@@ -37,10 +37,38 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import sys
 import flask
 
 import mongo
 import exceptions
+
+def validate(name):
+    # retrieves the caller frame and uses it to retrieve
+    # the map of global variables for it
+    caller = sys._getframe(1)
+    caller_globals = caller.f_globals
+
+    validate_method = caller_globals.get("_validate_" + name, None)
+    methods = validate_method and validate_method() or []
+    errors = []
+
+    object = {}
+    for name, value in flask.request.form.items(): object[name] = value
+    for name, value in flask.request.args.items(): object[name] = value
+
+    for method in methods:
+        try: method()
+        except exceptions.ValidationError, error:
+            errors.append((error.name, error.message))
+
+    errors_map = {}
+    for name, message in errors:
+        if not name in errors_map: errors_map[name] = []
+        _errors = errors_map[name]
+        _errors.append(message)
+
+    return errors_map, object
 
 def not_null(name):
     def validation():
