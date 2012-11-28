@@ -95,8 +95,8 @@ def equals(first_name, second_name):
 
 def not_duplicate(name, collection):
     def validation(object):
-        _id = object("_id", None)
-        value = object(name, None)
+        _id = object.get("_id", None)
+        value = object.get(name, None)
         db = mongo.get_db()
         _collection = db[collection]
         item = _collection.find_one({name : value})
