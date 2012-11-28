@@ -59,7 +59,7 @@ def validate(name):
     for name, value in flask.request.args.items(): object[name] = value
 
     for method in methods:
-        try: method()
+        try: method(object)
         except exceptions.ValidationError, error:
             errors.append((error.name, error.message))
 
@@ -72,43 +72,31 @@ def validate(name):
     return errors_map, object
 
 def not_null(name):
-    def validation():
-        value = flask.request.args.get(
-            name, flask.request.form.get(name, None)
-        )
+    def validation(object):
+        value = object.get(name, None)
         if not value == None: return True
         raise exceptions.ValidationError(name, "value is not set")
     return validation
 
 def not_empty(name):
-    def validation():
-        value = flask.request.args.get(
-            name, flask.request.form.get(name, None)
-        )
+    def validation(object):
+        value = object.get(name, None)
         if len(value): return True
         raise exceptions.ValidationError(name, "value is empty")
     return validation
 
 def equals(first_name, second_name):
-    def validation():
-        first_value = flask.request.args.get(
-            first_name, flask.request.form.get(first_name, None)
-        )
-        second_value = flask.request.args.get(
-            second_name, flask.request.form.get(second_name, None)
-        )
+    def validation(object):
+        first_value = object.get(first_name, None)
+        second_value = object.get(second_name, None)
         if first_value == second_value: return True
         raise exceptions.ValidationError(first_name, "value is not equals")
     return validation
 
 def not_duplicate(name, collection):
-    def validation():
-        _id = flask.request.args.get(
-            "_id", flask.request.form.get("_id", None)
-        )
-        value = flask.request.args.get(
-            name, flask.request.form.get(name, None)
-        )
+    def validation(object):
+        _id = object("_id", None)
+        value = object(name, None)
         db = mongo.get_db()
         _collection = db[collection]
         item = _collection.find_one({name : value})
