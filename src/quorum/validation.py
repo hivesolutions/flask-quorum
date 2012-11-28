@@ -37,343 +37,70 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import uuid
-import json
+import sys
 import flask
-import shelve
-import pickle
-import datetime
-import functools
 
-import werkzeug.datastructures
-
-try: import redis
-except: pass
-
-YEAR_IN_SECS = 31536000
-""" The number of seconds that exist in a
-complete year (365 days) """
-
-class RedisMemory:
-    """
-    "Local" in memory stub object that simulates
-    the redis interface, useful for debugging.
-
-    This memory interface may create problems in
-    a multiple process environment (non shared memory).
-    """
-
-    values = None
-    """ The map containing the various values to
-    be set in the memory map, simulates the redis
-    data store """
-
-    def __init__(self):
-        self.values = {}
-
-    def get(self, name):
-        name_s = str(name)
-        return self.values.get(name_s)
-
-    def set(self, name, value):
-        name_s = str(name)
-        self.values[name_s] = value
-
-    def setex(self, name, value, expire):
-        self.set(name, value)
-
-    def delete(self, name):
-        if not name in self.values: return
-        del self.values[name]
-
-class RedisShelve(RedisMemory):
-    """
-    "Local" in persistent stub object that simulates
-    the redis interface, useful for debugging.
-
-    This shelve interface requires a writable path
-    where its persistent file may be written.
-    """
-
-    def __init__(self, path = "redis.shelve"):
-        RedisMemory.__init__(self)
-        self.values = shelve.open(path)
-
-    def close(self):
-        self.values.close()
-
-    def set(self, name, value):
-        RedisMemory.set(self, name, value)
-        self.values.sync()
-
-    def delete(self, name):
-        name_s = str(name)
-        if not self.values.has_key(name_s): return
-        del self.values[name_s]
-
-class RedisSession(werkzeug.datastructures.CallbackDict, flask.sessions.SessionMixin):
-
-    def __init__(self, initial = None, sid = None, new = False):
-        def on_update(self): self.modified = True
-        werkzeug.datastructures.CallbackDict.__init__(self, initial, on_update)
-
-        self.sid = sid
-        self.new = new
-        self.modified = False
-
-class RedisSessionInterface(flask.sessions.SessionInterface):
-
-    serializer = pickle
-    """ The serializer to be used for the values
-    contained in the session (used on top of the class) """
-
-    session_class = RedisSession
-    """ The class to be used to encapsulate a session
-    the generated object will be serialized """
-
-    def __init__(self, _redis = None, prefix = "session:", url = None):
-        if _redis == None:
-            _redis = url and redis.from_url(url) or RedisShelve()
-
-        self.redis = _redis
-        self.prefix = prefix
-
-    def generate_sid(self):
-        return str(uuid.uuid4())
-
-    def get_redis_expiration_time(self, app, session):
-        if session.permanent: return app.permanent_session_lifetime
-        return datetime.timedelta(days = 1)
-
-    def get_seconds(self, delta):
-        return (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
-
-    def open_session(self, app, request):
-        # tries to retrieve the session identifier from the
-        # application cookie (or from parameters) in case
-        # none is found generates a new one using the default
-        # strategy and returns a new session object with that
-        # session identifier
-        sid = request.args.get("sid", request.args.get("session_id"))
-        sid = sid or request.form.get("sid", request.form.get("session_id"))
-        sid = sid or request.cookies.get(app.session_cookie_name)
-        if not sid:
-            sid = self.generate_sid()
-            return self.session_class(sid = sid)
-
-        # tries to retrieve the session value from redis in
-        # case the values is successfully found loads it using
-        # the serializer and returns the session object
-        value = self.redis.get(self.prefix + sid)
-        if not value == None:
-            data = self.serializer.loads(value)
-            return self.session_class(data, sid = sid)
-
-        # returns a new session object with an already existing
-        # session identifier, but not found in data source (redis)
-        return self.session_class(sid = sid, new = True)
-
-    def save_session(self, app, session, response):
-        # retrieves the domain associated with the cookie to
-        # be able to correctly modify it
-        domain = self.get_cookie_domain(app)
-
-        if not session:
-            self.redis.delete(self.prefix + session.sid)
-            if session.modified: response.delete_cookie(
-                app.session_cookie_name,
-                domain = domain
-            )
-            return
-
-        redis_expire = self.get_redis_expiration_time(app, session)
-        cookie_expire = self.get_expiration_time(app, session)
-        value = self.serializer.dumps(dict(session))
-        total_seconds = self.get_seconds(redis_expire)
-        self.redis.setex(
-            self.prefix + session.sid,
-            value,
-            int(total_seconds)
-        )
-
-        response.set_cookie(
-            app.session_cookie_name,
-            session.sid,
-            expires = cookie_expire,
-            httponly = True,
-            domain = domain
-        )
-
-class SSLify(object):
-    """
-    Secures your flask app by enabling the forcing
-    of the protocol in the http connection.
-    """
-
-    def __init__(self, app, age = YEAR_IN_SECS, subdomains = False):
-        """
-        Constructor of the class.
-
-        @type app: App
-        @param app: The application object to be used in the
-        in ssl operation for the forcing of the protocol.
-        @type age: int
-        @param age: The maximum age of the hsts operation.
-        @type subdomains: bool
-        @param subdomains: If subdomain should be allows as part
-        of the security policy.
-        """
-
-        if not app == None:
-            self.app = app
-            self.hsts_age = age
-            self.hsts_include_subdomains = subdomains
-
-            self.init_app(self.app)
-        else:
-            self.app = None
-
-    def init_app(self, app):
-        """
-        Configures the configured flask app to enforce ssl.
-
-        @type app: App
-        @param app: The application to be configured to enforce
-        the ssl redirection support.
-        """
-
-        app.before_request(self.redirect_to_ssl)
-        app.after_request(self.set_hsts_header)
-
-    @property
-    def hsts_header(self):
-        """
-        Returns the proper hsts policy.
-
-        @rtype: String
-        @return: The proper hsts policy string value.
-        """
-
-        hsts_policy = "max-age={0}".format(self.hsts_age)
-        if self.hsts_include_subdomains: hsts_policy += "; includeSubDomains"
-
-        return hsts_policy
-
-    def redirect_to_ssl(self):
-        """
-        Redirect incoming requests to https.
-
-        @rtype: Request
-        @return: The changed request containing the redirect
-        instruction in case it's required.
-        """
-
-        criteria = [
-            flask.request.is_secure,
-            self.app.debug,
-            flask.request.headers.get("X-Forwarded-Proto", "http") == "https"
-        ]
-
-        if not any(criteria):
-            if flask.request.url.startswith("http://"):
-                url = flask.request.url.replace("http://", "https://", 1)
-                request = flask.redirect(url)
-
-                return request
-
-    def set_hsts_header(self, response):
-        """
-        Adds hsts header to each response.
-        This header should enable extra security options to be
-        interpreted at the client side.
-
-        @type response: Response
-        @param response: The response to be used to set the hsts
-        policy header.
-        @rtype: Response
-        @return: The changed response object, containing the strict
-        transport security (hsts) header.
-        """
-
-        response.headers.setdefault("Strict-Transport-Security", self.hsts_header)
-        return response
-
-def check_basic_auth(username, password):
-    authorization = flask.request.authorization
-    if not authorization: return False
-    if not authorization.username == username: return False
-    if not authorization.password == password: return False
-    return True
-
-def ensure_basic_auth(username, password, json_s = False):
-    check = check_basic_auth(username, password)
-    if check: return
-
-    if json_s: return flask.Response(
-            json.dumps({
-                "exception" : {
-                    "message" : "Unauthorized for operation"
-                }
-            }),
-            status = 401,
-            mimetype = "application/json"
-        )
-    else:
-        return flask.redirect(
-            flask.url_for("login")
-        )
-
-def ensure_login(token = None, json_s = False):
-    if "username" in flask.session and not token: return None
-    if "*" in flask.session.get("tokens", []): return None
-    if token in flask.session.get("tokens", []): return None
-
-    if json_s:
-        return flask.Response(
-            json.dumps({
-                "exception" : {
-                    "message" : "Not enough permissions for operation"
-                }
-            }),
-            status = 403,
-            mimetype = "application/json"
-        )
-    else:
-        return flask.redirect(
-            flask.url_for("login")
-        )
-
-def ensure_user(username):
-    _username = flask.session.get("username", None)
-    if not _username == None and username == _username: return
-    raise RuntimeError("Permission denied")
-
-def ensure_session(object):
-    if object.get("sesion_id", None) == flask.session.get("session_id", None): return
-    raise RuntimeError("Permission denied")
-
-def ensure(token = None, json = False):
-
-    def decorator(function):
-        @functools.wraps(function)
-        def interceptor(*args, **kwargs):
-            ensure = ensure_login(token, json)
-            if ensure: return ensure
-            return function(*args, **kwargs)
-
-        return interceptor
-
-    return decorator
-
-def ensure_auth(username, password, json = False):
-
-    def decorator(function):
-        @functools.wraps(function)
-        def interceptor(*args, **kwargs):
-            ensure = ensure_basic_auth(username, password, json)
-            if ensure: return ensure
-            return function(*args, **kwargs)
-
-        return interceptor
-
-    return decorator
+import mongo
+import exceptions
+
+def validate(name):
+    # retrieves the caller frame and uses it to retrieve
+    # the map of global variables for it
+    caller = sys._getframe(1)
+    caller_globals = caller.f_globals
+
+    validate_method = caller_globals.get("_validate_" + name, None)
+    methods = validate_method and validate_method() or []
+    errors = []
+
+    object = {}
+    for name, value in flask.request.files.items(): object[name] = value
+    for name, value in flask.request.form.items(): object[name] = value
+    for name, value in flask.request.args.items(): object[name] = value
+
+    for method in methods:
+        try: method(object)
+        except exceptions.ValidationError, error:
+            errors.append((error.name, error.message))
+
+    errors_map = {}
+    for name, message in errors:
+        if not name in errors_map: errors_map[name] = []
+        _errors = errors_map[name]
+        _errors.append(message)
+
+    return errors_map, object
+
+def not_null(name):
+    def validation(object):
+        value = object.get(name, None)
+        if not value == None: return True
+        raise exceptions.ValidationError(name, "value is not set")
+    return validation
+
+def not_empty(name):
+    def validation(object):
+        value = object.get(name, None)
+        if len(value): return True
+        raise exceptions.ValidationError(name, "value is empty")
+    return validation
+
+def equals(first_name, second_name):
+    def validation(object):
+        first_value = object.get(first_name, None)
+        second_value = object.get(second_name, None)
+        if first_value == second_value: return True
+        raise exceptions.ValidationError(first_name, "value is not equals")
+    return validation
+
+def not_duplicate(name, collection):
+    def validation(object):
+        _id = object("_id", None)
+        value = object(name, None)
+        db = mongo.get_db()
+        _collection = db[collection]
+        item = _collection.find_one({name : value})
+        if not item: return True
+        if str(item["_id"]) == _id: return True
+        raise exceptions.ValidationError(name, "value is duplicate")
+    return validation
