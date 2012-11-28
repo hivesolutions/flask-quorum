@@ -298,6 +298,31 @@ class SSLify(object):
         response.headers.setdefault("Strict-Transport-Security", self.hsts_header)
         return response
 
+def check_basic_auth(username, password):
+    authorization = flask.request.authorization
+    if not authorization: return False
+    if not authorization.username == username: return False
+    if not authorization.password == password: return False
+    return True
+
+def ensure_basic_auth(username, password, json_s = False):
+    check = check_basic_auth(username, password)
+    if check: return
+
+    if json_s: return flask.Response(
+            json.dumps({
+                "exception" : {
+                    "message" : "Unauthorized for operation"
+                }
+            }),
+            status = 401,
+            mimetype = "application/json"
+        )
+    else:
+        return flask.redirect(
+            flask.url_for("login")
+        )
+
 def ensure_login(token = None, json_s = False):
     if "username" in flask.session and not token: return None
     if "*" in flask.session.get("tokens", []): return None
@@ -333,6 +358,19 @@ def ensure(token = None, json = False):
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             ensure = ensure_login(token, json)
+            if ensure: return ensure
+            return function(*args, **kwargs)
+
+        return interceptor
+
+    return decorator
+
+def ensure_auth(username, password, json = False):
+
+    def decorator(function):
+        @functools.wraps(function)
+        def interceptor(*args, **kwargs):
+            ensure = ensure_basic_auth(username, password, json)
             if ensure: return ensure
             return function(*args, **kwargs)
 
