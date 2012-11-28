@@ -54,6 +54,28 @@ database = "master"
 """ The global variable containing the value for the
 database to be used in the connection with the service """
 
+class MongoMap(object):
+    """
+    Encapsulates a mongo collection to provide an interface
+    that is compatible with the "normal" key value access
+    offered by the python dictionary (map).
+    """
+
+    collection = None
+    """ The collection to be used as the underlying structure
+    for the data access """
+
+    key = None
+    """ The name of the key to be used for the "default" search
+    for value providing """
+
+    def __init__(self, collection, key = "id"):
+        self.collection = collection
+        self.key = key
+
+    def get(self, value, default = None):
+        return self.collection.find_one({self.key : value}) or default
+
 def get_connection():
     global connection
     if pymongo == None: return None
