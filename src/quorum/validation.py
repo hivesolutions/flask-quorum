@@ -54,6 +54,7 @@ def validate(name):
     errors = []
 
     object = {}
+    for name, value in flask.request.files.items(): object[name] = value
     for name, value in flask.request.form.items(): object[name] = value
     for name, value in flask.request.args.items(): object[name] = value
 
