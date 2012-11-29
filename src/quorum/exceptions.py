@@ -37,7 +37,22 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-class ValidationError(RuntimeError):
+class BaseError(RuntimeError):
+    """
+    The base error class from which all the error
+    classes should inherit, contains basic functionality
+    to be inherited by all "errors".
+    """
+
+    message = None
+    """ The message value stored to describe the
+    current error """
+
+    def __init__(self, message):
+        RuntimeError.__init__(self, message)
+        self.message = message
+
+class ValidationError(BaseError):
     """
     Error raised when a validation on the model fails
     the error should associate a name in the model with
@@ -49,5 +64,5 @@ class ValidationError(RuntimeError):
     the validation """
 
     def __init__(self, name, message):
-        RuntimeError.__init__(self, message)
+        BaseError.__init__(self, message)
         self.name = name
