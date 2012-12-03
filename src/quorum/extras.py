@@ -305,6 +305,12 @@ def check_basic_auth(username, password):
     if not authorization.password == password: return False
     return True
 
+def check_login(token):
+    if "username" in flask.session and not token: return True
+    if "*" in flask.session.get("tokens", []): return True
+    if token in flask.session.get("tokens", []): return True
+    return False
+
 def ensure_basic_auth(username, password, json_s = False):
     check = check_basic_auth(username, password)
     if check: return
@@ -324,9 +330,7 @@ def ensure_basic_auth(username, password, json_s = False):
         )
 
 def ensure_login(token = None, json_s = False):
-    if "username" in flask.session and not token: return None
-    if "*" in flask.session.get("tokens", []): return None
-    if token in flask.session.get("tokens", []): return None
+    if check_login(token): return None
 
     if json_s:
         return flask.Response(
