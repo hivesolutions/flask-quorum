@@ -38,9 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
-import pymongo
 
-import bson.json_util
+try: import pymongo
+except: pass
+
+try: import bson.json_util
+except: pass
 
 connection = None
 """ The global connection object that should persist
