@@ -112,6 +112,6 @@ def get_connection():
 
 def _get_connection(url):
     global connection
-    if redis == None: return None
+    if redis == None and url: return None
     if not connection: connection = url and redis.from_url(url) or RedisShelve()
     return connection
