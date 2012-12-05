@@ -22,6 +22,9 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
+__version__ = "1.0.0"
+""" The version of the module """
+
 __revision__ = "$LastChangedRevision$"
 """ The revision number of the module """
 
@@ -34,18 +37,16 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import acl
-import base
-import exceptions
-import execution
-import export
-import extras
-import mongodb
-import redisdb
-import session
-import validation
+import os
+import flask
 
-from acl import *
-from base import *
-from exceptions import *
-from validation import *
+import mongo
+import redis
+import session
+
+def load():
+    redis_url = os.getenv("REDISTOGO_URL", None)
+    mongo_url = os.getenv("MONGOHQ_URL", None)
+    if redis_url: redis.url = redis_url
+    if mongo_url: mongo.url = mongo_url
+    flask.app.session_interface = session.RedisSessionInterface(url = redis_url)

@@ -39,11 +39,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import uuid
 import flask
-import redis
 import pickle
 import datetime
 
 import werkzeug.datastructures
+
+import redisdb
 
 class RedisSession(werkzeug.datastructures.CallbackDict, flask.sessions.SessionMixin):
 
@@ -66,7 +67,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
     the generated object will be serialized """
 
     def __init__(self, _redis = None, prefix = "session:", url = None):
-        if _redis == None: _redis = redis.get_connection(url)
+        if _redis == None: _redis = redisdb.get_connection(url)
 
         self.redis = _redis
         self.prefix = prefix
