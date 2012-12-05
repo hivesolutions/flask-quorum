@@ -46,7 +46,7 @@ connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
 
-url = "redis://localhost:27017"
+url = None
 """ The global variable containing the url to be used
 for the connection with the service """
 

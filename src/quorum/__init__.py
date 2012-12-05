@@ -49,3 +49,7 @@ from acl import *
 from base import *
 from exceptions import *
 from validation import *
+
+from mongodb import get_connection as get_mongo
+from mongodb import get_db as get_mongo_db
+from redisdb import get_connection as get_redis
