@@ -44,9 +44,9 @@ import session
 import redisdb
 import mongodb
 
-def load():
+def load(redis_session = False):
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
-    flask.app.session_interface = session.RedisSessionInterface(url = redis_url)
+    if redis_session: flask.app.session_interface = session.RedisSessionInterface(url = redis_url)
