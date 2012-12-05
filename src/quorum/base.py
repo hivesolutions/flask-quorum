@@ -38,15 +38,14 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import flask
 
 import session
 import redisdb
 import mongodb
 
-def load(redis_session = False):
+def load(app, redis_session = False):
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
-    if redis_session: flask.app.session_interface = session.RedisSessionInterface(url = redis_url)
+    if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
