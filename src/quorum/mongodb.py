@@ -79,11 +79,8 @@ class MongoMap(object):
     def get(self, value, default = None):
         return self.collection.find_one({self.key : value}) or default
 
-def get_connection(_url = None):
-    global connection
-    if pymongo == None: return None
-    if not connection: connection = pymongo.Connection(_url or url)
-    return connection
+def get_connection():
+    return _get_connection(url)
 
 def get_db():
     connection = get_connection()
@@ -95,3 +92,9 @@ def get_db():
 
 def dumps(*args):
     return json.dumps(default = bson.json_util.default, *args)
+
+def _get_connection(url):
+    global connection
+    if pymongo == None: return None
+    if not connection: connection = pymongo.Connection(url)
+    return connection

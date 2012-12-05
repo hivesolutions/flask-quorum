@@ -40,7 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import sys
 import flask
 
-import mongo
+import mongodb
 import exceptions
 
 def validate(name):
@@ -97,7 +97,7 @@ def not_duplicate(name, collection):
     def validation(object):
         _id = object.get("_id", None)
         value = object.get(name, None)
-        db = mongo.get_db()
+        db = mongodb.get_db()
         _collection = db[collection]
         item = _collection.find_one({name : value})
         if not item: return True

@@ -107,8 +107,11 @@ class RedisShelve(RedisMemory):
         if not self.values.has_key(name_s): return
         del self.values[name_s]
 
-def get_connection(_url = None):
+def get_connection():
+    return _get_connection(url)
+
+def _get_connection(url):
     global connection
     if redis == None: return None
-    if not connection: connection = _url or url and redis.from_url(_url or url) or RedisShelve()
+    if not connection: connection = url and redis.from_url(url) or RedisShelve()
     return connection

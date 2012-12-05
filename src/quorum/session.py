@@ -67,7 +67,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
     the generated object will be serialized """
 
     def __init__(self, _redis = None, prefix = "session:", url = None):
-        if _redis == None: _redis = redisdb.get_connection(url)
+        if _redis == None: _redis = redisdb._get_connection(url)
 
         self.redis = _redis
         self.prefix = prefix

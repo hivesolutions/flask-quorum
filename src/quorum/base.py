@@ -40,13 +40,13 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import flask
 
-import mongo
-import redis
 import session
+import redisdb
+import mongodb
 
 def load():
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
-    if redis_url: redis.url = redis_url
-    if mongo_url: mongo.url = mongo_url
+    if redis_url: redisdb.url = redis_url
+    if mongo_url: mongodb.url = mongo_url
     flask.app.session_interface = session.RedisSessionInterface(url = redis_url)
