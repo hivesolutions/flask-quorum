@@ -38,10 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import bson
 import json
 import zipfile
 import tempfile
+
+try: import bson
+except: bson = None
 
 class ExportManager(object):
 
