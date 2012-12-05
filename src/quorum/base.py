@@ -43,9 +43,10 @@ import session
 import redisdb
 import mongodb
 
-def load(app, redis_session = False):
+def load(app, redis_session = False, mongo_database = None):
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
+    if mongo_database: mongodb.database = mongo_database
