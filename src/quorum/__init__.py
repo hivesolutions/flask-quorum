@@ -34,12 +34,16 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import acl
 import exceptions
 import execution
 import export
 import extras
 import mongo
+import redis
+import session
 import validation
 
+from acl import *
 from exceptions import *
 from validation import *

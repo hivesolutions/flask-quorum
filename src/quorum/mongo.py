@@ -40,10 +40,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import json
 
 try: import pymongo
-except: pass
+except: pymongo = None
 
 try: import bson.json_util
-except: pass
+except: bson = None
 
 connection = None
 """ The global connection object that should persist
@@ -79,10 +79,10 @@ class MongoMap(object):
     def get(self, value, default = None):
         return self.collection.find_one({self.key : value}) or default
 
-def get_connection():
+def get_connection(_url = None):
     global connection
     if pymongo == None: return None
-    if not connection: connection = pymongo.Connection(url)
+    if not connection: connection = pymongo.Connection(_url or url)
     return connection
 
 def get_db():
