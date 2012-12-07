@@ -92,42 +92,46 @@ def not_null(name):
     def validation(object):
         value = object.get(name, None)
         if not value == None: return True
-        raise exceptions.ValidationError(name, "value is not set")
+        raise exceptions.ValidationError(name, "is not set")
     return validation
 
 def not_empty(name):
     def validation(object):
         value = object.get(name, None)
         if len(value): return True
-        raise exceptions.ValidationError(name, "value is empty")
+        raise exceptions.ValidationError(name, "is empty")
     return validation
 
 def is_email(name):
     def validation(object):
         value = object.get(name, None)
         if EMAIL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "value is not an email")
+        raise exceptions.ValidationError(name, "is not a valid email")
     return validation
 
 def is_url(name):
     def validation(object):
         value = object.get(name, None)
         if URL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "value is not an url")
+        raise exceptions.ValidationError(name, "is not a valid url")
     return validation
 
 def string_gt(name, size):
     def validation(object):
         value = object.get(name, None)
         if len(value) > size: return True
-        raise exceptions.ValidationError(name, "must be larger than %d characters" % size)
+        raise exceptions.ValidationError(
+            name, "must be larger than %d characters" % size
+        )
     return validation
 
 def string_lt(name, size):
     def validation(object):
         value = object.get(name, None)
         if len(value) < size: return True
-        raise exceptions.ValidationError(name, "must be smaller than %d characters" % size)
+        raise exceptions.ValidationError(
+            name, "must be smaller than %d characters" % size
+        )
     return validation
 
 def equals(first_name, second_name):
@@ -135,7 +139,9 @@ def equals(first_name, second_name):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
         if first_value == second_value: return True
-        raise exceptions.ValidationError(first_name, "value is not equals to %s" % second_name)
+        raise exceptions.ValidationError(
+            first_name, "value is not equals to %s" % second_name
+        )
     return validation
 
 def not_duplicate(name, collection):
