@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import json
 import shelve
 
 try: import redis
@@ -109,6 +110,9 @@ class RedisShelve(RedisMemory):
 
 def get_connection():
     return _get_connection(url)
+
+def dumps(*args):
+    return json.dumps(*args)
 
 def _get_connection(url):
     global connection
