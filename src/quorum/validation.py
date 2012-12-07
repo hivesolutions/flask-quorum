@@ -92,28 +92,28 @@ def not_null(name):
     def validation(object):
         value = object.get(name, None)
         if not value == None: return True
-        raise exceptions.ValidationError(name, "is not set")
+        raise exceptions.ValidationError(name, "value is not set")
     return validation
 
 def not_empty(name):
     def validation(object):
         value = object.get(name, None)
         if len(value): return True
-        raise exceptions.ValidationError(name, "is empty")
+        raise exceptions.ValidationError(name, "value is empty")
     return validation
 
 def is_email(name):
     def validation(object):
         value = object.get(name, None)
         if EMAIL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "is not a valid email")
+        raise exceptions.ValidationError(name, "value is not a valid email")
     return validation
 
 def is_url(name):
     def validation(object):
         value = object.get(name, None)
         if URL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "is not a valid url")
+        raise exceptions.ValidationError(name, "value is not a valid url")
     return validation
 
 def string_gt(name, size):
