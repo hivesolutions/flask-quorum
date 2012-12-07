@@ -37,11 +37,28 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import re
 import sys
 import flask
 
 import mongodb
 import exceptions
+
+EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
+""" The email regex value used to validate
+if the provided value is in fact an email """
+
+URL_REGEX_VALUE = "^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
+""" The url regex value used to validate
+if the provided value is in fact an URL/URI """
+
+EMAIL_REGEX = re.compile(EMAIL_REGEX_VALUE)
+""" The email regex used to validate
+if the provided value is in fact an email """
+
+URL_REGEX = re.compile(URL_REGEX_VALUE)
+""" The url regex used to validate
+if the provided value is in fact an URL/URI """
 
 def validate(name):
     # retrieves the caller frame and uses it to retrieve
@@ -85,12 +102,40 @@ def not_empty(name):
         raise exceptions.ValidationError(name, "value is empty")
     return validation
 
+def is_email(name):
+    def validation(object):
+        value = object.get(name, None)
+        if EMAIL_REGEX.match(value): return True
+        raise exceptions.ValidationError(name, "value is not an email")
+    return validation
+
+def is_url(name):
+    def validation(object):
+        value = object.get(name, None)
+        if URL_REGEX.match(value): return True
+        raise exceptions.ValidationError(name, "value is not an url")
+    return validation
+
+def string_gt(name, size):
+    def validation(object):
+        value = object.get(name, None)
+        if len(value) > size: return True
+        raise exceptions.ValidationError(name, "must be larger than %d characters" % size)
+    return validation
+
+def string_lt(name, size):
+    def validation(object):
+        value = object.get(name, None)
+        if len(value) < size: return True
+        raise exceptions.ValidationError(name, "must be smaller than %d characters" % size)
+    return validation
+
 def equals(first_name, second_name):
     def validation(object):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
         if first_value == second_value: return True
-        raise exceptions.ValidationError(first_name, "value is not equals")
+        raise exceptions.ValidationError(first_name, "value is not equals to %s" % second_name)
     return validation
 
 def not_duplicate(name, collection):
