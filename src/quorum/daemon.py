@@ -178,7 +178,7 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pidfile %s does not exist. Daemon not running?\n"
+            message = "pidfile %s does not exist, daemon not running ?\n"
             sys.stderr.write(message % self.pidfile)
             return
 
