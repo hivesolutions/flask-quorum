@@ -148,10 +148,9 @@ class Daemon:
             pid_file = file(self.pidfile, "r")
             pid_contents = pid_file.read().strip()
             pid = int(pid_contents)
+            pid_file.close()
         except IOError:
             pid = None
-        finally:
-            pid_file.close()
 
         # in case the pid value is loaded, prints an error
         # message to the standard error and exists the current
@@ -174,10 +173,9 @@ class Daemon:
             pid_file = file(self.pidfile, "r")
             pid_contents = pid_file.read().strip()
             pid = int(pid_contents)
+            pid_file.close()
         except IOError:
             pid = None
-        finally:
-            pid_file.close()
 
         if not pid:
             message = "pidfile %s does not exist. Daemon not running?\n"
