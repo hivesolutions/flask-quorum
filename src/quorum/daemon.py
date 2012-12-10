@@ -131,7 +131,8 @@ class Daemon:
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
-        # write pidfile
+        # write pidfile, updating the data in it
+        # this should mark the process as running
         atexit.register(self.delpid)
         pid = str(os.getpid())
         file(self.pidfile, "w+").write("%s\n" % pid)
@@ -184,14 +185,14 @@ class Daemon:
             return # not an error in a restart
 
         try:
-            while 1:
+            while True:
                 os.kill(pid, signal.SIGTERM) #@UndefinedVariable
                 time.sleep(0.1)
         except OSError, err:
             err = str(err)
             if err.find("No such process") > 0:
-                if os.path.exists(self.pidfile):
-                    os.remove(self.pidfile)
+                pid_exists = os.path.exists(self.pidfile)
+                pid_exists and os.remove(self.pidfile)
             else:
                 print str(err)
                 sys.exit(1)
