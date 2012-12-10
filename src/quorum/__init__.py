@@ -36,6 +36,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import acl
 import base
+import daemon
 import exceptions
 import execution
 import export
@@ -47,6 +48,7 @@ import validation
 
 from acl import *
 from base import *
+from daemon import *
 from exceptions import *
 from validation import *
 
