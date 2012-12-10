@@ -98,8 +98,15 @@ def not_null(name):
 def not_empty(name):
     def validation(object):
         value = object.get(name, None)
-        if len(value): return True
+        if value and len(value): return True
         raise exceptions.ValidationError(name, "value is empty")
+    return validation
+
+def is_in(name, values):
+    def validation(object):
+        value = object.get(name, None)
+        if value in values: return True
+        raise exceptions.ValidationError(name, "value is not in set")
     return validation
 
 def is_email(name):
