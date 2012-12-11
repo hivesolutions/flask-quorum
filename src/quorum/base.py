@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import logging
 
 import session
 import redisdb
@@ -50,3 +51,11 @@ def load(app, redis_session = False, mongo_database = None):
     if mongo_url: mongodb.url = mongo_url
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
+
+def start_log(app, name):
+    if app.debug: return
+    if os.name == "nt": path_t = "%s"
+    else: path_t = "/var/log/%s"
+    file_handler = logging.FileHandler(path_t, name)
+    file_handler.setLevel(logging.WARNING)
+    app.logger.addHandler(file_handler)
