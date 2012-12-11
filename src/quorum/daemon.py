@@ -66,10 +66,6 @@ class Daemon:
     """ The file path to the file to be used
     as the standard error of the created process """
 
-    error = False
-    """ The flag indicating if a startup error as occurred in
-    the current daemon, avoid problems with pid """
-
     def __init__(self, pid_file, stdin = "/dev/null", stdout = "/dev/null", stderr = "/dev/null"):
         """
         Constructor of the class.
@@ -91,8 +87,6 @@ class Daemon:
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
-
-        self.error = False
 
     def daemonize(self):
         """
@@ -167,7 +161,6 @@ class Daemon:
         # process (avoids duplicated running)
         if pid:
             message = "pidfile %s already exists, daemon already running ?\n"
-            self.error = True
             sys.stderr.write(message % self.pidfile)
             sys.exit(1)
 
@@ -220,7 +213,6 @@ class Daemon:
         releasing all the structures locked by it.
         """
 
-        if self.error: return
         pid_exists = os.path.exists(self.pidfile)
         pid_exists and os.remove(self.pidfile)
 
