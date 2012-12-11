@@ -44,16 +44,17 @@ import session
 import redisdb
 import mongodb
 
-def load(app, redis_session = False, mongo_database = None):
+def load(app, redis_session = False, mongo_database = None, name = None):
+    debug = os.getenv("DEBUG", False)
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
+    if not debug and name: start_log(app, name)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
 
 def start_log(app, name):
-    if app.debug: return
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = path_t % name
