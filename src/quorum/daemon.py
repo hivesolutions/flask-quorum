@@ -88,7 +88,7 @@ class Daemon:
         self.stdout = stdout
         self.stderr = stderr
 
-    def daemonize(self):
+    def daemonize(self, register = True):
         """
         Do the UNIX double-fork magic, see Stevens "Advanced
         Programming in the UNIX Environment" for details (ISBN 0201563177).
@@ -96,6 +96,9 @@ class Daemon:
         This is considered the main method for the execution
         of the daemon strategy.
 
+        @type register: bool
+        @param register: If a cleanup function should be register for
+        the at exit operation.
         @see: http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
         """
 
@@ -137,14 +140,12 @@ class Daemon:
 
         # write pidfile, updating the data in it
         # this should mark the process as running
-        atexit.register(self.delpid)
+        register and atexit.register(self.cleanup)
+        register and signal.signal(signal.SIGTERM, self.cleanup_s)
         pid = str(os.getpid())
         file(self.pidfile, "w+").write("%s\n" % pid)
 
-    def delpid(self):
-        os.remove(self.pidfile)
-
-    def start(self):
+    def start(self, register = True):
         try:
             # checks for a pidfile to check if the daemon
             # already runs, in such case retrieves the pid
@@ -166,7 +167,7 @@ class Daemon:
 
         # daemonizes the current process and then starts
         # the daemon structures (runs the process)
-        self.daemonize()
+        self.daemonize(register = register)
         self.run()
 
     def stop(self):
@@ -211,6 +212,32 @@ class Daemon:
         """
         Performs a cleanup operation in the current daemon
         releasing all the structures locked by it.
+        """
+
+        self.delete_pid()
+
+    def cleanup_s(self, signum, frame):
+        """
+        Cleanup handler for the signal handler, this handler
+        takes extra arguments required by the signal handler
+        caller.
+
+        @type signum: int
+        @param signum: The identifier of the signal that has
+        just been raised.
+        @type frame: Object
+        @param frame: The object containing the current program
+        frame at the time of the signal raise.
+        """
+
+        self.cleanup()
+
+    def delete_pid(self):
+        """
+        Removes the current pid file in case it exists in the
+        current file system.
+
+        No error will be raised in case no pid file exists.
         """
 
         pid_exists = os.path.exists(self.pidfile)
