@@ -56,6 +56,7 @@ def start_log(app, name):
     if app.debug: return
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
-    file_handler = logging.FileHandler(path_t, name)
+    path = path_t % name
+    file_handler = logging.FileHandler(path)
     file_handler.setLevel(logging.WARNING)
     app.logger.addHandler(file_handler)
