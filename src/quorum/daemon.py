@@ -67,7 +67,7 @@ class Daemon:
     as the standard error of the created process """
 
     error = False
-    """ The flag indicating if a startup error as ocured in
+    """ The flag indicating if a startup error as occurred in
     the current daemon, avoid problems with pid """
 
     def __init__(self, pid_file, stdin = "/dev/null", stdout = "/dev/null", stderr = "/dev/null"):
@@ -92,6 +92,8 @@ class Daemon:
         self.stdout = stdout
         self.stderr = stderr
 
+        self.error = False
+
     def daemonize(self):
         """
         Do the UNIX double-fork magic, see Stevens "Advanced
@@ -106,8 +108,10 @@ class Daemon:
         try:
             pid = os.fork() #@UndefinedVariable
             if pid > 0: sys.exit(0)
-        except OSError, e:
-            sys.stderr.write("first fork failed: %d (%s)\n" % (e.errno, e.strerror))
+        except OSError, error:
+            sys.stderr.write(
+                "first fork failed: %d (%s)\n" % (error.errno, error.strerror)
+            )
             sys.exit(1)
 
         # decouples the current process from parent environment
@@ -121,8 +125,10 @@ class Daemon:
             # the "second" parent process
             pid = os.fork() #@UndefinedVariable
             if pid > 0:  sys.exit(0)
-        except OSError, e:
-            sys.stderr.write("second fork failed: %d (%s)\n" % (e.errno, e.strerror))
+        except OSError, error:
+            sys.stderr.write(
+                "second fork failed: %d (%s)\n" % (error.errno, error.strerror)
+            )
             sys.exit(1)
 
         # redirect standard file descriptors
@@ -191,9 +197,9 @@ class Daemon:
             while True:
                 os.kill(pid, signal.SIGTERM) #@UndefinedVariable
                 time.sleep(0.1)
-        except OSError, err:
-            err = str(err)
-            if err.find("No such process") > 0:
+        except OSError, error:
+            error = str(error)
+            if error.find("No such process") > 0:
                 pid_exists = os.path.exists(self.pidfile)
                 pid_exists and os.remove(self.pidfile)
             else:
