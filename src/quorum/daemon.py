@@ -204,6 +204,15 @@ class Daemon:
         self.stop()
         self.start()
 
+    def cleanup(self):
+        """
+        Performs a cleanup operation in the current daemon
+        releasing all the structures locked by it.
+        """
+
+        pid_exists = os.path.exists(self.pidfile)
+        pid_exists and os.remove(self.pidfile)
+
     def run(self):
         """
         You should override this method when you subclass
