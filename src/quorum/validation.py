@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import re
 import sys
+import copy
 import flask
 
 import mongodb
@@ -60,17 +61,24 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 """ The url regex used to validate
 if the provided value is in fact an URL/URI """
 
-def validate(name):
+def validate(name, object = None):
     # retrieves the caller frame and uses it to retrieve
     # the map of global variables for it
     caller = sys._getframe(1)
     caller_globals = caller.f_globals
 
+    # retrieves the method that will returns the list of method
+    # to be used as validation methods, this method is retrieved
+    # using the provided name as a prefix value
     validate_method = caller_globals.get("_validate_" + name, None)
     methods = validate_method and validate_method() or []
     errors = []
 
-    object = {}
+    # verifies if the provided object is valid in such case creates
+    # a copy of it and uses it as the base object for validation
+    # otherwise used an empty map (form validation)
+    object = object and copy.copy(object) or {}
+
     for name, value in flask.request.files.items(): object[name] = value
     for name, value in flask.request.form.items(): object[name] = value
     for name, value in flask.request.args.items(): object[name] = value
