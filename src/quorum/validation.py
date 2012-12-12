@@ -38,10 +38,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import re
-import sys
 import copy
 import flask
 
+import util
 import mongodb
 import exceptions
 
@@ -61,17 +61,11 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 """ The url regex used to validate
 if the provided value is in fact an URL/URI """
 
-def validate(name, object = None):
-    # retrieves the caller frame and uses it to retrieve
-    # the map of global variables for it
-    caller = sys._getframe(1)
-    caller_globals = caller.f_globals
-
-    # retrieves the method that will returns the list of method
-    # to be used as validation methods, this method is retrieved
-    # using the provided name as a prefix value
-    validate_method = caller_globals.get("_validate_" + name, None)
-    methods = validate_method and validate_method() or []
+def validate(method, object = None):
+    # uses the provided method to retrieves the complete
+    # set of methods to be used for validation, this provides
+    # an extra level of indirection
+    methods = method and method() or []
     errors = []
 
     # verifies if the provided object is valid in such case creates
@@ -79,13 +73,19 @@ def validate(name, object = None):
     # otherwise used an empty map (form validation)
     object = object and copy.copy(object) or {}
 
+    # retrieves the current request data and tries to
+    # "load" it as json data, in case it fails gracefully
+    # handles the failure setting the value as an empty map
+    data_j = util.request_json()
+
+    for name, value in data_j.items(): object[name] = value
     for name, value in flask.request.files.items(): object[name] = value
     for name, value in flask.request.form.items(): object[name] = value
     for name, value in flask.request.args.items(): object[name] = value
 
     for method in methods:
         try: method(object)
-        except exceptions.ValidationError, error:
+        except exceptions.ValidationInternalError, error:
             errors.append((error.name, error.message))
 
     errors_map = {}
@@ -100,42 +100,42 @@ def not_null(name):
     def validation(object):
         value = object.get(name, None)
         if not value == None: return True
-        raise exceptions.ValidationError(name, "value is not set")
+        raise exceptions.ValidationInternalError(name, "value is not set")
     return validation
 
 def not_empty(name):
     def validation(object):
         value = object.get(name, None)
         if value and len(value): return True
-        raise exceptions.ValidationError(name, "value is empty")
+        raise exceptions.ValidationInternalError(name, "value is empty")
     return validation
 
 def is_in(name, values):
     def validation(object):
         value = object.get(name, None)
         if value in values: return True
-        raise exceptions.ValidationError(name, "value is not in set")
+        raise exceptions.ValidationInternalError(name, "value is not in set")
     return validation
 
 def is_email(name):
     def validation(object):
         value = object.get(name, None)
         if EMAIL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "value is not a valid email")
+        raise exceptions.ValidationInternalError(name, "value is not a valid email")
     return validation
 
 def is_url(name):
     def validation(object):
         value = object.get(name, None)
         if URL_REGEX.match(value): return True
-        raise exceptions.ValidationError(name, "value is not a valid url")
+        raise exceptions.ValidationInternalError(name, "value is not a valid url")
     return validation
 
 def string_gt(name, size):
     def validation(object):
         value = object.get(name, None)
         if len(value) > size: return True
-        raise exceptions.ValidationError(
+        raise exceptions.ValidationInternalError(
             name, "must be larger than %d characters" % size
         )
     return validation
@@ -144,7 +144,7 @@ def string_lt(name, size):
     def validation(object):
         value = object.get(name, None)
         if len(value) < size: return True
-        raise exceptions.ValidationError(
+        raise exceptions.ValidationInternalError(
             name, "must be smaller than %d characters" % size
         )
     return validation
@@ -154,7 +154,7 @@ def equals(first_name, second_name):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
         if first_value == second_value: return True
-        raise exceptions.ValidationError(
+        raise exceptions.ValidationInternalError(
             first_name, "value is not equals to %s" % second_name
         )
     return validation
@@ -168,5 +168,5 @@ def not_duplicate(name, collection):
         item = _collection.find_one({name : value})
         if not item: return True
         if str(item["_id"]) == _id: return True
-        raise exceptions.ValidationError(name, "value is duplicate")
+        raise exceptions.ValidationInternalError(name, "value is duplicate")
     return validation

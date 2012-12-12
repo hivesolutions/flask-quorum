@@ -90,6 +90,13 @@ def get_db():
     db = connection[_database]
     return db
 
+def drop_db():
+    db = get_db()
+    names = db.collection_names()
+    for name in names:
+        if name.startswith("system."): continue
+        db.drop_collection(name)
+
 def dumps(*args):
     return json.dumps(default = bson.json_util.default, *args)
 

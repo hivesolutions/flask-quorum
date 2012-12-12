@@ -43,6 +43,7 @@ import logging
 import session
 import redisdb
 import mongodb
+import request
 
 def load(app, redis_session = False, mongo_database = None, name = None):
     debug = os.getenv("DEBUG", False)
@@ -53,6 +54,7 @@ def load(app, redis_session = False, mongo_database = None, name = None):
     if mongo_url: mongodb.url = mongo_url
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
+    app.request_class = request.Request
 
 def start_log(app, name):
     if os.name == "nt": path_t = "%s"

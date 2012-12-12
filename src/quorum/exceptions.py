@@ -41,7 +41,7 @@ class BaseError(RuntimeError):
     """
     The base error class from which all the error
     classes should inherit, contains basic functionality
-    to be inherited by all "errors".
+    to be inherited by all the "errors".
     """
 
     message = None
@@ -52,7 +52,51 @@ class BaseError(RuntimeError):
         RuntimeError.__init__(self, message)
         self.message = message
 
-class ValidationError(BaseError):
+class OperationalError(BaseError):
+    """
+    The operational error class that should represent any
+    error resulting from a business logic error.
+    """
+
+    code = 500
+    """ The code to be used in the consequent serialization
+    of the error in an http response """
+
+    def __init__(self, message, code = 500):
+        BaseError.__init__(self, message)
+        self.code = code
+
+class ValidationError(OperationalError):
+    """
+    Error raised when a validation on the model fails
+    the error should associate a name in the model with
+    a message describing the validation failure.
+    """
+
+    errors = None
+    """ The map containing an association between the name
+    of a field and a list of validation errors for it """
+
+    def __init__(self, errors):
+        OperationalError.__init__(self, "Validation of submitted data failed", 400)
+        self.errors = errors
+
+class BaseInternalError(RuntimeError):
+    """
+    The base error class from which all the error
+    classes should inherit, contains basic functionality
+    to be inherited by all the internal "errors".
+    """
+
+    message = None
+    """ The message value stored to describe the
+    current error """
+
+    def __init__(self, message):
+        RuntimeError.__init__(self, message)
+        self.message = message
+
+class ValidationInternalError(BaseInternalError):
     """
     Error raised when a validation on the model fails
     the error should associate a name in the model with
@@ -64,5 +108,5 @@ class ValidationError(BaseError):
     the validation """
 
     def __init__(self, name, message):
-        BaseError.__init__(self, message)
+        BaseInternalError.__init__(self, message)
         self.name = name
