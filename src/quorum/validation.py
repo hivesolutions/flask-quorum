@@ -61,7 +61,7 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 """ The url regex used to validate
 if the provided value is in fact an URL/URI """
 
-def validate(method, object = None):
+def validate(method, object = None, build = True):
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
     # an extra level of indirection
@@ -78,10 +78,11 @@ def validate(method, object = None):
     # handles the failure setting the value as an empty map
     data_j = util.request_json()
 
-    for name, value in data_j.items(): object[name] = value
-    for name, value in flask.request.files.items(): object[name] = value
-    for name, value in flask.request.form.items(): object[name] = value
-    for name, value in flask.request.args.items(): object[name] = value
+    if build:
+        for name, value in data_j.items(): object[name] = value
+        for name, value in flask.request.files.items(): object[name] = value
+        for name, value in flask.request.form.items(): object[name] = value
+        for name, value in flask.request.args.items(): object[name] = value
 
     for method in methods:
         try: method(object)
@@ -106,13 +107,15 @@ def not_null(name):
 def not_empty(name):
     def validation(object):
         value = object.get(name, None)
-        if value and len(value): return True
+        if value == None: return True
+        if len(value): return True
         raise exceptions.ValidationInternalError(name, "value is empty")
     return validation
 
 def is_in(name, values):
     def validation(object):
         value = object.get(name, None)
+        if value == None: return True
         if value in values: return True
         raise exceptions.ValidationInternalError(name, "value is not in set")
     return validation
@@ -120,6 +123,7 @@ def is_in(name, values):
 def is_email(name):
     def validation(object):
         value = object.get(name, None)
+        if value == None: return True
         if EMAIL_REGEX.match(value): return True
         raise exceptions.ValidationInternalError(name, "value is not a valid email")
     return validation
@@ -127,6 +131,7 @@ def is_email(name):
 def is_url(name):
     def validation(object):
         value = object.get(name, None)
+        if value == None: return True
         if URL_REGEX.match(value): return True
         raise exceptions.ValidationInternalError(name, "value is not a valid url")
     return validation
@@ -134,6 +139,7 @@ def is_url(name):
 def string_gt(name, size):
     def validation(object):
         value = object.get(name, None)
+        if value == None: return True
         if len(value) > size: return True
         raise exceptions.ValidationInternalError(
             name, "must be larger than %d characters" % size
@@ -143,6 +149,7 @@ def string_gt(name, size):
 def string_lt(name, size):
     def validation(object):
         value = object.get(name, None)
+        if value == None: return True
         if len(value) < size: return True
         raise exceptions.ValidationInternalError(
             name, "must be smaller than %d characters" % size
@@ -153,6 +160,8 @@ def equals(first_name, second_name):
     def validation(object):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
+        if first_value == None: return True
+        if second_value == None: return True
         if first_value == second_value: return True
         raise exceptions.ValidationInternalError(
             first_name, "value is not equals to %s" % second_name
@@ -163,6 +172,7 @@ def not_duplicate(name, collection):
     def validation(object):
         _id = object.get("_id", None)
         value = object.get(name, None)
+        if value == None: return True
         db = mongodb.get_db()
         _collection = db[collection]
         item = _collection.find_one({name : value})

@@ -77,9 +77,14 @@ class ValidationError(OperationalError):
     """ The map containing an association between the name
     of a field and a list of validation errors for it """
 
-    def __init__(self, errors):
+    model = None
+    """ The model containing the values in it after the
+    process of validation has completed """
+
+    def __init__(self, errors, model):
         OperationalError.__init__(self, "Validation of submitted data failed", 400)
         self.errors = errors
+        self.model = model
 
 class BaseInternalError(RuntimeError):
     """
