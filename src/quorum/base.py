@@ -40,12 +40,13 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import logging
 
+import model
 import session
 import redisdb
 import mongodb
 import request
 
-def load(app, redis_session = False, mongo_database = None, name = None):
+def load(app, redis_session = False, mongo_database = None, name = None, models = None):
     debug = os.getenv("DEBUG", False)
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
@@ -54,6 +55,7 @@ def load(app, redis_session = False, mongo_database = None, name = None):
     if mongo_url: mongodb.url = mongo_url
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
+    if models: start_db(models)
     app.request_class = request.Request
 
 def start_log(app, name):
@@ -63,3 +65,11 @@ def start_log(app, name):
     file_handler = logging.FileHandler(path)
     file_handler.setLevel(logging.WARNING)
     app.logger.addHandler(file_handler)
+
+def start_db(models):
+    for _name, value in models.__dict__.items():
+        try: is_valid = issubclass(value, model.Model)
+        except: is_valid = False
+        if not is_valid: continue
+
+        value.setup()

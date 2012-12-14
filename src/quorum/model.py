@@ -131,6 +131,12 @@ class Model(object):
         return definition.get(name, {})
 
     @classmethod
+    def setup(cls):
+        indexes = cls.indexes()
+        collection = cls._collection()
+        for index in indexes: collection.ensure_index(index)
+
+    @classmethod
     def validate(cls):
         return []
 
@@ -211,6 +217,60 @@ class Model(object):
         # returns the sequence to the caller method
         cls._hierarchy = hierarchy
         return hierarchy
+
+    @classmethod
+    def increments(cls):
+        # in case the increments are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_increments" in cls.__dict__: return cls._increments
+
+        # creates the list that will hold the various names that are
+        # meant to be automatically incremented
+        increments = []
+
+        # retrieves the map containing the definition of the class with
+        # the name of the fields associated with their definition
+        definition = cls.definition()
+
+        # iterate over all the names in the definition to retrieve their
+        # definition and check if their are of type increment
+        for name in definition:
+            _definition = cls.definition_n(name)
+            is_increment = _definition.get("increment", False)
+            if not is_increment: continue
+            increments.append(name)
+
+        # saves the increment list under the class and then
+        # returns the sequence to the caller method
+        cls._increments = increments
+        return increments
+
+    @classmethod
+    def indexes(cls):
+        # in case the indexes are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_indexes" in cls.__dict__: return cls._indexes
+
+        # creates the list that will hold the various names that are
+        # meant to be indexed in the data source
+        indexes = []
+
+        # retrieves the map containing the definition of the class with
+        # the name of the fields associated with their definition
+        definition = cls.definition()
+
+        # iterate over all the names in the definition to retrieve their
+        # definition and check if their are of type index
+        for name in definition:
+            _definition = cls.definition_n(name)
+            is_index = _definition.get("index", False)
+            if not is_index: continue
+            indexes.append(name)
+
+        # saves the index list under the class and then
+        # returns the sequence to the caller method
+        cls._indexes = indexes
+        return indexes
 
     @classmethod
     def _build(cls, model, map):
@@ -342,11 +402,13 @@ class Model(object):
         # various definitions for the model fields
         definition = cls.definition()
 
-        for name, value in definition.items():
-            _definition = cls.definition_n(name)
-            is_increment = _definition.get("increment", False)
-            if not is_increment: continue
-            model[name] = cls._increment(name)
+        # retrieves the complete list of fields that are meant to be
+        # automatically incremented for every save operation
+        increments = cls.increments()
+
+        # iterates over all the increment fields and increments their
+        # fields so that a new value is set on the model
+        for name in increments: model[name] = cls._increment(name)
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
