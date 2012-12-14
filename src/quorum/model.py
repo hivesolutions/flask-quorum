@@ -164,6 +164,7 @@ class Model(object):
     @classmethod
     def types(cls, model):
         for name, value in model.items():
+            if value == None: continue
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
             model[name] = _type(value)
@@ -351,16 +352,20 @@ class Model(object):
         # or if this is an update operation
         is_new = self.is_new()
 
-        # calls the complete set of event handlers for the current
-        # save operation, this should trigger changes in the model
-        self.pre_save()
-        is_new and self.pre_create()
-        not is_new and self.pre_update()
+        # calls the event handler for the validation process this
+        # should setup the operations for a correct validation
+        self.pre_validate()
 
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it
         self._validate()
+
+        # calls the complete set of event handlers for the current
+        # save operation, this should trigger changes in the model
+        self.pre_save()
+        is_new and self.pre_create()
+        not is_new and self.pre_update()
 
         # filters the values that are present in the current
         # model so that only those are stored in
@@ -379,6 +384,9 @@ class Model(object):
 
     def dumps(self):
         return mongodb.dumps(self.model)
+
+    def pre_validate(self):
+        pass
 
     def pre_save(self):
         pass
