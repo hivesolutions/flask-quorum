@@ -347,22 +347,56 @@ class Model(object):
         return not "_id" in self.model
 
     def save(self):
-        # filters the values that are present in the current
-        # model so that only those are stored in
-        model = self._filter()
+        # checks if the instance to be saved is a new instance
+        # or if this is an update operation
+        is_new = self.is_new()
+
+        # calls the complete set of event handlers for the current
+        # save operation, this should trigger changes in the model
+        self.pre_save()
+        is_new and self.pre_create()
+        not is_new and self.pre_update()
 
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it
-        self._validate(model = model)
+        self._validate()
+
+        # filters the values that are present in the current
+        # model so that only those are stored in
+        model = self._filter()
 
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
         store.save(model)
 
+        # calls the post save event handlers in order to be able to
+        # execute appropriate post operations
+        self.post_save()
+        is_new and self.post_create()
+        not is_new and self.post_update()
+
     def dumps(self):
         return mongodb.dumps(self.model)
+
+    def pre_save(self):
+        pass
+
+    def pre_create(self):
+        pass
+
+    def pre_update(self):
+        pass
+
+    def post_save(self):
+        pass
+
+    def post_create(self):
+        pass
+
+    def post_update(self):
+        pass
 
     def _get_store(self):
         return  self.__class__._collection()
