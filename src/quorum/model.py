@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import util
+import types
 import mongodb
 import validation
 import exceptions
@@ -96,8 +97,38 @@ class Model(object):
         return models
 
     @classmethod
-    def definition(cls, name):
-        return getattr(cls, name) if hasattr(cls, name) else {}
+    def definition(cls):
+        # in case the definition are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_definition" in cls.__dict__: return cls._definition
+
+        # creates the map that will hold the complete definition of
+        # the current model
+        definition = {}
+
+        # retrieves the complete model hierarchy for the current model
+        # this should allow the method to retrieve the complete set
+        # of fields for the current model
+        hierarchy = cls.hierarchy()
+
+        # iterates over all the classes in the hierarchy to creates the
+        # map that will contain the various names of the current model
+        # associated with its definition map
+        for _cls in hierarchy:
+            for name, value in _cls.__dict__.items():
+                if name.startswith("_"): continue
+                if not type(value) == types.DictionaryType: continue
+                definition[name] = value
+
+        # saves the currently generated definition under the current
+        # class and then returns the contents of it to the caller method
+        cls._definition = definition
+        return definition
+
+    @classmethod
+    def definition_n(cls, name):
+        definition = cls.definition()
+        return definition.get(name, {})
 
     @classmethod
     def validate(cls):
@@ -115,7 +146,7 @@ class Model(object):
     @classmethod
     def rules(cls, model, map):
         for name, _value in model.items():
-            definition = cls.definition(name)
+            definition = cls.definition_n(name)
             is_private = definition.get("private", False)
             if not is_private: continue
             del model[name]
@@ -123,11 +154,63 @@ class Model(object):
     @classmethod
     def types(cls, model):
         for name, value in model.items():
-            definition = cls.definition(name)
+            definition = cls.definition_n(name)
             _type = definition.get("type", str)
             model[name] = _type(value)
 
         return model
+
+    @classmethod
+    def all_parents(cls):
+        # in case the all parents are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_all_parents" in cls.__dict__: return cls._all_parents
+
+        # creates the list to hold the various parent
+        # entity classes, populated recursively
+        all_parents = []
+
+        # retrieves the parent entity classes from
+        # the current class
+        parents = cls._bases()
+
+        # iterates over all the parents to extend
+        # the all parents list with the parent entities
+        # from the parent
+        for parent in parents:
+            # retrieves the (all) parents from the parents
+            # and extends the all parents list with them,
+            # this extension method avoids duplicates
+            _parents = parent.all_parents()
+            all_parents += _parents
+
+        # extends the all parents list with the parents
+        # from the current entity class (avoids duplicates)
+        all_parents += parents
+
+        # caches the all parents element in the class
+        # to provide fast access in latter access
+        cls._all_parents = all_parents
+
+        # returns the list that contains all the parents
+        # entity classes
+        return all_parents
+
+    @classmethod
+    def hierarchy(cls):
+        # in case the hierarchy are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_hierarchy" in cls.__dict__: return cls._hierarchy
+
+        # retrieves the complete set of parents for the current class
+        # and then adds the current class to it
+        all_parents = cls.all_parents()
+        hierarchy = all_parents + [cls]
+
+        # saves the current hierarchy list under the class and then
+        # returns the sequence to the caller method
+        cls._hierarchy = hierarchy
+        return hierarchy
 
     @classmethod
     def _build(cls, model, map):
@@ -162,6 +245,31 @@ class Model(object):
             _attrs.append(value)
 
         return _attrs
+
+    @classmethod
+    def _bases(cls):
+        """
+        Retrieves the complete set of base (parent) classes for
+        the current class, this method is safe as it removes any
+        class that does not inherit from the entity class.
+
+        @rtype: List/Tuple
+        @return: The set containing the various bases classes for
+        the current class that are considered valid.
+        """
+
+        # retrieves the complete set of base classes for
+        # the current class and in case the object is not
+        # the bases set returns the set immediately
+        bases = cls.__bases__
+        if not object in bases: return bases
+
+        # converts the base classes into a list and removes
+        # the object class from it, then returns the new bases
+        # list (without the object class)
+        bases = list(bases)
+        bases.remove(object)
+        return bases
 
     def val(self, name, default = None):
         return self.model.get(name, default)
@@ -229,12 +337,43 @@ class Model(object):
         # to be able to retrieve the correct definition methods
         cls = self.__class__
 
+        # retrieves the (schema) definition for the current model
+        # to be "filtered" it's going to be used to retrieve the
+        # various definitions for the model fields
+        definition = cls.definition()
+
+        for name, value in definition.items():
+            _definition = cls.definition_n(name)
+            is_increment = _definition.get("increment", False)
+            if not is_increment: continue
+            model[name] = cls._increment(name)
+
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
         for name, value in self.model.items():
-            if not hasattr(cls, name): continue
+            if not name in definition: continue
             model[name] = value
 
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class
         return model
+
+    @classmethod
+    def _increment(cls, name):
+        _name = cls._name() + ":" + name
+        db = mongodb.get_db()
+        value = db.counters.find_and_modify(
+            query = {
+                "_id" : _name
+            },
+            update = {
+                "$inc" : {
+                    "seq" : 1
+                }
+            },
+            upsert = True
+        )
+        value = value or db.counters.find_one({
+            "_id" : _name
+        })
+        return value["seq"]
