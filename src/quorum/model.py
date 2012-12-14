@@ -47,8 +47,12 @@ class Model(object):
     def __init__(self, model = None):
         self.__dict__["model"] = model or {}
 
-    def __getattr__(self, name):
-        return self.model[name]
+    def __getattribute__(self, name):
+        try:
+            model = object.__getattribute__(self, "model")
+            if name in model: return model[name]
+        except AttributeError: pass
+        return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
         is_base = name in self.__dict__
@@ -74,8 +78,9 @@ class Model(object):
         model = collection.find_one(kwargs)
         if not model and raise_e: raise RuntimeError("%s not found" % cls.__name__)
         if not model and not raise_e: return model
+        cls.types(model)
         build and cls.build(model, map)
-        return model if map else cls.new(model = model)
+        return cls.types(model) if map else cls.new(model = model)
 
     @classmethod
     def find(cls, *args, **kwargs):
@@ -85,13 +90,47 @@ class Model(object):
         ))
 
         collection = cls._collection()
-        models = [model for model in collection.find(kwargs)]
+        models = [cls.types(model) for model in collection.find(kwargs)]
         build and [cls.build(model, map) for model in models]
         models = models if map else [cls.new(model = model) for model in models]
         return models
 
     @classmethod
+    def definition(cls, name):
+        return getattr(cls, name) if hasattr(cls, name) else {}
+
+    @classmethod
+    def validate(cls):
+        return []
+
+    @classmethod
+    def validate_new(cls):
+        return cls.validate()
+
+    @classmethod
     def build(cls, model, map):
+        cls.rules(model, map)
+        cls._build(model, map)
+
+    @classmethod
+    def rules(cls, model, map):
+        for name, _value in model.items():
+            definition = cls.definition(name)
+            is_private = definition.get("private", False)
+            if not is_private: continue
+            del model[name]
+
+    @classmethod
+    def types(cls, model):
+        for name, value in model.items():
+            definition = cls.definition(name)
+            _type = definition.get("type", str)
+            model[name] = _type(value)
+
+        return model
+
+    @classmethod
+    def _build(cls, model, map):
         pass
 
     @classmethod
@@ -129,26 +168,26 @@ class Model(object):
 
     def apply(self, model = None):
         self.model = model or util.get_object()
+        cls = self.__class__
+        cls.types(self.model)
 
     def is_new(self):
         return not "_id" in self.model
 
     def save(self):
+        # filters the values that are present in the current
+        # model so that only those are stored in
+        model = self._filter()
+
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it
-        self._validate()
+        self._validate(model = model)
 
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        store.save(self.model)
-
-    def validate(self):
-        return []
-
-    def validate_new(self):
-        return self.validate()
+        store.save(model)
 
     def dumps(self):
         return mongodb.dumps(self.model)
@@ -156,19 +195,46 @@ class Model(object):
     def _get_store(self):
         return  self.__class__._collection()
 
-    def _validate(self):
+    def _validate(self, model = None):
+        # starts the model reference with the current model in
+        # case none is defined
+        model = model or self.model
+
+        # retrieves the class associated with the current instance
+        # to be able to retrieve the correct validate methods
+        cls = self.__class__
+
         # checks if the current model is new (create operation)
         # and sets the proper validation methods retrieval method
         is_new = self.is_new()
-        if is_new: method = self.validate_new
-        else: method = self.validate
+        if is_new: method = cls.validate_new
+        else: method = cls.validate
 
         # runs the validation process on the various arguments
         # provided to the account and in case an error is returned
         # raises a validation error to the upper layers
         errors, object = validation.validate(
             method,
-            object = self.model,
+            object = model,
             build = False
         )
         if errors: raise exceptions.ValidationError(errors, object)
+
+    def _filter(self):
+        # creates the model that will hold the "filtered" model
+        # with all the items that conform with the class specification
+        model = {}
+
+        # retrieves the class associated with the current instance
+        # to be able to retrieve the correct definition methods
+        cls = self.__class__
+
+        # iterates over all the model items to filter the ones
+        # that are not valid for the current class context
+        for name, value in self.model.items():
+            if not hasattr(cls, name): continue
+            model[name] = value
+
+        # returns the model containing the "filtered" items resulting
+        # from the validation of the items against the model class
+        return model
