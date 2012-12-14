@@ -40,23 +40,36 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import logging
 
+import mail
 import model
 import session
 import redisdb
 import mongodb
 import request
 
+APP = None
+""" The reference to the top level application
+that is being handled by quorum """
+
 def load(app, redis_session = False, mongo_database = None, name = None, models = None):
+    global APP
     debug = os.getenv("DEBUG", False)
     redis_url = os.getenv("REDISTOGO_URL", None)
     mongo_url = os.getenv("MONGOHQ_URL", None)
+    smtp_host = os.getenv("SMTP_HOST", None)
+    smtp_user = os.getenv("SMTP_USER", None)
+    smtp_password = os.getenv("SMTP_PASSWORD", None)
     if not debug and name: start_log(app, name)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
+    if smtp_host: mail.SMTP_HOST = smtp_host
+    if smtp_user: mail.SMTP_USER = smtp_user
+    if smtp_password: mail.SMTP_PASSWORD = smtp_password
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
     if models: setup_models(models)
     app.request_class = request.Request
+    APP = app
 
 def start_log(app, name):
     if os.name == "nt": path_t = "%s"

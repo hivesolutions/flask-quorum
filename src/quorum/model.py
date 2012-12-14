@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import copy
+
 import util
 import types
 import mongodb
@@ -64,7 +66,7 @@ class Model(object):
     def new(cls, model = None, build = False):
         instance = cls()
         instance.apply(model)
-        build and instance.build(instance.model, False)
+        build and cls.build(instance.model, False)
         return instance
 
     @classmethod
@@ -343,6 +345,12 @@ class Model(object):
         self.model = model or util.get_object()
         cls = self.__class__
         cls.types(self.model)
+
+    def copy(self, build = False):
+        cls = self.__class__
+        _copy = copy.deepcopy(self)
+        build and cls.build(_copy.model, False)
+        return _copy
 
     def is_new(self):
         return not "_id" in self.model

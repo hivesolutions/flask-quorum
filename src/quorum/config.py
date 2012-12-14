@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Flask Quorum. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães <joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -33,39 +36,3 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
-
-import acl
-import base
-import config
-import daemon
-import error
-import exceptions
-import execution
-import export
-import extras
-import mail
-import model
-import mongodb
-import redisdb
-import request
-import session
-import util
-import validation
-
-from acl import *
-from base import *
-from config import *
-from daemon import *
-from error import *
-from exceptions import *
-from mail import *
-from model import *
-from util import *
-from validation import *
-
-from mongodb import get_connection as get_mongo
-from mongodb import get_db as get_mongo_db
-from mongodb import drop_db as drop_mongo_db
-from mongodb import dumps as dumps_mongo
-from redisdb import get_connection as get_redis
-from redisdb import dumps as dumps_redis
