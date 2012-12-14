@@ -85,13 +85,17 @@ class Model(object):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        map, build = cls._get_attrs(kwargs, (
+        map, build, skip, limit = cls._get_attrs(kwargs, (
             ("map", False),
-            ("build", True)
+            ("build", True),
+            ("skip", 0),
+            ("limit", -1)
         ))
 
         collection = cls._collection()
-        models = [cls.types(model) for model in collection.find(kwargs)]
+        models = [cls.types(model) for model in collection.find(
+            kwargs, skip = skip, limit = limit
+        )]
         build and [cls.build(model, map) for model in models]
         models = models if map else [cls.new(model = model) for model in models]
         return models

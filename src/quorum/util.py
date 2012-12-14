@@ -41,6 +41,20 @@ import copy
 import json
 import flask
 
+ALIAS = {
+    "start_record" : "skip",
+    "number_records" : "limit"
+}
+""" The map containing the various attribute alias
+between the normalized manned and the quorum manner """
+
+FIND_TYPES = {
+    "skip" : int,
+    "limit" : int
+}
+""" The map associating the various find fields with
+their respective types """
+
 def request_json(request = None):
     request = request or flask.request
     if "_data_j" in request.properties: return request.properties["_data_j"]
@@ -65,7 +79,7 @@ def get_field(name, default = None):
 
     return value
 
-def get_object(object = None):
+def get_object(object = None, alias = False, find = False):
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
     # otherwise used an empty map (form validation)
@@ -81,4 +95,22 @@ def get_object(object = None):
     for name, value in flask.request.form.items(): object[name] = value
     for name, value in flask.request.args.items(): object[name] = value
 
+    alias and resolve_alias(object)
+    find and find_types(object)
+
     return object
+
+def resolve_alias(object):
+    for name, value in object.items():
+        if not name in ALIAS: continue
+        _alias = ALIAS[name]
+        object[_alias] = value
+        del object[name]
+
+def find_types(object):
+    for name, value in object.items():
+        if not name in FIND_TYPES:
+            del object[name]
+            continue
+        find_type = FIND_TYPES[name]
+        object[name] = find_type(value)
