@@ -55,12 +55,23 @@ class Model(object):
             model = object.__getattribute__(self, "model")
             if name in model: return model[name]
         except AttributeError: pass
+        cls = object.__getattribute__(self, "__class__")
+        definition = cls.definition()
+        if name in definition: raise AttributeError(
+            "attribute '%s' is not set" % name
+        )
         return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
         is_base = name in self.__dict__
         if is_base: self.__dict__[name] = value
         else: self.model[name] = value
+
+    def __delattr__(self, name):
+        try:
+            model = object.__getattribute__(self, "model")
+            if name in model: del model[name]
+        except AttributeError: pass
 
     @classmethod
     def new(cls, model = None, build = False):
@@ -126,6 +137,10 @@ class Model(object):
                 if not type(value) == types.DictionaryType: continue
                 definition[name] = value
 
+        # sets the "default" definition for the based identifier
+        # (underlying identifier attribute)
+        definition["_id"] = dict()
+
         # saves the currently generated definition under the current
         # class and then returns the contents of it to the caller method
         cls._definition = definition
@@ -166,6 +181,7 @@ class Model(object):
     @classmethod
     def types(cls, model):
         for name, value in model.items():
+            if name == "_id": continue
             if value == None: continue
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
@@ -342,7 +358,9 @@ class Model(object):
         return self.model.get(name, default)
 
     def apply(self, model = None):
-        self.model = model or util.get_object()
+        model = model or util.get_object()
+        for name, value in model.items():
+            self.model[name] = value
         cls = self.__class__
         cls.types(self.model)
 
@@ -355,19 +373,16 @@ class Model(object):
     def is_new(self):
         return not "_id" in self.model
 
-    def save(self):
+    def save(self, validate = True):
         # checks if the instance to be saved is a new instance
         # or if this is an update operation
         is_new = self.is_new()
 
-        # calls the event handler for the validation process this
-        # should setup the operations for a correct validation
-        self.pre_validate()
-
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
-        # data source, without corruption of it
-        self._validate()
+        # data source, without corruption of it, only run this process
+        # in case the validate flag is correctly set
+        validate and self._validate()
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
@@ -379,10 +394,15 @@ class Model(object):
         # model so that only those are stored in
         model = self._filter()
 
+        # in case the current model is not new must create a new
+        # model instance and remove the main identifier from it
+        if not is_new: _model = copy.copy(model); del _model["_id"]
+
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        store.save(model)
+        if is_new: store.insert(model)
+        else: store.update({"_id" : model["_id"]}, {"$set" : _model})
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
@@ -405,6 +425,9 @@ class Model(object):
     def pre_update(self):
         pass
 
+    def post_validate(self):
+        pass
+
     def post_save(self):
         pass
 
@@ -418,6 +441,10 @@ class Model(object):
         return  self.__class__._collection()
 
     def _validate(self, model = None):
+        # calls the event handler for the validation process this
+        # should setup the operations for a correct validation
+        self.pre_validate()
+
         # starts the model reference with the current model in
         # case none is defined
         model = model or self.model
@@ -441,6 +468,10 @@ class Model(object):
             build = False
         )
         if errors: raise exceptions.ValidationError(errors, object)
+
+        # calls the event handler for the validation process this
+        # should finish the operations from a correct validation
+        self.post_validate()
 
     def _filter(self):
         # creates the model that will hold the "filtered" model
