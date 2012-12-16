@@ -56,7 +56,11 @@ def errors_json(function):
             return flask.Response(
                 json.dumps({
                     "error" : error.message,
-                    "invalid" : invalid_m
+                    "invalid" : invalid_m,
+                    "exception" : {
+                        "message" : error.message,
+                        "errors" : error.errors
+                    }
                 }),
                 status = error.code,
                 mimetype = "application/json"
@@ -64,7 +68,10 @@ def errors_json(function):
         except exceptions.OperationalError, error:
             return flask.Response(
                 json.dumps({
-                    "error" : error.message
+                    "error" : error.message,
+                    "exception" : {
+                        "message" : error.message
+                    }
                 }),
                 status = error.code,
                 mimetype = "application/json"
