@@ -74,9 +74,9 @@ class Model(object):
         except AttributeError: pass
 
     @classmethod
-    def new(cls, model = None, build = False):
+    def new(cls, model = None, safe = True, build = False):
         instance = cls()
-        instance.apply(model)
+        instance.apply(model, safe_a = safe)
         build and cls.build(instance.model, False)
         return instance
 
@@ -94,7 +94,7 @@ class Model(object):
         if not model and not raise_e: return model
         cls.types(model)
         build and cls.build(model, map)
-        return cls.types(model) if map else cls.new(model = model)
+        return cls.types(model) if map else cls.new(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
@@ -110,7 +110,7 @@ class Model(object):
             kwargs, skip = skip, limit = limit
         )]
         build and [cls.build(model, map) for model in models]
-        models = models if map else [cls.new(model = model) for model in models]
+        models = models if map else [cls.new(model = model, safe = False) for model in models]
         return models
 
     @classmethod
@@ -296,6 +296,33 @@ class Model(object):
         return indexes
 
     @classmethod
+    def safes(cls):
+        # in case the safes are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_safes" in cls.__dict__: return cls._safes
+
+        # creates the list that will hold the various names that are
+        # meant to be safe values in the data source
+        safes = []
+
+        # retrieves the map containing the definition of the class with
+        # the name of the fields associated with their definition
+        definition = cls.definition()
+
+        # iterate over all the names in the definition to retrieve their
+        # definition and check if their are of type safe
+        for name in definition:
+            _definition = cls.definition_n(name)
+            is_safe = _definition.get("safe", False)
+            if not is_safe: continue
+            safes.append(name)
+
+        # saves the safes list under the class and then
+        # returns the sequence to the caller method
+        cls._safes = safes
+        return safes
+
+    @classmethod
     def _build(cls, model, map):
         pass
 
@@ -357,9 +384,26 @@ class Model(object):
     def val(self, name, default = None):
         return self.model.get(name, default)
 
-    def apply(self, model = None):
+    def apply(self, model = None, safe = None, safe_a = True):
+        # retrieves the reference to the class associated
+        # with the current instance
+        cls = self.__class__
+
+        # creates the base safe map from the provided map or
+        # builds a new map that will hold these values
+        safe = safe or {}
+
+        # verifies if the base safe rules should be applied
+        # to the current map of safe attributes
+        if safe_a:
+            safes = cls.safes()
+            for _safe in safes:
+                safe[_safe] = True
+
         model = model or util.get_object()
         for name, value in model.items():
+            is_safe = safe.get(name, False)
+            if is_safe: continue
             self.model[name] = value
         cls = self.__class__
         cls.types(self.model)
@@ -410,6 +454,20 @@ class Model(object):
         is_new and self.post_create()
         not is_new and self.post_update()
 
+    def delete(self):
+        # calls the complete set of event handlers for the current
+        # delete operation, this should trigger changes in the model
+        self.pre_delete()
+
+        # retrieves the reference to the store object to be able to
+        # execute the removal command for the current model
+        store = self._get_store()
+        store.remove({"_id" : self._id})
+
+        # calls the complete set of event handlers for the current
+        # delete operation, this should trigger changes in the model
+        self.post_delete()
+
     def dumps(self):
         return mongodb.dumps(self.model)
 
@@ -425,6 +483,9 @@ class Model(object):
     def pre_update(self):
         pass
 
+    def pre_delete(self):
+        pass
+
     def post_validate(self):
         pass
 
@@ -435,6 +496,9 @@ class Model(object):
         pass
 
     def post_update(self):
+        pass
+
+    def post_delete(self):
         pass
 
     def _get_store(self):
