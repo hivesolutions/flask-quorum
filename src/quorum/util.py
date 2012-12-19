@@ -40,6 +40,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import copy
 import json
 import flask
+import string
+import random
 
 ALIAS = {
     "start_record" : "skip",
@@ -114,3 +116,24 @@ def find_types(object):
             continue
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
+
+def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
+    """
+    Generates a random identifier (may be used as password) with
+    the provided constrains of length and character ranges.
+
+    This function may be used in the generation of random based
+    keys for both passwords and api keys.
+
+    @type size: int
+    @param size: The size (in number of characters) to be used in
+    the generation of the random identifier.
+    @type chars: List
+    @param chars: The list containing the characters to be used
+    in the generation of the random identifier.
+    @rtype: String
+    @return: The randomly generated identifier obeying to the
+    provided constrains.
+    """
+
+    return "".join(random.choice(chars) for _index in range(size))
