@@ -102,7 +102,7 @@ class Model(object):
             ("map", False),
             ("build", True),
             ("skip", 0),
-            ("limit", -1)
+            ("limit", 0)
         ))
 
         collection = cls._collection()
@@ -381,6 +381,26 @@ class Model(object):
         bases.remove(object)
         return bases
 
+    @classmethod
+    def _increment(cls, name):
+        _name = cls._name() + ":" + name
+        db = mongodb.get_db()
+        value = db.counters.find_and_modify(
+            query = {
+                "_id" : _name
+            },
+            update = {
+                "$inc" : {
+                    "seq" : 1
+                }
+            },
+            upsert = True
+        )
+        value = value or db.counters.find_one({
+            "_id" : _name
+        })
+        return value["seq"]
+
     def val(self, name, default = None):
         return self.model.get(name, default)
 
@@ -464,6 +484,10 @@ class Model(object):
         store = self._get_store()
         store.remove({"_id" : self._id})
 
+        # calls the underlying delete handler that may be used to extend
+        # the default delete functionality
+        self._delete()
+
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
         self.post_delete()
@@ -503,6 +527,9 @@ class Model(object):
 
     def _get_store(self):
         return  self.__class__._collection()
+
+    def _delete(self):
+        pass
 
     def _validate(self, model = None):
         # calls the event handler for the validation process this
@@ -568,23 +595,3 @@ class Model(object):
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class
         return model
-
-    @classmethod
-    def _increment(cls, name):
-        _name = cls._name() + ":" + name
-        db = mongodb.get_db()
-        value = db.counters.find_and_modify(
-            query = {
-                "_id" : _name
-            },
-            update = {
-                "$inc" : {
-                    "seq" : 1
-                }
-            },
-            upsert = True
-        )
-        value = value or db.counters.find_one({
-            "_id" : _name
-        })
-        return value["seq"]

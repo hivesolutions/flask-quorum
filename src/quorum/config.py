@@ -36,3 +36,10 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
+
+config_g = {}
+""" The map containing the various global wide
+configuration for the current application """
+
+def conf(value, default = None):
+    return config_g.get(value, default)

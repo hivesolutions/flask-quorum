@@ -42,6 +42,7 @@ import json
 import flask
 import string
 import random
+import thread
 
 ALIAS = {
     "start_record" : "skip",
@@ -116,6 +117,9 @@ def find_types(object):
             continue
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
+
+def run_background(function, args = [], kwargs = {}):
+    thread.start_new_thread(function, args, kwargs)
 
 def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
     """

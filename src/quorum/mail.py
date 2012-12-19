@@ -37,11 +37,12 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
 import email
 import flask
-import thread
 import smtplib
+
+import util
+import base
 
 SMTP_HOST = "localhost"
 """ The host to be used in the smtp connection with
@@ -85,7 +86,7 @@ def send_email(app = None, subject = "", sender = "", receivers = [], plain = No
         server.quit()
 
 def send_mail_a(*args, **kwargs):
-    thread.start_new_thread(send_email, args, kwargs)
+    util.run_background(send_email, args, kwargs)
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)

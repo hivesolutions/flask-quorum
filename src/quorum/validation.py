@@ -73,12 +73,14 @@ def validate(method, object = None, build = True):
     # otherwise used an empty map (form validation)
     object = object and copy.copy(object) or {}
 
-    # retrieves the current request data and tries to
-    # "load" it as json data, in case it fails gracefully
-    # handles the failure setting the value as an empty map
-    data_j = util.request_json()
-
+    # in case the build flag is set must process the received request
+    # to correctly retrieve populate the object from it
     if build:
+        # retrieves the current request data and tries to
+        # "load" it as json data, in case it fails gracefully
+        # handles the failure setting the value as an empty map
+        data_j = util.request_json()
+
         for name, value in data_j.items(): object[name] = value
         for name, value in flask.request.files.items(): object[name] = value
         for name, value in flask.request.form.items(): object[name] = value
