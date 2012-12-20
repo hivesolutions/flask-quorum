@@ -114,6 +114,11 @@ class Model(object):
         return models
 
     @classmethod
+    def delete_c(cls, *args, **kwargs):
+        collection = cls._collection()
+        collection.remove(kwargs)
+
+    @classmethod
     def definition(cls):
         # in case the definition are already "cached" in the current
         # class (fast retrieval) returns immediately
