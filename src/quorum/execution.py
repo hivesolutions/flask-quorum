@@ -47,6 +47,10 @@ SLEEP_TIME = 0.5
 this amount should be small enough to provide some
 resolution level to the schedule execution """
 
+background = None
+""" The background execution task to be started by
+the quorum execution system (global value) """
+
 class ExecutionThread(threading.Thread):
     """
     The thread to be used in the execution of "random"
@@ -137,3 +141,6 @@ class ExecutionThread(threading.Thread):
         self.work_lock.acquire()
         try: heapq.heappush(self.work_list, work)
         finally: self.work_lock.release()
+
+def insert_work(target_time, callable):
+    background.insert_work(target_time, callable)

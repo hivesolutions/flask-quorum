@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import atexit
 import logging
 
 import mail
@@ -46,12 +47,13 @@ import session
 import redisdb
 import mongodb
 import request
+import execution
 
 APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-def load(app, redis_session = False, mongo_database = None, name = None, models = None):
+def load(app, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
     global APP
     debug = os.getenv("DEBUG", False)
     redis_url = os.getenv("REDISTOGO_URL", None)
@@ -65,6 +67,7 @@ def load(app, redis_session = False, mongo_database = None, name = None, models 
     if smtp_host: mail.SMTP_HOST = smtp_host
     if smtp_user: mail.SMTP_USER = smtp_user
     if smtp_password: mail.SMTP_PASSWORD = smtp_password
+    if execution: start_execution()
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
     if models: setup_models(models)
@@ -78,6 +81,19 @@ def start_log(app, name):
     file_handler = logging.FileHandler(path)
     file_handler.setLevel(logging.WARNING)
     app.logger.addHandler(file_handler)
+
+def start_execution():
+    # creates the thread that it's going to be used to
+    # execute the various background tasks and starts
+    # it, providing the mechanism for execution
+    execution.background = execution.ExecutionThread()
+    execution.background.start()
+
+@atexit.register
+def stop_execution():
+    # stop the execution thread so that it's possible to
+    # the process to return the calling
+    execution.background and execution.background.stop()
 
 def setup_models(models):
     for _name, value in models.__dict__.items():

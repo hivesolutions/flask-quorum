@@ -497,6 +497,12 @@ class Model(object):
         # delete operation, this should trigger changes in the model
         self.post_delete()
 
+    def reload(self):
+        is_new = self.is_new()
+        if is_new: raise RuntimeError("Can't reload a new model entity")
+        cls = self.__class__
+        return cls.get(_id = self._id)
+
     def dumps(self):
         return mongodb.dumps(self.model)
 
@@ -531,7 +537,7 @@ class Model(object):
         pass
 
     def _get_store(self):
-        return  self.__class__._collection()
+        return self.__class__._collection()
 
     def _delete(self):
         pass
