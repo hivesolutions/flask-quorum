@@ -101,3 +101,6 @@ def setup_models(models):
         except: is_valid = False
         if not is_valid: continue
         value.setup()
+
+def base_path(*args, **kwargs):
+    return os.path.join(APP.root_path, *args)
