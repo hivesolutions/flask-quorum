@@ -80,6 +80,7 @@ class ExecutionThread(threading.Thread):
 
         threading.Thread.__init__(self)
 
+        self.daemon = True
         self.work_list = []
         self.work_lock = threading.RLock()
 
