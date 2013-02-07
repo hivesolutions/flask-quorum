@@ -190,7 +190,8 @@ class Model(object):
             if value == None: continue
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
-            model[name] = _type(value)
+            try: model[name] = _type(value) if _type else value
+            except: model[name] = None
 
         return model
 
@@ -503,6 +504,10 @@ class Model(object):
         cls = self.__class__
         return cls.get(_id = self._id)
 
+    def map(self):
+        model = self._filter()
+        return model
+
     def dumps(self):
         return mongodb.dumps(self.model)
 
@@ -601,6 +606,7 @@ class Model(object):
         # that are not valid for the current class context
         for name, value in self.model.items():
             if not name in definition: continue
+            value = value.json_v() if hasattr(value, "json_v") else value
             model[name] = value
 
         # returns the model containing the "filtered" items resulting
