@@ -45,6 +45,14 @@ import mongodb
 import validation
 import exceptions
 
+TYPE_DEFAULTS = {
+    str : "",
+    int : 0,
+    float : 0.0
+}
+""" The default values to be set when a type
+conversion fails for the provided string value """
+
 class Model(object):
 
     def __init__(self, model = None):
@@ -191,7 +199,7 @@ class Model(object):
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
             try: model[name] = _type(value) if _type else value
-            except: model[name] = None
+            except: model[name] = TYPE_DEFAULTS.get(_type, None)
 
         return model
 
