@@ -91,6 +91,9 @@ class File:
             "data" : self.data_b64
         }
 
+    def is_empty(self):
+        return not self.file_name
+
     def _flush(self):
         if not self.file_name: return
 
