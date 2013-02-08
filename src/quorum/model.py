@@ -90,14 +90,19 @@ class Model(object):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        map, build, raise_e = cls._get_attrs(kwargs, (
+        map, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("map", False),
             ("build", True),
+            ("skip", 0),
+            ("limit", 0),
+            ("sort", None),
             ("raise_e", True)
         ))
 
         collection = cls._collection()
-        model = collection.find_one(kwargs)
+        model = collection.find_one(
+            kwargs, skip = skip, limit = limit, sort = sort
+        )
         if not model and raise_e: raise RuntimeError("%s not found" % cls.__name__)
         if not model and not raise_e: return model
         cls.types(model)
