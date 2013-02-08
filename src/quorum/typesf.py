@@ -95,7 +95,7 @@ class File:
         }
 
     def is_empty(self):
-        return not self.file_name
+        return self.size <= 0
 
     def _flush(self):
         if not self.file_name: return
@@ -110,4 +110,4 @@ class File:
 
         self.data = data
         self.data_b64 = base64.b64encode(data)
-        self.size =  len(data)
+        self.size = len(data)
