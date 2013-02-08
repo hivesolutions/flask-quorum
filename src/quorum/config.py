@@ -43,3 +43,6 @@ configuration for the current application """
 
 def conf(value, default = None):
     return config_g.get(value, default)
+
+def confs(name, value):
+    config_g[name] = value

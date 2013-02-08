@@ -38,11 +38,14 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import json
 import atexit
 import logging
+import inspect
 
 import mail
 import model
+import config
 import session
 import redisdb
 import mongodb
@@ -53,14 +56,26 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
+BASE_VALUES= (
+    "DEBUG"
+    "REDISTOGO_URL",
+    "MONGOHQ_URL",
+    "SMTP_HOST",
+    "SMTP_USER",
+    "SMTP_PASSWORD"
+)
+
 def load(app, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
     global APP
-    debug = os.getenv("DEBUG", False)
-    redis_url = os.getenv("REDISTOGO_URL", None)
-    mongo_url = os.getenv("MONGOHQ_URL", None)
-    smtp_host = os.getenv("SMTP_HOST", None)
-    smtp_user = os.getenv("SMTP_USER", None)
-    smtp_password = os.getenv("SMTP_PASSWORD", None)
+
+    load_all()
+    debug = config.conf("DEBUG", False)
+    redis_url = config.conf("REDISTOGO_URL", None)
+    mongo_url = config.conf("MONGOHQ_URL", None)
+    smtp_host = config.conf("SMTP_HOST", None)
+    smtp_user = config.conf("SMTP_USER", None)
+    smtp_password = config.conf("SMTP_PASSWORD", None)
+
     if not debug and name: start_log(app, name)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
@@ -73,6 +88,27 @@ def load(app, execution = True, redis_session = False, mongo_database = None, na
     if models: setup_models(models)
     app.request_class = request.Request
     APP = app
+
+def load_all():
+    load_config(3)
+    load_base()
+
+def load_config(offset = 1):
+    element = inspect.stack()[offset]
+    module = inspect.getmodule(element[0])
+    base_folder = os.path.dirname(module.__file__)
+    config_path = os.path.join(base_folder, "quorum.json")
+
+    if not os.path.exists(config_path): return
+    config_file = open(config_path, "rb")
+    try: config.config_g = json.load(config_file)
+    finally: config_file.close()
+
+def load_base():
+    for name in BASE_VALUES:
+        value = os.getenv(name, None)
+        if not value: continue
+        config.config_g[name] = value
 
 def start_log(app, name):
     if os.name == "nt": path_t = "%s"
@@ -104,6 +140,3 @@ def setup_models(models):
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
-
-def config(name):
-    return APP.config[name]
