@@ -104,3 +104,6 @@ def setup_models(models):
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
+
+def config(name):
+    return APP.config[name]

@@ -106,16 +106,17 @@ class Model(object):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        map, build, skip, limit = cls._get_attrs(kwargs, (
+        map, build, skip, limit, sort = cls._get_attrs(kwargs, (
             ("map", False),
             ("build", True),
             ("skip", 0),
-            ("limit", 0)
+            ("limit", 0),
+            ("sort", None)
         ))
 
         collection = cls._collection()
         models = [cls.types(model) for model in collection.find(
-            kwargs, skip = skip, limit = limit
+            kwargs, skip = skip, limit = limit, sort = sort
         )]
         build and [cls.build(model, map) for model in models]
         models = models if map else [cls.new(model = model, safe = False) for model in models]
@@ -179,7 +180,7 @@ class Model(object):
         return cls.validate()
 
     @classmethod
-    def build(cls, model, map):
+    def build(cls, model, map = False):
         cls.rules(model, map)
         cls._build(model, map)
 
@@ -418,7 +419,30 @@ class Model(object):
     def val(self, name, default = None):
         return self.model.get(name, default)
 
+    def build_m(self, model = None):
+        """
+        Builds the currently defined model, this should run
+        additional computation for the current model creating
+        new (calculated) attributes and deleting other.
+
+        This method should me used carefully to avoid validation
+        problems and other side effects.
+
+        @type model: Map
+        @param model: The model map to be used for the build
+        operation in case none is specified the currently set
+        model is used instead.
+        """
+
+        cls = self.__class__
+        model = model or self.model
+        cls.build(self.model)
+
     def apply(self, model = None, safe = None, safe_a = True):
+        # calls the complete set of event handlers for the current
+        # apply operation, this should trigger changes in the model
+        self.pre_apply()
+
         # retrieves the reference to the class associated
         # with the current instance
         cls = self.__class__
@@ -441,6 +465,10 @@ class Model(object):
             self.model[name] = value
         cls = self.__class__
         cls.types(self.model)
+
+        # calls the complete set of event handlers for the current
+        # apply operation, this should trigger changes in the model
+        self.post_apply()
 
     def copy(self, build = False):
         cls = self.__class__
@@ -547,6 +575,12 @@ class Model(object):
         pass
 
     def post_delete(self):
+        pass
+
+    def pre_apply(self):
+        pass
+
+    def post_apply(self):
         pass
 
     def _get_store(self):

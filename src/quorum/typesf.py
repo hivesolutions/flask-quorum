@@ -56,6 +56,9 @@ class File:
     def __str__(self):
         return self.file_name
 
+    def __len__(self):
+        return self.size
+
     def build_b64(self, file_m):
         name = file_m["name"]
         data_b64 = file_m["data"]
@@ -107,3 +110,4 @@ class File:
 
         self.data = data
         self.data_b64 = base64.b64encode(data)
+        self.size =  len(data)
