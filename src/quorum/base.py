@@ -64,6 +64,8 @@ BASE_VALUES= (
     "SMTP_USER",
     "SMTP_PASSWORD"
 )
+""" The set of values to be processed from the
+environment variables and set in the configuration """
 
 def load(app, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
     global APP
