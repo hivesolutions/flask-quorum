@@ -56,17 +56,6 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-BASE_VALUES= (
-    "DEBUG"
-    "REDISTOGO_URL",
-    "MONGOHQ_URL",
-    "SMTP_HOST",
-    "SMTP_USER",
-    "SMTP_PASSWORD"
-)
-""" The set of values to be processed from the
-environment variables and set in the configuration """
-
 def load(app, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
     global APP
 
@@ -93,7 +82,7 @@ def load(app, execution = True, redis_session = False, mongo_database = None, na
 
 def load_all():
     load_config(3)
-    load_base()
+    load_environ()
 
 def load_config(offset = 1):
     element = inspect.stack()[offset]
@@ -106,10 +95,8 @@ def load_config(offset = 1):
     try: config.config_g = json.load(config_file)
     finally: config_file.close()
 
-def load_base():
-    for name in BASE_VALUES:
-        value = os.getenv(name, None)
-        if not value: continue
+def load_environ():
+    for name, value in os.environ.items():
         config.config_g[name] = value
 
 def start_log(app, name):
