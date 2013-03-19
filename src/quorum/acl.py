@@ -100,6 +100,29 @@ def ensure_session(object):
     raise RuntimeError("Permission denied")
 
 def ensure(token = None, json = False):
+    """
+    Decorator that provides support for verifying the current
+    session login and permission (token oriented).
+
+    The basic (login) verification ensures that the username
+    session variable is set to a not null value (user logged in).
+
+    The optional token parameter may be used to enforce presence
+    of the string in the tokens sequence contained in session.
+
+    An optional json parameter may be set in case the return
+    error value should be returned as a json response instead
+    of the normal (default) login page redirection.
+
+    @type token: String
+    @param token: The string based token to be in the verification
+    procedure, in case the value is not set only the basic login
+    verification is done.
+    @type json: bool
+    @param json: Flag indicating id an eventual error should be
+    serialized as json and returned or if a page redirection
+    should be used instead (default behavior).
+    """
 
     def decorator(function):
         @functools.wraps(function)
@@ -113,6 +136,27 @@ def ensure(token = None, json = False):
     return decorator
 
 def ensure_auth(username, password, json = False):
+    """
+    Decorator that provides support for verifying the current
+    request basic authentication information for the provided
+    username and password.
+
+    An optional json parameter may be set in case the return
+    error value should be returned as a json response instead
+    of the normal (default) login page redirection.
+
+    @type username: String
+    @param username: The username to be used for the verification
+    of the basic authentication.
+    @type password: String
+    @param password: The password value to be used for matching
+    if the basic authentication values verification.
+    @type json: bool
+    @param json: Flag indicating id an eventual error should be
+    serialized as json and returned or if a page redirection
+    should be used instead (default behavior).
+    @see: http://en.wikipedia.org/wiki/Basic_access_authentication
+    """
 
     def decorator(function):
         @functools.wraps(function)
