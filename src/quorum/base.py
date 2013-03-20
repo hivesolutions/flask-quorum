@@ -51,12 +51,23 @@ import redisdb
 import mongodb
 import request
 import execution
+import exceptions
 
 APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-def run():
+def run(server = "base"):
+    if not APP:
+        raise exceptions.BaseError("Application not set or not runnable")
+
+    runner = globals().get("run_" + server, None)
+    if not runner:
+        raise exceptions.BaseError("Server '%s' not found" % server)
+
+    runner()
+
+def run_base():
     debug = config.conf("DEBUG", False, cast = bool)
     reloader = config.conf("RELOADER", False, cast = bool)
     host = config.conf("HOST", "0.0.0.0")
