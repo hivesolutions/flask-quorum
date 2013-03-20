@@ -56,7 +56,7 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-def run(secret_key = None):
+def run():
     debug = config.conf("DEBUG", False, cast = bool)
     reloader = config.conf("RELOADER", False, cast = bool)
     host = config.conf("HOST", "0.0.0.0")
@@ -69,7 +69,7 @@ def run(secret_key = None):
         port = port
     )
 
-def run_waitress(secret_key = None):
+def run_waitress():
     import waitress
 
     host = config.conf("HOST", "0.0.0.0")
