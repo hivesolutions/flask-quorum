@@ -90,8 +90,9 @@ def load(app, secret_key = None, execution = True, redis_session = False, mongo_
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
+    level = debug and logging.DEBUG or logging.WARN
 
-    if not debug and name: start_log(app, name)
+    if name: start_log(app, name, level = level)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if smtp_host: mail.SMTP_HOST = smtp_host
@@ -125,12 +126,13 @@ def load_environ():
     for name, value in os.environ.items():
         config.config_g[name] = value
 
-def start_log(app, name):
+def start_log(app, name, level = logging.WARN):
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = path_t % name
     file_handler = logging.FileHandler(path)
-    file_handler.setLevel(logging.WARNING)
+    file_handler.setLevel(level)
+    app.logger.setLevel(level)
     app.logger.addHandler(file_handler)
 
 def start_execution():
