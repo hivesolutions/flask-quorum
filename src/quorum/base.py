@@ -56,11 +56,35 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-def load(app, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
+def run(secret_key = None):
+    debug = config.conf("DEBUG", False) and True or False
+    reloader = config.conf("RELOADER", False) and True or False
+    host = config.conf("HOST", "0.0.0.0")
+    port = int(config.conf("PORT", 5000))
+    APP.run(
+        use_debugger = debug,
+        debug = debug,
+        use_reloader = reloader,
+        host = host,
+        port = port
+    )
+
+def run_waitress(secret_key = None):
+    import waitress
+
+    host = config.conf("HOST", "0.0.0.0")
+    port = int(config.conf("PORT", 5000))
+    waitress.serve(
+        APP,
+        host = host,
+        port = port
+    )
+
+def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
     global APP
 
     load_all()
-    debug = config.conf("DEBUG", False)
+    debug = config.conf("DEBUG", False) and True or False
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
     smtp_host = config.conf("SMTP_HOST", None)
@@ -78,6 +102,8 @@ def load(app, execution = True, redis_session = False, mongo_database = None, na
     if mongo_database: mongodb.database = mongo_database
     if models: setup_models(models)
     app.request_class = request.Request
+    app.debug = debug
+    app.secret_key = secret_key
     APP = app
 
 def load_all():
