@@ -41,8 +41,10 @@ config_g = {}
 """ The map containing the various global wide
 configuration for the current application """
 
-def conf(value, default = None):
-    return config_g.get(value, default)
+def conf(name, default = None, cast = None):
+    value = config_g.get(name, default)
+    value = cast(value) if cast else value
+    return value
 
 def confs(name, value):
     config_g[name] = value

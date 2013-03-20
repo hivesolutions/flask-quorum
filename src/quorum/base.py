@@ -57,8 +57,8 @@ APP = None
 that is being handled by quorum """
 
 def run(secret_key = None):
-    debug = config.conf("DEBUG", False) and True or False
-    reloader = config.conf("RELOADER", False) and True or False
+    debug = config.conf("DEBUG", False, cast = bool)
+    reloader = config.conf("RELOADER", False, cast = bool)
     host = config.conf("HOST", "0.0.0.0")
     port = int(config.conf("PORT", 5000))
     APP.run(
@@ -84,7 +84,7 @@ def load(app, secret_key = None, execution = True, redis_session = False, mongo_
     global APP
 
     load_all()
-    debug = config.conf("DEBUG", False) and True or False
+    debug = config.conf("DEBUG", False, cast = bool)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
     smtp_host = config.conf("SMTP_HOST", None)
