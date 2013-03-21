@@ -57,15 +57,21 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
-def run(server = "base"):
-    if not APP:
-        raise exceptions.BaseError("Application not set or not runnable")
+def run(server = "base", fallback = "base"):
+    if not APP: raise exceptions.BaseError("Application not set or runnable")
 
     runner = globals().get("run_" + server, None)
-    if not runner:
-        raise exceptions.BaseError("Server '%s' not found" % server)
+    runner_f = globals().get("run_" + fallback, None)
+    if not runner: raise exceptions.BaseError("Server '%s' not found" % server)
 
-    runner()
+    try: runner()
+    except exceptions.ServerInitError, error:
+        APP.logger.warn(
+            "Server '%s' failed to start (%s) falling back to '%s'" % (
+                server, unicode(error), fallback
+            )
+        )
+        runner_f and runner_f()
 
 def run_base():
     debug = config.conf("DEBUG", False, cast = bool)
@@ -81,7 +87,12 @@ def run_base():
     )
 
 def run_waitress():
-    import waitress
+    try: import waitress
+    except BaseException, exception:
+        raise exceptions.ServerInitError(
+            unicode(exception),
+            server = "waitress"
+        )
 
     host = config.conf("HOST", "0.0.0.0")
     port = int(config.conf("PORT", 5000))
