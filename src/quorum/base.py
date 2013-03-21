@@ -91,10 +91,11 @@ def run_waitress():
         port = port
     )
 
-def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None):
+def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None, **kwargs):
     global APP
 
     load_all()
+    load_app_config(app, kwargs)
     debug = config.conf("DEBUG", False, cast = bool)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
@@ -136,6 +137,10 @@ def load_config(offset = 1):
 def load_environ():
     for name, value in os.environ.items():
         config.config_g[name] = value
+
+def load_app_config(app, configs):
+    for name, value in configs.items():
+        app.config[name] = value
 
 def start_log(app, name, level = logging.WARN):
     if os.name == "nt": path_t = "%s"
