@@ -52,6 +52,21 @@ class BaseError(RuntimeError):
         RuntimeError.__init__(self, message)
         self.message = message
 
+class ServerInitError(BaseError):
+    """
+    The server initialization error that represents a
+    problem in the boot process for the server, this
+    error should not be raised during server runtime.
+    """
+
+    server = None
+    """ The name (description) of the server that raised
+    the initialization problem """
+
+    def __init__(self, message, server = None):
+        BaseError.__init__(self, message)
+        self.server = server
+
 class OperationalError(BaseError):
     """
     The operational error class that should represent any
