@@ -85,6 +85,25 @@ def post_json(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
+def delete_json(url, **kwargs):
+    # starts the variable holding the number of
+    # retrieves to be used
+    retries = 5
+
+    while True:
+        try:
+            return _delete_json(url, **kwargs)
+        except urllib2.HTTPError, error:
+            data = error.read()
+            data_s = json.loads(data)
+            raise exceptions.JsonError(data_s)
+
+        # decrements the number of retries and checks if the
+        # number of retries has reached the limit
+        retries -= 1
+        if retries == 0:
+            raise exceptions.HttpError("Data retrieval not possible")
+
 def _get_json(url, **kwargs):
     values = kwargs or {}
     data = urllib.urlencode(values, doseq = True)
@@ -99,6 +118,18 @@ def _post_json(url, **kwargs):
     data = urllib.urlencode(values, doseq = True)
     request = urllib2.Request(url, data)
     response = urllib2.urlopen(request, timeout = TIMEOUT)
+    contents = response.read()
+    contents_s = json.loads(contents)
+    return contents_s
+
+def _delete_json(url, **kwargs):
+    values = kwargs or {}
+    data = urllib.urlencode(values, doseq = True)
+    url = url + "?" + data
+    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    request = urllib2.Request(url)
+    request.get_method = lambda: "DELETE"
+    response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
     contents_s = json.loads(contents)
     return contents_s
