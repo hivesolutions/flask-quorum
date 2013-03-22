@@ -64,7 +64,7 @@ def get_json(url, **kwargs):
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.SubmitError("Data retrieval not possible")
+            raise exceptions.HttpError("Data retrieval not possible")
 
 def post_json(url, **kwargs):
     # starts the variable holding the number of
@@ -83,7 +83,7 @@ def post_json(url, **kwargs):
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.SubmitError("Data retrieval not possible")
+            raise exceptions.HttpError("Data retrieval not possible")
 
 def _get_json(url, **kwargs):
     values = kwargs or {}
