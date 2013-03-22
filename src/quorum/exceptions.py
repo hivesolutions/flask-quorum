@@ -130,3 +130,27 @@ class ValidationInternalError(BaseInternalError):
     def __init__(self, name, message):
         BaseInternalError.__init__(self, message)
         self.name = name
+
+class HttpError(BaseError):
+    """
+    Error raised when an http (client) related issue
+    arises, most of the problems should occur during
+    the communication between client and server.
+    """
+
+    def __init__(self, message):
+        BaseError.__init__(self, message)
+
+class JsonError(HttpError):
+    """
+    Error raised when a json based http communication
+    fails or is not accepted by the server pear.
+    """
+
+    data = None
+    """ The deserialized version of the response information
+    provided by the json request  """
+
+    def __init__(self, data):
+        HttpError.__init__(self, "Problem requesting json data")
+        self.data = data
