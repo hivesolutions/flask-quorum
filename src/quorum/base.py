@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import json
+import flask
 import atexit
 import logging
 import inspect
@@ -106,9 +107,11 @@ def run_waitress():
         port = port
     )
 
-def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None, **kwargs):
+def load(app = None, name = None, secret_key = None, execution = True, redis_session = False, mongo_database = None, logger = None, models = None, **kwargs):
     global APP
-    if APP: return
+    if APP: return APP
+
+    app = app or flask.Flask(name)
 
     load_all()
     load_app_config(app, kwargs)
@@ -120,7 +123,7 @@ def load(app, secret_key = None, execution = True, redis_session = False, mongo_
     smtp_password = config.conf("SMTP_PASSWORD", None)
     level = debug and logging.DEBUG or logging.WARN
 
-    start_log(app, name = name, level = level)
+    start_log(app, name = logger, level = level)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if smtp_host: mail.SMTP_HOST = smtp_host
@@ -134,6 +137,8 @@ def load(app, secret_key = None, execution = True, redis_session = False, mongo_
     app.debug = debug
     app.secret_key = secret_key
     APP = app
+
+    return app
 
 def load_all():
     load_config(3)
