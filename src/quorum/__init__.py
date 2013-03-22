@@ -43,6 +43,7 @@ import exceptions
 import execution
 import export
 import extras
+import http
 import jsonf
 import log
 import mail
@@ -62,6 +63,7 @@ from daemon import *
 from errors import *
 from exceptions import *
 from execution import *
+from http import *
 from jsonf import *
 from log import *
 from mail import *
