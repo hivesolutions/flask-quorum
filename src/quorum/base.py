@@ -108,7 +108,6 @@ def run_waitress():
 
 def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None, **kwargs):
     global APP
-
     if APP: return
 
     load_all()
@@ -121,7 +120,7 @@ def load(app, secret_key = None, execution = True, redis_session = False, mongo_
     smtp_password = config.conf("SMTP_PASSWORD", None)
     level = debug and logging.DEBUG or logging.WARN
 
-    if name: start_log(app, name, level = level)
+    start_log(app, name = name, level = level)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if smtp_host: mail.SMTP_HOST = smtp_host
@@ -159,21 +158,20 @@ def load_app_config(app, configs):
     for name, value in configs.items():
         app.config[name] = value
 
-def start_log(app, name, level = logging.WARN, format = LOGGING_FORMAT):
+def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
-    path = path_t % name
+    path = name and path_t % name
 
+    formatter = logging.Formatter(format)
     logger = logging.getLogger("quorum")
     logger.parent = None
+    logger.setLevel(level)
 
     stream_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler(path)
-    formatter = logging.Formatter(format)
-
-    logger.setLevel(level)
-    logger.addHandler(stream_handler)
-    logger.addHandler(file_handler)
+    file_handler = path and logging.FileHandler(path)
+    stream_handler and logger.addHandler(stream_handler)
+    file_handler and logger.addHandler(file_handler)
 
     for handler in logger.handlers:
         handler.setFormatter(formatter)
