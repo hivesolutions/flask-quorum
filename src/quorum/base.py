@@ -57,6 +57,10 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
+LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
+""" The logging format definition to be used by all
+the format handlers available """
+
 def run(server = "base", fallback = "base"):
     if not APP: raise exceptions.BaseError("Application not set or runnable")
 
@@ -104,6 +108,8 @@ def run_waitress():
 
 def load(app, secret_key = None, execution = True, redis_session = False, mongo_database = None, name = None, models = None, **kwargs):
     global APP
+
+    if APP: return
 
     load_all()
     load_app_config(app, kwargs)
@@ -153,14 +159,32 @@ def load_app_config(app, configs):
     for name, value in configs.items():
         app.config[name] = value
 
-def start_log(app, name, level = logging.WARN):
+def start_log(app, name, level = logging.WARN, format = LOGGING_FORMAT):
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = path_t % name
+
+    logger = logging.getLogger("quorum")
+    logger.parent = None
+
+    stream_handler = logging.StreamHandler()
     file_handler = logging.FileHandler(path)
-    file_handler.setLevel(level)
-    app.logger.setLevel(level)
-    app.logger.addHandler(file_handler)
+    formatter = logging.Formatter(format)
+
+    logger.setLevel(level)
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
+
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
+        handler.setLevel(level)
+
+    app.logger_q = logger
+
+def get_log(app = None):
+    app = app or APP
+    is_custom = hasattr(app, "logger_q")
+    return app.logger_q if is_custom else app.logger
 
 def start_execution():
     # creates the thread that it's going to be used to

@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import sys
+import log
 import time
 import heapq
 import threading
@@ -128,7 +128,7 @@ class ExecutionThread(threading.Thread):
                 # execution fails (must be done to log the error)
                 try: callable()
                 except BaseException, exception:
-                    print sys.stderr.write(str(exception) + "\n")
+                    log.warning(str(exception) + "\n")
 
             # sleeps for a while so that the process may
             # released for different tasks
