@@ -146,6 +146,3 @@ class ExecutionThread(threading.Thread):
 
 def insert_work(callable, target_time = None):
     background.insert_work(callable, target_time)
-
-run_back = insert_work
-run_background = insert_work

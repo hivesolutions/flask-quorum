@@ -72,6 +72,8 @@ from typesf import *
 from util import *
 from validation import *
 
+from execution import insert_work as run_back
+from execution import insert_work as run_background
 from mongodb import get_connection as get_mongo
 from mongodb import get_db as get_mongo_db
 from mongodb import drop_db as drop_mongo_db
