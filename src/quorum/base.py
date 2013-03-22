@@ -51,6 +51,7 @@ import session
 import redisdb
 import mongodb
 import request
+import rabbitmq
 import execution
 import exceptions
 
@@ -118,6 +119,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     debug = config.conf("DEBUG", False, cast = bool)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
+    rabbit_url = config.conf("CLOUDAMQP_URL", None)
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
@@ -126,6 +128,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     start_log(app, name = logger, level = level)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
+    if rabbit_url: rabbitmq.url = rabbit_url
     if smtp_host: mail.SMTP_HOST = smtp_host
     if smtp_user: mail.SMTP_USER = smtp_user
     if smtp_password: mail.SMTP_PASSWORD = smtp_password

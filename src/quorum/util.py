@@ -119,7 +119,7 @@ def find_types(object):
         object[name] = find_type(value)
 
 def run_thread(function, *args, **kwargs):
-    thread.start_new_thread(function, args, kwargs)
+    return thread.start_new_thread(function, args, kwargs)
 
 def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
     """

@@ -154,3 +154,6 @@ class JsonError(HttpError):
     def __init__(self, data):
         HttpError.__init__(self, "Problem requesting json data")
         self.data = data
+
+    def get_data(self):
+        return self.data

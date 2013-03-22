@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Flask Quorum. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães <joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,52 +37,24 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import acl
-import base
-import config
-import daemon
-import errors
-import exceptions
-import execution
-import export
-import extras
-import http
-import jsonf
-import log
-import mail
-import model
-import mongodb
-import rabbitmq
-import redisdb
-import request
-import session
-import typesf
-import util
-import validation
+import urlparse
 
-from acl import *
-from base import *
-from config import *
-from daemon import *
-from errors import *
-from exceptions import *
-from execution import *
-from http import *
-from jsonf import *
-from log import *
-from mail import *
-from model import *
-from typesf import *
-from util import *
-from validation import *
+try: import pika
+except: pika = None
 
-from execution import insert_work as run_back
-from execution import insert_work as run_background
-from mongodb import get_connection as get_mongo
-from mongodb import get_db as get_mongo_db
-from mongodb import drop_db as drop_mongo_db
-from mongodb import dumps as dumps_mongo
-from rabbitmq import get_connection as get_rabbit
-from rabbitmq import properties as properties_rabbit
-from redisdb import get_connection as get_redis
-from redisdb import dumps as dumps_redis
+url = "amqp://localhost//"
+""" The global variable containing the url to be used
+for the connection with the service """
+
+def get_connection():
+    url_p = urlparse.urlparse(url)
+    parameters = pika.ConnectionParameters(
+        host = url_p.hostname,
+        virtual_host = url_p.path[1:],
+        credentials = pika.PlainCredentials(url_p.username, url_p.password)
+    )
+    connection = pika.BlockingConnection(parameters)
+    return connection
+
+def properties(*args, **kwargs):
+    return pika.BasicProperties(*args, **kwargs)
