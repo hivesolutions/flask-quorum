@@ -137,11 +137,15 @@ class ExecutionThread(threading.Thread):
     def stop(self):
         self.run_flag = False
 
-    def insert_work(self, target_time, callable):
+    def insert_work(self, callable, target_time = None):
+        target_time = target_time or time.time()
         work = (target_time, callable)
         self.work_lock.acquire()
         try: heapq.heappush(self.work_list, work)
         finally: self.work_lock.release()
 
-def insert_work(target_time, callable):
-    background.insert_work(target_time, callable)
+def insert_work(callable, target_time = None):
+    background.insert_work(callable, target_time)
+
+def run_background(callable, target_time = None):
+    background.insert_work(callable, target_time)
