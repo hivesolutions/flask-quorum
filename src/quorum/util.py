@@ -118,7 +118,7 @@ def find_types(object):
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
 
-def run_background(function, args = [], kwargs = {}):
+def run_thread(function, *args, **kwargs):
     thread.start_new_thread(function, args, kwargs)
 
 def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):

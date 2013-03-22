@@ -88,7 +88,7 @@ def send_email(app = None, subject = "", sender = "", receivers = [], plain = No
         server.quit()
 
 def send_mail_a(*args, **kwargs):
-    util.run_background(send_email, args, kwargs)
+    util.run_thread(send_email, *args, **kwargs)
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)
