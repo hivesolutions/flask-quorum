@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import string
 import unittest
 
 import quorum
@@ -44,5 +45,10 @@ import quorum
 class UtilTest(unittest.TestCase):
 
     def test_generate_identifier(self):
-        identifier = quorum.util.generate_identifier(16)
+        identifier = quorum.util.generate_identifier(
+            size = 16,
+            chars = string.ascii_uppercase
+        )
         self.assertEqual(len(identifier), 16)
+        for char in identifier:
+            self.assertTrue(char in string.ascii_uppercase)
