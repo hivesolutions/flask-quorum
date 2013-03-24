@@ -49,6 +49,7 @@ setuptools.setup(
     license = "GNU General Public License (GPL), Version 3",
     keywords = "quorum flask",
     url = "http://quorum.com",
+    zip_safe = True,
     packages = [
         "quorum"
     ],
