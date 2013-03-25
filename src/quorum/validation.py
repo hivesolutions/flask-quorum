@@ -138,6 +138,17 @@ def is_url(name):
         raise exceptions.ValidationInternalError(name, "value is not a valid url")
     return validation
 
+def is_regex(name, regex):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        match = re.match(regex, value)
+        if match: return True
+        raise exceptions.ValidationInternalError(
+            name, "value has incorrect format"
+        )
+    return validation
+
 def string_gt(name, size):
     def validation(object):
         value = object.get(name, None)
