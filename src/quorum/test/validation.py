@@ -136,3 +136,191 @@ class ValidationTest(unittest.TestCase):
             build = False
         )
         self.assertFalse(result)
+
+    def test_gt(self):
+        methods = [quorum.gt("age", 2)]
+
+        object = dict(age = 3)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2.01)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+        object = dict(age = "2")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 1.99)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+    def test_gte(self):
+        methods = [quorum.gte("age", 2)]
+
+        object = dict(age = 3)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2.01)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2.00)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = "2")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 1.99)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+    def test_lt(self):
+        methods = [quorum.lt("age", 2)]
+
+        object = dict(age = 1)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 1.99)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+        object = dict(age = "2")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+        object = dict(age = 2.01)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+    def test_lte(self):
+        methods = [quorum.lte("age", 2)]
+
+        object = dict(age = 1)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 1.99)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = 2.00)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(age = "2")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+        object = dict(age = 2.01)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
