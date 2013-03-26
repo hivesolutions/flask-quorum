@@ -40,6 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import re
 import copy
 import flask
+import datetime
 
 import util
 import mongodb
@@ -233,6 +234,16 @@ def equals(first_name, second_name):
         if first_value == second_value: return True
         raise exceptions.ValidationInternalError(
             first_name, "value is not equals to %s" % second_name
+        )
+    return validation
+
+def not_past(name):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value >= datetime.datetime.utcnow(): return True
+        raise exceptions.ValidationInternalError(
+            name, "date is in the past"
         )
     return validation
 

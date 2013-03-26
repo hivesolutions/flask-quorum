@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import datetime
 import unittest
 
 import quorum
@@ -404,6 +405,25 @@ class ValidationTest(unittest.TestCase):
         self.assertFalse(result)
 
         object = dict(name = [])
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+    def test_not_past(self):
+        methods = [quorum.not_past("time")]
+
+        object = dict(time = datetime.datetime(2200, 1, 1))
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(time = datetime.datetime(2001, 1, 1))
         result = quorum.validation.validate_b(
             methods = methods,
             object = object,
