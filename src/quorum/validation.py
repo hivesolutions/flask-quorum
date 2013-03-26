@@ -61,11 +61,11 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 """ The url regex used to validate
 if the provided value is in fact an URL/URI """
 
-def validate(method, object = None, build = True):
+def validate(method = None, methods = [], object = None, build = True):
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
     # an extra level of indirection
-    methods = method and method() or []
+    methods = method and method() or methods
     errors = []
 
     # verifies if the provided object is valid in such case creates
@@ -98,6 +98,66 @@ def validate(method, object = None, build = True):
         _errors.append(message)
 
     return errors_map, object
+
+def validate_b(method = None, methods = [], object = None, build = True):
+    errors_map, object = validate(
+        method = method,
+        methods = methods,
+        object = object,
+        build = build
+    )
+    result = False if errors_map else True
+    return result
+
+def eq(name, value_c):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value == value_c: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be equal to %s" % str(value_c)
+        )
+    return validation
+
+def gt(name, value_c):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value > value_c: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be greater than %s" % str(value_c)
+        )
+    return validation
+
+def gte(name, value_c):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value >= value_c: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be greater than or equal to %s" % str(value_c)
+        )
+    return validation
+
+def lt(name, value_c):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value < value_c: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be less than %s" % str(value_c)
+        )
+    return validation
+
+def lte(name, value_c):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        if value <= value_c: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be less than or equal to %s" % str(value_c)
+        )
+    return validation
 
 def not_null(name):
     def validation(object):
