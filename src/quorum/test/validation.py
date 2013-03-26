@@ -324,3 +324,89 @@ class ValidationTest(unittest.TestCase):
             build = False
         )
         self.assertFalse(result)
+
+    def test_not_null(self):
+        methods = [quorum.not_null("name")]
+
+        object = dict(name = "John Doe")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = 1)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = 1.0)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = False)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = "")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = None)
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+    def test_not_empty(self):
+        methods = [quorum.not_empty("name")]
+
+        object = dict(name = "John Doe")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = [1, 2, 3])
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertTrue(result)
+
+        object = dict(name = "")
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
+
+        object = dict(name = [])
+        result = quorum.validation.validate_b(
+            methods = methods,
+            object = object,
+            build = False
+        )
+        self.assertFalse(result)
