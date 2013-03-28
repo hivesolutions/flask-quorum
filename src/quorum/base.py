@@ -143,6 +143,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
 
     return app
 
+def unload():
+    APP = None
+
 def load_all():
     load_config(3)
     load_environ()

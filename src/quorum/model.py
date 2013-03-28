@@ -128,6 +128,12 @@ class Model(object):
         return models
 
     @classmethod
+    def count(cls, *args, **kwargs):
+        collection = cls._collection()
+        result = collection.count(**kwargs)
+        return result
+
+    @classmethod
     def delete_c(cls, *args, **kwargs):
         collection = cls._collection()
         collection.remove(kwargs)
