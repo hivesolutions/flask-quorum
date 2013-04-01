@@ -42,12 +42,18 @@ import time
 import heapq
 import threading
 
+BACKGROUND = []
+""" The list containing the various global registered
+function to be executed as background operations, note
+that only the name is used in the list so a possible
+collision of tasks is possible """
+
 SLEEP_TIME = 0.5
 """ The amount of time to sleep between iteration
 this amount should be small enough to provide some
 resolution level to the schedule execution """
 
-background = None
+background_t = None
 """ The background execution task to be started by
 the quorum execution system (global value) """
 
@@ -112,10 +118,13 @@ class ExecutionThread(threading.Thread):
 
                     # retrieves the current work tuple to
                     # be used and executes it in case the
-                    # time has passed
-                    _time, callable = self.work_list[0]
-                    if _time < current_time: execution_list.append(callable); heapq.heappop(self.work_list)
-                    else: break
+                    # time has passed (should be executed)
+                    _time, callable, callback = self.work_list[0]
+                    if _time < current_time:
+                        execution_list.append((callable, callback))
+                        heapq.heappop(self.work_list)
+                    else:
+                        break
             finally:
                 # releases the work lock providing access
                 # to the work list
@@ -123,12 +132,23 @@ class ExecutionThread(threading.Thread):
 
             # iterates over all the "callables" in the execution
             # list to execute their operations
-            for callable in execution_list:
-                # executes the "callable" and log the error in case the
-                # execution fails (must be done to log the error)
+            for callable, callback in execution_list:
+                # sets the initial (default) value for the error
+                # variable that controls the result of the execution
+                error = None
+
+                # executes the "callable" and logs the error in case the
+                # execution fails (must be done to log the error) then
+                # sets the error flag with the exception variable
                 try: callable()
                 except BaseException, exception:
+                    error = exception
                     log.warning(str(exception) + "\n")
+
+                # calls the callback method with the currently set error
+                # in order to notify the runtime about the problem, only
+                # calls the callback in case such method is defined
+                callback and callback(error = error)
 
             # sleeps for a while so that the process may
             # released for different tasks
@@ -137,12 +157,43 @@ class ExecutionThread(threading.Thread):
     def stop(self):
         self.run_flag = False
 
-    def insert_work(self, callable, target_time = None):
+    def insert_work(self, callable, target_time = None, callback = None):
         target_time = target_time or time.time()
-        work = (target_time, callable)
+        work = (target_time, callable, callback)
         self.work_lock.acquire()
         try: heapq.heappush(self.work_list, work)
         finally: self.work_lock.release()
 
-def insert_work(callable, target_time = None):
-    background.insert_work(callable, target_time)
+def background(timeout = None):
+
+    def decorator(function):
+        _timeout = timeout or 0.0
+
+        def schedule(error = None, force = False):
+            if timeout == None and not force: return
+            target = time.time() + _timeout
+            insert_work(function, target, schedule)
+
+        # retrieves the name of the function and in
+        # case the name already exists in the global
+        # list of background execution tasks returns
+        # immediately (nothing to be done, duplicate)
+        fname = function.__name__
+        exists = fname in BACKGROUND
+        if exists: return function
+
+        # runs the scheduling operation on the task and
+        # then adds the function name to the list of already
+        # registered names
+        schedule(force = True)
+        BACKGROUND.append(fname)
+        return function
+
+    return decorator
+
+def insert_work(callable, target_time = None, callback = None):
+    background_t.insert_work(
+        callable,
+        target_time = target_time,
+        callback = callback
+    )

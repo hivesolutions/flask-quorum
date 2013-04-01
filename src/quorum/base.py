@@ -199,14 +199,14 @@ def start_execution():
     # creates the thread that it's going to be used to
     # execute the various background tasks and starts
     # it, providing the mechanism for execution
-    execution.background = execution.ExecutionThread()
-    execution.background.start()
+    execution.background_t = execution.ExecutionThread()
+    execution.background_t.start()
 
 @atexit.register
 def stop_execution():
     # stop the execution thread so that it's possible to
     # the process to return the calling
-    execution.background and execution.background.stop()
+    execution.background_t and execution.background_t.stop()
 
 def setup_models(models):
     for _name, value in models.__dict__.items():
