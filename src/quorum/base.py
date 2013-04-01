@@ -59,6 +59,10 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
+RUN_F = {}
+""" The map that will contain the various functions that
+will be called upon the start of the main run loop """
+
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The logging format definition to be used by all
 the format handlers available """
@@ -69,6 +73,8 @@ def run(server = "base", fallback = "base"):
     runner = globals().get("run_" + server, None)
     runner_f = globals().get("run_" + fallback, None)
     if not runner: raise exceptions.BaseError("Server '%s' not found" % server)
+
+    for _fname, f in RUN_F.items(): f()
 
     try: runner()
     except exceptions.ServerInitError, error:
@@ -217,3 +223,9 @@ def setup_models(models):
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
+
+def onrun(function):
+    fname = function.__name__
+    if fname in RUN_F: return
+    RUN_F[fname] = function
+    return function
