@@ -67,7 +67,8 @@ def route(*args, **kwargs):
                     json.dumps({
                         "exception" : {
                             "name" : exception.__class__.__name__,
-                            "message" : exception.message
+                            "message" : exception.message,
+                            "code" : exception.code
                         }
                     }),
                     status = exception.code,
@@ -78,7 +79,8 @@ def route(*args, **kwargs):
                     json.dumps({
                         "exception" : {
                             "name" : exception.__class__.__name__,
-                            "message" : str(exception)
+                            "message" : str(exception),
+                            "code" : 500
                         }
                     }),
                     status = 500,
