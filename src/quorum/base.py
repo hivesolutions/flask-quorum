@@ -45,6 +45,7 @@ import logging
 import inspect
 
 import mail
+import route
 import model
 import config
 import session
@@ -145,6 +146,8 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     app.request_class = request.Request
     app.debug = debug
     app.secret_key = secret_key
+    app.old_route = app.route
+    app.route = route.route
     APP = app
 
     return app
