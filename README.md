@@ -19,3 +19,11 @@ def index():
 if __name__ == "__main__":
     quorum.run()
 ```
+
+Creation of background (task) callbables, that will execute every one second
+
+```python
+@quorum.background(timeout = 1.0)
+def hello_recursive():
+    print "hello word"
+```
