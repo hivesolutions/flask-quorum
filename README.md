@@ -20,7 +20,7 @@ if __name__ == "__main__":
     quorum.run()
 ```
 
-Creation of background (task) callbables, that will execute every one second
+Creation of background callbables, that will execute every one second in a separate thread
 
 ```python
 @quorum.background(timeout = 1.0)
