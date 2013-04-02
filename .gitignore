@@ -3,5 +3,5 @@
 
 /dist/
 /build/
-/docs/_build/
+/doc/_build/
 /src/quorum.egg-info/
