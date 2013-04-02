@@ -21,7 +21,7 @@
 import os
 import sys
 
-extensions = []
+extensions = ["sphinx.ext.autodoc"]
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"
