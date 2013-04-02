@@ -30,7 +30,7 @@ def hello_recursive():
 
 ## Building
 
-    sphinx-build -b html docs docs/_build
+    sphinx-build -b html doc doc/_build
 
 ## Build Automation
 
