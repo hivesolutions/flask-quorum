@@ -42,19 +42,37 @@ import unittest
 import mock
 import quorum
 
-class ModelTest(unittest.TestCase):
+def secured(function):
+
+    def decorator(self, *args, **kwargs):
+        if self.skipped: return
+        return function(self, *args, **kwargs)
+
+    return decorator
+
+class TestCase(unittest.TestCase):
+
+    skipped = False
+
+    def skip(self):
+        self.skipped = True
+
+class ModelTest(TestCase):
 
     def setUp(self):
-        quorum.load(
-            name = __name__,
-            mongo_database = "test",
-            models = mock
-        )
+        try: quorum.load(
+                name = __name__,
+                mongo_database = "test",
+                models = mock
+            )
+        except: self.skip()
 
+    @secured
     def tearDown(self):
         quorum.drop_mongo_db()
         quorum.unload()
 
+    @secured
     def test_find(self):
         result = mock.Person.find(age = 1)
         self.assertEqual(len(result), 0)
@@ -67,6 +85,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].age, 1)
 
+    @secured
     def test_count(self):
         result = mock.Person.count()
         self.assertEqual(result, 0)
