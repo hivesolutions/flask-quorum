@@ -38,12 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import datetime
-import unittest
 
 import quorum
 
-class ValidationTest(unittest.TestCase):
+class ValidationTest(quorum.TestCase):
 
+    @quorum.secured
     def test_eq_number(self):
         methods = [quorum.eq("age", 2)]
 
@@ -87,6 +87,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_eq_string(self):
         methods = [quorum.eq("name", "John Doe")]
 
@@ -138,6 +139,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_gt(self):
         methods = [quorum.gt("age", 2)]
 
@@ -181,6 +183,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_gte(self):
         methods = [quorum.gte("age", 2)]
 
@@ -232,6 +235,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_lt(self):
         methods = [quorum.lt("age", 2)]
 
@@ -275,6 +279,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_lte(self):
         methods = [quorum.lte("age", 2)]
 
@@ -326,6 +331,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_not_null(self):
         methods = [quorum.not_null("name")]
 
@@ -377,6 +383,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_not_empty(self):
         methods = [quorum.not_empty("name")]
 
@@ -412,6 +419,7 @@ class ValidationTest(unittest.TestCase):
         )
         self.assertFalse(result)
 
+    @quorum.secured
     def test_not_past(self):
         methods = [quorum.not_past("time")]
 

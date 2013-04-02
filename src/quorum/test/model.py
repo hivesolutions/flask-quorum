@@ -37,28 +37,12 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import unittest
-
 import mock
 import quorum
 
-def secured(function):
+class ModelTest(quorum.TestCase):
 
-    def decorator(self, *args, **kwargs):
-        if self.skipped: return
-        return function(self, *args, **kwargs)
-
-    return decorator
-
-class TestCase(unittest.TestCase):
-
-    skipped = False
-
-    def skip(self):
-        self.skipped = True
-
-class ModelTest(TestCase):
-
+    @quorum.secured
     def setUp(self):
         try: quorum.load(
                 name = __name__,
@@ -67,12 +51,12 @@ class ModelTest(TestCase):
             )
         except: self.skip()
 
-    @secured
+    @quorum.secured
     def tearDown(self):
         quorum.drop_mongo_db()
         quorum.unload()
 
-    @secured
+    @quorum.secured
     def test_find(self):
         result = mock.Person.find(age = 1)
         self.assertEqual(len(result), 0)
@@ -85,7 +69,7 @@ class ModelTest(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].age, 1)
 
-    @secured
+    @quorum.secured
     def test_count(self):
         result = mock.Person.count()
         self.assertEqual(result, 0)

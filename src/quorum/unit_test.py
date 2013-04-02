@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Flask Quorum. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães <joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,55 +37,27 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import acl
-import base
-import config
-import daemon
-import errors
-import exceptions
-import execution
-import export
-import extras
-import http
-import jsonf
-import log
-import mail
-import model
-import mongodb
-import rabbitmq
-import redisdb
-import request
-import route
-import session
-import typesf
-import unit_test
-import util
-import validation
+import unittest
 
-from acl import *
-from base import *
-from config import *
-from daemon import *
-from errors import *
-from exceptions import *
-from execution import *
-from http import *
-from jsonf import *
-from log import *
-from mail import *
-from model import *
-from typesf import *
-from unit_test import *
-from util import *
-from validation import *
+def secured(function):
 
-from execution import insert_work as run_back
-from execution import insert_work as run_background
-from mongodb import get_connection as get_mongo
-from mongodb import get_db as get_mongo_db
-from mongodb import drop_db as drop_mongo_db
-from mongodb import dumps as dumps_mongo
-from rabbitmq import get_connection as get_rabbit
-from rabbitmq import properties as properties_rabbit
-from redisdb import get_connection as get_redis
-from redisdb import dumps as dumps_redis
+    def decorator(self, *args, **kwargs):
+        if self._skip: self._skipped.append(function.__name__); return
+        return function(self, *args, **kwargs)
+
+    return decorator
+
+class TestCase(unittest.TestCase):
+
+    _skip = False
+
+    _skipped = []
+
+    def __init__(self, methodName = "runTest"):
+        unittest.TestCase.__init__(self, methodName = methodName)
+
+        self._skip = False
+        self._skipped = []
+
+    def skip(self):
+        self._skip = True

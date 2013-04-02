@@ -38,12 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import string
-import unittest
 
 import quorum
 
-class UtilTest(unittest.TestCase):
+class UtilTest(quorum.TestCase):
 
+    @quorum.secured
     def test_generate_identifier(self):
         identifier = quorum.util.generate_identifier(
             size = 16,
