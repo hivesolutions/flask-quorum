@@ -28,6 +28,10 @@ def hello_recursive():
     print "hello word"
 ```
 
+## Building
+
+    sphinx-build -b html docs docs/_build
+
 ## Build Automation
 
 [![Build Status](https://travis-ci.org/hivesolutions/flask_quorum.png?branch=master)](https://travis-ci.org/hivesolutions/flask_quorum)
