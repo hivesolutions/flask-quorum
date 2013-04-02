@@ -21,6 +21,11 @@
 import os
 import sys
 
+current_dir = os.path.dirname(__file__)
+src_dir = current_dir + "/../src"
+src_dir = os.path.abspath(src_dir)
+sys.path.append(src_dir)
+
 extensions = ["sphinx.ext.autodoc"]
 templates_path = ["_templates"]
 source_suffix = ".rst"
