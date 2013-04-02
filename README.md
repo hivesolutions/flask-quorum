@@ -27,3 +27,7 @@ Creation of background callbables, that will execute every one second in a separ
 def hello_recursive():
     print "hello word"
 ```
+
+## Build Automation
+
+[![Build Status](https://travis-ci.org/hivesolutions/flask_quorum.png?branch=master)](https://travis-ci.org/hivesolutions/flask_quorum)
