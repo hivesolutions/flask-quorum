@@ -107,7 +107,7 @@ class Model(object):
         if not model and not raise_e: return model
         cls.types(model)
         build and cls.build(model, map)
-        return cls.types(model) if map else cls.new(model = model, safe = False)
+        return model if map else cls.new(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
