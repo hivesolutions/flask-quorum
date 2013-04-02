@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import urlparse
 
+import exceptions
+
 try: import pika
 except: pika = None
 
@@ -47,6 +49,7 @@ url = "amqp://localhost//"
 for the connection with the service """
 
 def get_connection():
+    if pika == None: raise exceptions.ModuleNotFound("pika")
     url_p = urlparse.urlparse(url)
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,

@@ -67,6 +67,21 @@ class ServerInitError(BaseError):
         BaseError.__init__(self, message)
         self.server = server
 
+class ModuleNotFound(BaseError):
+    """
+    The module not found error that represents a
+    problem created by the failure to load a required module.
+    This kind of error should be handled accordingly.
+    """
+
+    name = None
+    """ The name (description) of the module that failed
+    to load and raised the problem """
+
+    def __init__(self, name):
+        BaseError.__init__(self, "Failed to load '%s' module" % name)
+        self.name = name
+
 class OperationalError(BaseError):
     """
     The operational error class that should represent any

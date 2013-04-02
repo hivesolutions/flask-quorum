@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
+import exceptions
+
 try: import pymongo
 except: pymongo = None
 
@@ -84,7 +86,6 @@ def get_connection():
 
 def get_db():
     connection = get_connection()
-    if not connection: return None
     result = pymongo.uri_parser.parse_uri(url)
     _database = result.get("database", None) or database
     db = connection[_database]
@@ -102,6 +103,6 @@ def dumps(*args):
 
 def _get_connection(url):
     global connection
-    if pymongo == None: return None
+    if pymongo == None: raise exceptions.ModuleNotFound("pymongo")
     if not connection: connection = pymongo.Connection(url)
     return connection

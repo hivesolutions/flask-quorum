@@ -40,6 +40,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import json
 import shelve
 
+import exceptions
+
 try: import redis
 except: redis = None
 
@@ -116,6 +118,6 @@ def dumps(*args):
 
 def _get_connection(url):
     global connection
-    if redis == None and url: return None
+    if redis == None: raise exceptions.ModuleNotFound("redis")
     if not connection: connection = url and redis.from_url(url) or RedisShelve()
     return connection
