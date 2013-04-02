@@ -116,6 +116,20 @@ def run_waitress():
     )
 
 def load(app = None, name = None, secret_key = None, execution = True, redis_session = False, mongo_database = None, logger = None, models = None, **kwargs):
+    """
+    Initial loader function responsible for the overriding of
+    the flask loading system and for the loading of configuration.
+    
+    @type app: Application
+    @param app: The optional flask application object to be used
+    in the loading of quorum (useful for self managed apps).
+    
+    
+    
+    
+    
+    """
+    
     global APP
     if APP: return APP
 
@@ -153,6 +167,14 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     return app
 
 def unload():
+    """
+    Unloads the current quorum instance, after this call
+    no more access to the quorum facilities is allowed.
+    
+    Use this function with care as it may result in unexpected
+    behavior from a developer point of view.
+    """
+
     APP = None
 
 def load_all():
