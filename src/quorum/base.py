@@ -120,14 +120,22 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     Initial loader function responsible for the overriding of
     the flask loading system and for the loading of configuration.
     
-    @type app: Application
-    @param app: The optional flask application object to be used
+    :type app: Application
+    :param app: The optional flask application object to be used\
     in the loading of quorum (useful for self managed apps).
-    
-    
-    
-    
-    
+    :type name: String
+    :param name: The name to be used to describe the application\
+    for the management of internal values.
+    :type secret_key: String
+    :param secret_key: The secret seed value to be used for cryptographic\
+    operations under flask (eg: client side sessions) this value should\
+    be shared among all the pre-fork instances.
+    :type execution: bool
+    :param execution: Flag indicating if the (background) execution thread\
+    should be started providing the required support for background tasks.
+    :type redis_session: bool
+    :param redis_session: If the session management for the flask infra-structure\
+    should be managed using a server side session support using redis.
     """
     
     global APP
