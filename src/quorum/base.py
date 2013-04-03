@@ -119,7 +119,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     """
     Initial loader function responsible for the overriding of
     the flask loading system and for the loading of configuration.
-    
+
     :type app: Application
     :param app: The optional flask application object to be used\
     in the loading of quorum (useful for self managed apps).
@@ -136,8 +136,21 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     :type redis_session: bool
     :param redis_session: If the session management for the flask infra-structure\
     should be managed using a server side session support using redis.
+    :type mongo_database: String
+    :param mongo_database: The default name of the database to be used when\
+    using the mongo infra-structure.
+    :type logger: String
+    :param logger: The name to be used as identification for possible logger\
+    files created by the logging sub-module.
+    :type models: Module
+    :param models: The module containing the complete set of model classes to\
+    be used by the data infra-structure (eg: `mongo`).
+    :rtype: Application
+    :return: The application that is used by the loaded quorum environment in\
+    case one was provided that is retrieved, otherwise the newly created one is\
+    returned instead.
     """
-    
+
     global APP
     if APP: return APP
 
@@ -178,9 +191,16 @@ def unload():
     """
     Unloads the current quorum instance, after this call
     no more access to the quorum facilities is allowed.
-    
-    Use this function with care as it may result in unexpected
-    behavior from a developer point of view.
+
+    .. warning::
+
+        Use this function with care as it may result in unexpected
+        behavior from a developer point of view.
+
+    .. note::
+
+        After the call to this method most of the functionally of quorum\
+        will become unavailable until further call to :func:`quorum.load`.
     """
 
     APP = None
