@@ -29,6 +29,12 @@ src_dir = current_dir + "/../src"
 src_dir = os.path.abspath(src_dir)
 sys.path.append(src_dir)
 
+# adds the themes path to the current python path
+# to able to use third-party themes
+themes_dir = current_dir + "/_themes"
+themes_dir = os.path.abspath(themes_dir)
+sys.path.append(themes_dir)
+
 # verifies if the current environment is a read
 # the docs (cloud infra-structure) one
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
@@ -43,7 +49,8 @@ version = "0.1.0"
 release = "0.1.0"
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
-html_theme = "flasky" if on_rtd else "default"
+html_theme = "kr"
+html_theme_path = ["_themes"]
 html_static_path = ["_static"]
 htmlhelp_basename = "quorumdoc"
 latex_elements = {}
