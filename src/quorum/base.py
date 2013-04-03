@@ -90,7 +90,7 @@ def run(server = "base", fallback = "base"):
 def run_base():
     debug = config.conf("DEBUG", False, cast = bool)
     reloader = config.conf("RELOADER", False, cast = bool)
-    host = config.conf("HOST", "0.0.0.0")
+    host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
     APP.run(
         use_debugger = debug,
@@ -108,7 +108,7 @@ def run_waitress():
             server = "waitress"
         )
 
-    host = config.conf("HOST", "0.0.0.0")
+    host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
     waitress.serve(
         APP,
