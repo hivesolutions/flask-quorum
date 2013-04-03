@@ -28,8 +28,8 @@ Global
 
         The :rst:dir:`HOST` value is not used when running in contained **WSGI**.
 
-E-mail / SMTP
--------------
+Mail / SMTP
+-----------
 
 .. rst:directive:: .. SMTP_HOST:: string
 

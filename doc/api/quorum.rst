@@ -1,6 +1,9 @@
 quorum
 ======
 
+Base
+----
+
 .. autodata:: quorum.APP
 
     The reference to the top level application object
@@ -21,9 +24,15 @@ quorum
 .. autofunction:: quorum.run_back
 .. autofunction:: quorum.run_background
 
+Mail / SMTP
+-----------
+
 .. autofunction:: quorum.send_mail
 
 .. autofunction:: quorum.send_mail_a
+
+MongoDB
+-------
 
 .. py:function:: enumerate(sequence[, start=0])
 
