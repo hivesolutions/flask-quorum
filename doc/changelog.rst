@@ -23,22 +23,27 @@ Older Versions
 --------------
 
 0.1.5
+^^^^^
 
     * Initial support for ``mongodb``
 
 0.1.4
+^^^^^
 
     * Legacy support values
 
 0.1.3
+^^^^^
 
     * Legacy support values
 
 0.1.1
+^^^^^
 
     * Legacy support values
 
 0.1.0
+^^^^^
 
     * Initial release
     * First specification of the framework
