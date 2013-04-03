@@ -60,7 +60,7 @@ the remote smtp server """
 
 def send_mail(app = None, subject = "", sender = None, receivers = [], data = None, plain = None, rich = None, context = {}):
     """
-    Sends an email message using the provided :rst:dir:`SMTP_HOST`
+    Sends an email message using the provided :rst:dir:`SMTP_HOST`,
     :rst:dir:`SMTP_USER` and :rst:dir:`SMTP_PASSWORD` configurations.
 
     The email message is sent under the ``alternative`` mime
