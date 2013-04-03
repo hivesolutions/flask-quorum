@@ -44,12 +44,15 @@ class ModelTest(quorum.TestCase):
 
     @quorum.secured
     def setUp(self):
-        try: quorum.load(
+        try:
+            quorum.load(
                 name = __name__,
                 mongo_database = "test",
                 models = mock
             )
-        except: self.skip()
+            quorum.get_mongo()
+        except:
+            self.skip()
 
     @quorum.secured
     def tearDown(self):
