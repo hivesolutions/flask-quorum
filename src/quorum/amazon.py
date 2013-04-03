@@ -77,11 +77,22 @@ def get_bucket():
     bucket = connection.get_bucket(bucket_name)
     return bucket
 
+def clear_bucket():
+    bucket = get_bucket()
+    keys = bucket.get_all_keys()
+    for key in keys: key.delete()
+
 def get_key(name):
     bucket = get_bucket()
     key = boto.s3.key.Key(bucket)
     key.key = name
     return key
+
+def exists_key(name):
+    bucket = get_bucket()
+    key = boto.s3.key.Key(bucket)
+    key.key = name
+    return key.exists()
 
 def delete_key(name):
     bucket = get_bucket()

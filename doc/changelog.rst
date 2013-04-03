@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.1.8
+^^^^^
+
+    * New support for :func:`quorum.exists_amazon_key` and :func:`quorum.clear_amazon_bucket` calls
+    * Better unit testing for ``amazon.py``
+
 0.1.7
 ^^^^^
 

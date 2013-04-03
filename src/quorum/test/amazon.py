@@ -53,6 +53,7 @@ class AmazonTest(quorum.TestCase):
 
     @quorum.secured
     def tearDown(self):
+        quorum.clear_amazon_bucket()
         quorum.unload()
 
     @quorum.secured
@@ -73,3 +74,11 @@ class AmazonTest(quorum.TestCase):
         key = quorum.get_amazon_key("test")
         value = key.get_contents_as_string()
         self.assertEqual(value, "test message")
+
+        value = quorum.exists_amazon_key("test")
+        self.assertEqual(value, True)
+
+        quorum.delete_amazon_key("test")
+
+        value = quorum.exists_amazon_key("test")
+        self.assertEqual(value, False)

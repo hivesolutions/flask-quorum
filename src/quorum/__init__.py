@@ -79,7 +79,9 @@ from validation import *
 
 from amazon import get_connection as get_amazon
 from amazon import get_bucket as get_amazon_bucket
+from amazon import clear_bucket as clear_amazon_bucket
 from amazon import get_key as get_amazon_key
+from amazon import exists_key as exists_amazon_key
 from amazon import delete_key as delete_amazon_key
 from execution import insert_work as run_back
 from execution import insert_work as run_background
