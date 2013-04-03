@@ -18,6 +18,9 @@ quorum
 
 .. autofunction:: quorum.unload
 
+.. autofunction:: quorum.run_back
+.. autofunction:: quorum.run_background
+
 .. autofunction:: quorum.send_mail
 
 .. autofunction:: quorum.send_mail_a

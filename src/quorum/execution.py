@@ -192,6 +192,37 @@ def background(timeout = None):
     return decorator
 
 def insert_work(callable, args = [], kwargs = {}, target_time = None, callback = None):
+    """
+    Runs the provided callable (function, method, etc) in a separated
+    thread context under submission of a queue system.
+    It's possible to control the runtime for the execution with the
+    ``target_time`` argument and it's also possible to be notified
+    of the end of the execution providing a callable to the ``callback``
+    parameter.
+
+    .. warning::
+
+        The execution is not guaranteed as the system process may be
+        interrupted and resuming of the execution would not be possible.
+
+    :type callable: Function
+    :param callable: The callable object to be called in a separated\
+    execution environment.
+    :type args: List
+    :param args: The list of unnamed argument values to be send to the\
+    callable upon execution.
+    :type args: Dictionary
+    :param args: The dictionary of named argument values to be send to the\
+    callable upon execution.
+    :type target_time: float
+    :param target_time: The target timestamp value for execution, in case\
+    it's not provided the current time is used as the target one.
+    :type callback: Function
+    :param callback: The callback function to be called upon finishing the\
+    execution of the callable, in case an error (exception) on executing\
+    the callback the error is passed as error argument.
+    """
+
     background_t.insert_work(
         callable,
         args = args,
