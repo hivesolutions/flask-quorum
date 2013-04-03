@@ -12,18 +12,18 @@ body {
 }
 
 div.documentwrapper {
-    float: none;
     background: white;
+    float: none;
 }
 
 div.sphinxsidebar {
+    background: #333333;
+    color: white;
     display: block;
     float: none;
-    width: 102.5%;
     margin: 50px -30px -20px -30px;
     padding: 10px 20px;
-    background: #333;
-    color: white;
+    width: 102.5%;
 }
 
 div.sphinxsidebar h3, div.sphinxsidebar h4, div.sphinxsidebar p,
@@ -32,7 +32,7 @@ div.sphinxsidebar h3 a {
 }
 
 div.sphinxsidebar a {
-    color: #aaa;
+    color: #aaaaaa;
 }
 
 div.sphinxsidebar p.logo {
@@ -40,8 +40,8 @@ div.sphinxsidebar p.logo {
 }
 
 div.document {
-    width: 100%;
     margin: 0;
+    width: 100%;
 }
 
 div.related {
