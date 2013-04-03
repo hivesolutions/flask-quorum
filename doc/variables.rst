@@ -37,7 +37,7 @@ E-mail / SMTP
     for sending smtp messages (e-mails) under quorum.
 
     This value may contain an optional port value separated by
-    a **:** character.
+    a **':'** character.
 
 .. rst:directive:: .. SMTP_USER:: string
 
