@@ -34,7 +34,7 @@ def hello_recursive():
     
 ## Documentation
 
-Extra documentation is available under our readthedocs.com repository [here](https://quorum.readthedocs.org). Keep
+Extra documentation is available under our readthedocs.com [page](https://quorum.readthedocs.org). Keep
 in mind that some delay may exist between the current repository `master` version and the documentation.
 
 We need people to help documentation the code base if you know anyone please contact us.
