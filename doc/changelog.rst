@@ -18,5 +18,9 @@ Current Versions
     * Support for Amazon S3 using `boto <http://docs.pythonboto.org/>`_
     * Experimental documentation
 
-Old Versions
-------------
+Older Versions
+--------------
+
+0.1.5
+
+    * Initial support for ``mongodb``

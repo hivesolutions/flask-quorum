@@ -21,10 +21,17 @@
 import os
 import sys
 
+# sets the base source directory in the current
+# system path variable so that linking to code
+# documentation is possible
 current_dir = os.path.dirname(__file__)
 src_dir = current_dir + "/../src"
 src_dir = os.path.abspath(src_dir)
 sys.path.append(src_dir)
+
+# verifies if the current environment is a read
+# the docs (cloud infra-structure) one
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 extensions = ["sphinx.ext.autodoc"]
 templates_path = ["_templates"]
@@ -36,7 +43,7 @@ version = "0.1.0"
 release = "0.1.0"
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
-html_theme = "default"
+html_theme = "flasky" if on_rtd else "default"
 html_static_path = ["_static"]
 htmlhelp_basename = "quorumdoc"
 latex_elements = {}
