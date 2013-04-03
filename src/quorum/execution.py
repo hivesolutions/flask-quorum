@@ -157,7 +157,7 @@ class ExecutionThread(threading.Thread):
     def stop(self):
         self.run_flag = False
 
-    def insert_work(self, callable, args = [], kwargs = [], target_time = None, callback = None):
+    def insert_work(self, callable, args = [], kwargs = {}, target_time = None, callback = None):
         target_time = target_time or time.time()
         work = (target_time, callable, callback, args, kwargs)
         self.work_lock.acquire()

@@ -82,3 +82,7 @@ def get_key(name):
     key = boto.s3.key.Key(bucket)
     key.key = name
     return key
+
+def delete_key(name):
+    bucket = get_bucket()
+    bucket.delete_key(name)
