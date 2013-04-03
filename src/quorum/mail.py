@@ -58,13 +58,13 @@ SMTP_PASSWORD = None
 """ The password to be used in the authentication with
 the remote smtp server """
 
-def send_email(app = None, subject = "", sender = "", receivers = [], plain = None, rich = None, context = {}):
+def send_email(app = None, subject = "", sender = "", receivers = [], data = None, plain = None, rich = None, context = {}):
     app = app or base.APP
 
     # renders the (possible existing) templates in both the plain
     # and rich text object retrieving the final data to be sent
-    plain_data = plain and _render(app, plain, **context)
-    html_data = rich and _render(app, rich, **context)
+    plain_data = plain and _render(app, plain, **context) or data
+    html_data = rich and _render(app, rich, **context) or data
 
     # creates the mime's multipart object with the appropriate header
     # values set and in the alternative model (for html compatibility)
