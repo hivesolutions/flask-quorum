@@ -8,6 +8,7 @@ A small extension framework for Flask to easy a series of simple tasks.
 
    introduction
    changelog
+   variables
    api/api
    glosary
 
