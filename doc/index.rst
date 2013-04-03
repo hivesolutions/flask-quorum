@@ -6,6 +6,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+Installation
+============
+
+Install using setuptools, e.g. (within a virtualenv)::
+
+  $ easy_install quorum
+
 Indices and tables
 ==================
 
