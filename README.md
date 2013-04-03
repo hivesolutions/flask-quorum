@@ -31,6 +31,10 @@ def hello_recursive():
 ## Building
 
     sphinx-build -b html doc doc/_build
+    
+## Documentation
+
+Extra documentation is available [here](https://quorum.readthedocs.org).
 
 ## Build Automation
 
