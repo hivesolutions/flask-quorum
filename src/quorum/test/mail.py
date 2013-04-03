@@ -39,37 +39,15 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import quorum
 
-class AmazonTest(quorum.TestCase):
+class MailTest(quorum.TestCase):
 
     @quorum.secured
     def setUp(self):
-        try:
-            quorum.load(
+        try: quorum.load(
                 name = __name__
             )
-            quorum.get_amazon()
-        except:
-            self.skip()
+        except: self.skip()
 
     @quorum.secured
     def tearDown(self):
         quorum.unload()
-
-    @quorum.secured
-    def test_connect(self):
-        connection = quorum.get_amazon()
-        self.assertNotEqual(connection, None)
-
-    @quorum.secured
-    def test_bucket(self):
-        bucket = quorum.get_amazon_bucket()
-        self.assertNotEqual(bucket, None)
-
-    @quorum.secured
-    def test_key(self):
-        key = quorum.get_amazon_key("test")
-        key.set_contents_from_string("test message")
-
-        key = quorum.get_amazon_key("test")
-        value = key.get_contents_as_string()
-        self.assertEqual(value, "test message")
