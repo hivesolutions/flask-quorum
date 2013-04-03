@@ -18,7 +18,9 @@ quorum
 
 .. autofunction:: quorum.unload
 
-.. autofunction:: quorum.send_email
+.. autofunction:: quorum.send_mail
+
+.. autofunction:: quorum.send_mail_a
 
 .. py:function:: enumerate(sequence[, start=0])
 
