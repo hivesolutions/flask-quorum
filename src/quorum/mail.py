@@ -43,8 +43,8 @@ import smtplib
 import email.mime.multipart
 import email.mime.text
 
-import util
 import base
+import execution
 
 SMTP_HOST = "localhost"
 """ The host to be used in the smtp connection with
@@ -58,7 +58,7 @@ SMTP_PASSWORD = None
 """ The password to be used in the authentication with
 the remote smtp server """
 
-def send_email(app = None, subject = "", sender = "", receivers = [], data = None, plain = None, rich = None, context = {}):
+def send_mail(app = None, subject = "", sender = "", receivers = [], data = None, plain = None, rich = None, context = {}):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`
     :rst:dir:`SMTP_USER` and :rst:dir:`SMTP_PASSWORD` configurations.
@@ -70,6 +70,12 @@ def send_email(app = None, subject = "", sender = "", receivers = [], data = Non
     The ``plain`` and ``rich`` arguments allow the user to process
     a template with the context provided by the ``context`` map.
 
+    .. warning::
+
+        This is a blocking call and as such the control flow may block
+        for more that a second, if you want a non blocking (asynchronous)
+        call please use :func:`quorum.send_mail_a`.
+
     :type app: Application
     :param app: Optional application object to be used for the\
     rendering operation as the main object for flask. In case this\
@@ -80,9 +86,28 @@ def send_email(app = None, subject = "", sender = "", receivers = [], data = Non
     note that if this value is not set many spam filters will consider\
     the message as spam.
     :type sender: String
-    :param sender: The email of the sender .....
-
-
+    :param sender: The email (and name) of the sender of the email, in\
+    case this value is not set the :rst:dir:`SMTP_USER` variable is\
+    used instead.
+    :type receivers: List
+    :param receivers: The list of receivers (with email and name) for\
+    which the email will be sent.
+    :type data: String
+    :param data: The buffer containing the data to be used for both the\
+    plain and the rich text parts in case the template associated arguments\
+    are not set or in case the rendering is not successful.
+    :type plain: String
+    :param plain: Relative path to the plain text template to be used\
+    for the rendering of the email, this path must be relative to the\
+    templates folder.
+    :type rich: String
+    :param rich: Relative path to the rich text template to be used\
+    for the rendering of the email, this path must be relative to the\
+    templates folder.
+    :type context: Dictionary
+    :param context: The map containing the complete set of variables that\
+    are going to be `"exposed"` to the template rendering engine for both\
+    the ``plain`` and the ``rich``.
     """
 
     app = app or base.APP
@@ -118,7 +143,19 @@ def send_email(app = None, subject = "", sender = "", receivers = [], data = Non
         server.quit()
 
 def send_mail_a(*args, **kwargs):
-    util.run_thread(send_email, *args, **kwargs)
+    """
+    Asynchronous call to the :func:`quorum.send_mail` function that
+    is executed in a different thread from the current one. The currently
+    loaded queue system is used for the sending of the email, for more
+    information check on :func:`quorum.run_background` .
+
+    .. note::
+
+        The arguments to be send for this function are the same as the one
+        present in the original :func:`quorum.send_mail` function.
+    """
+
+    execution.insert_work(send_mail, args, kwargs)
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)
