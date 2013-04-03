@@ -47,6 +47,7 @@ import inspect
 import mail
 import route
 import model
+import amazon
 import config
 import session
 import redisdb
@@ -140,7 +141,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     should be started providing the required support for background tasks.
     :type redis_session: bool
     :param redis_session: If the session management for the flask infra-structure\
-    should be managed using a server side session support using redis.
+    should be managed using a server side session with support from redis.
     :type mongo_database: String
     :param mongo_database: The default name of the database to be used when\
     using the mongo infra-structure.
@@ -167,6 +168,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
     rabbit_url = config.conf("CLOUDAMQP_URL", None)
+    amazon_id = config.conf("AMAZON_ID", None)
+    amazon_secret = config.conf("AMAZON_SECRET", None)
+    amazon_bucket = config.conf("AMAZON_BUCKET", None)
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
@@ -176,6 +180,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if rabbit_url: rabbitmq.url = rabbit_url
+    if amazon_id: amazon.id = amazon_id
+    if amazon_secret: amazon.secret = amazon_secret
+    if amazon_bucket: amazon.bucket_name = amazon_bucket
     if smtp_host: mail.SMTP_HOST = smtp_host
     if smtp_user: mail.SMTP_USER = smtp_user
     if smtp_password: mail.SMTP_PASSWORD = smtp_password

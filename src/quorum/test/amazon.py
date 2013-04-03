@@ -37,33 +37,35 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import urlparse
+import quorum
 
-import exceptions
+class AmazonTest(quorum.TestCase):
 
-try: import pika
-except: pika = None
+    @quorum.secured
+    def setUp(self):
+        try:
+            quorum.load(
+                name = __name__,
+                mongo_database = "test"
+            )
+            quorum.get_amazon()
+        except: self.skip()
 
-connection = None
-""" The global wide connection to the rabbit mq server
-that is meant to be used across sessions """
+    @quorum.secured
+    def test_connect(self):
+        connection = quorum.get_amazon()
+        self.assertNotEqual(connection, None)
 
-url = "amqp://localhost//"
-""" The global variable containing the url to be used
-for the connection with the service """
+    @quorum.secured
+    def test_bucket(self):
+        bucket = quorum.get_amazon_bucket()
+        self.assertNotEqual(bucket, None)
 
-def get_connection():
-    global connection
-    if pika == None: raise exceptions.ModuleNotFound("pika")
-    if connection: return connection
-    url_p = urlparse.urlparse(url)
-    parameters = pika.ConnectionParameters(
-        host = url_p.hostname,
-        virtual_host = url_p.path[1:],
-        credentials = pika.PlainCredentials(url_p.username, url_p.password)
-    )
-    connection = pika.BlockingConnection(parameters)
-    return connection
+    @quorum.secured
+    def test_key(self):
+        key = quorum.get_amazon_key("test")
+        key.set_contents_from_string("test message")
 
-def properties(*args, **kwargs):
-    return pika.BasicProperties(*args, **kwargs)
+        key = quorum.get_amazon_key("test")
+        value = key.get_contents_as_string()
+        self.assertEqual(value, "test message")

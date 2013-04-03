@@ -37,33 +37,48 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import urlparse
-
 import exceptions
 
-try: import pika
-except: pika = None
+try: import boto
+except: boto = None
 
 connection = None
-""" The global wide connection to the rabbit mq server
+""" The global wide connection to the amazon server
 that is meant to be used across sessions """
 
-url = "amqp://localhost//"
-""" The global variable containing the url to be used
-for the connection with the service """
+bucket = None
+""" The global bucket reference to be used to create
+new key values and to retrieve existing ones, only one
+bucket exists for a given quorum diffusion scope """
+
+id = None
+""" The id of the client that is going to be used in the
+connections to be established to the amazon servers """
+
+secret = None
+""" The secret of the client that is going to be used in the
+connections to be established to the amazon servers """
+
+bucket_name = None
+""" The name of the bucket to be used to create and retrieve
+keys from the amazon services """
 
 def get_connection():
     global connection
-    if pika == None: raise exceptions.ModuleNotFound("pika")
+    if boto == None: raise exceptions.ModuleNotFound("boto")
     if connection: return connection
-    url_p = urlparse.urlparse(url)
-    parameters = pika.ConnectionParameters(
-        host = url_p.hostname,
-        virtual_host = url_p.path[1:],
-        credentials = pika.PlainCredentials(url_p.username, url_p.password)
-    )
-    connection = pika.BlockingConnection(parameters)
+    connection = boto.connect_s3(id, secret)
     return connection
 
-def properties(*args, **kwargs):
-    return pika.BasicProperties(*args, **kwargs)
+def get_bucket():
+    global bucket
+    connection = get_connection()
+    if bucket: return bucket
+    bucket = connection.get_bucket(bucket_name)
+    return bucket
+
+def get_key(name):
+    bucket = get_bucket()
+    key = boto.s3.key.Key(bucket)
+    key.key = name
+    return key

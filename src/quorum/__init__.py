@@ -35,6 +35,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import acl
+import amazon
 import base
 import config
 import daemon
@@ -76,6 +77,9 @@ from unit_test import *
 from util import *
 from validation import *
 
+from amazon import get_connection as get_amazon
+from amazon import get_bucket as get_amazon_bucket
+from amazon import get_key as get_amazon_key
 from execution import insert_work as run_back
 from execution import insert_work as run_background
 from mongodb import get_connection as get_mongo
