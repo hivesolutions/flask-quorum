@@ -120,6 +120,11 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     Initial loader function responsible for the overriding of
     the flask loading system and for the loading of configuration.
 
+    .. note::
+
+        This function should be called inside you main app file failure
+        to do so may result in unexpected behavior.
+
     :type app: Application
     :param app: The optional flask application object to be used\
     in the loading of quorum (useful for self managed apps).
@@ -144,7 +149,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     files created by the logging sub-module.
     :type models: Module
     :param models: The module containing the complete set of model classes to\
-    be used by the data infra-structure (eg: `mongo`).
+    be used by the data infra-structure (eg: ``mongo``).
     :rtype: Application
     :return: The application that is used by the loaded quorum environment in\
     case one was provided that is retrieved, otherwise the newly created one is\

@@ -6,7 +6,10 @@ A small extension framework for Flask to easy a series of simple tasks.
 .. toctree::
    :maxdepth: 2
    
+   introduction
+   changelog
    api/api
+   glosary
 
 Installation
 ============
