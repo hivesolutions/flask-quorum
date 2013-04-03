@@ -64,6 +64,6 @@ texinfo_documents = [(
     u"Quorum Documentation",
     u"Hive Solutions Lda.",
     "Quorum",
-    "One line description of project.",
+    "An extension to flask for, ssl, acl, etc.",
     "Miscellaneous"
 )]
