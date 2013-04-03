@@ -119,9 +119,9 @@ class ExecutionThread(threading.Thread):
                     # retrieves the current work tuple to
                     # be used and executes it in case the
                     # time has passed (should be executed)
-                    _time, callable, callback = self.work_list[0]
+                    _time, callable, callback, args, kwargs = self.work_list[0]
                     if _time < current_time:
-                        execution_list.append((callable, callback))
+                        execution_list.append((callable, callback, args, kwargs))
                         heapq.heappop(self.work_list)
                     else:
                         break
@@ -132,7 +132,7 @@ class ExecutionThread(threading.Thread):
 
             # iterates over all the "callables" in the execution
             # list to execute their operations
-            for callable, callback in execution_list:
+            for callable, callback, args, kwargs in execution_list:
                 # sets the initial (default) value for the error
                 # variable that controls the result of the execution
                 error = None
@@ -140,7 +140,7 @@ class ExecutionThread(threading.Thread):
                 # executes the "callable" and logs the error in case the
                 # execution fails (must be done to log the error) then
                 # sets the error flag with the exception variable
-                try: callable()
+                try: callable(*args, **kwargs)
                 except BaseException, exception:
                     error = exception
                     log.warning(str(exception) + "\n")
@@ -157,9 +157,9 @@ class ExecutionThread(threading.Thread):
     def stop(self):
         self.run_flag = False
 
-    def insert_work(self, callable, target_time = None, callback = None):
+    def insert_work(self, callable, args = [], kwargs = [], target_time = None, callback = None):
         target_time = target_time or time.time()
-        work = (target_time, callable, callback)
+        work = (target_time, callable, callback, args, kwargs)
         self.work_lock.acquire()
         try: heapq.heappush(self.work_list, work)
         finally: self.work_lock.release()
@@ -191,9 +191,11 @@ def background(timeout = None):
 
     return decorator
 
-def insert_work(callable, target_time = None, callback = None):
+def insert_work(callable, args = [], kwargs = {}, target_time = None, callback = None):
     background_t.insert_work(
         callable,
+        args = args,
+        kwargs = kwargs,
         target_time = target_time,
         callback = callback
     )
