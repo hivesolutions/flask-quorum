@@ -58,7 +58,7 @@ SMTP_PASSWORD = None
 """ The password to be used in the authentication with
 the remote smtp server """
 
-def send_mail(app = None, subject = "", sender = "", receivers = [], data = None, plain = None, rich = None, context = {}):
+def send_mail(app = None, subject = "", sender = None, receivers = [], data = None, plain = None, rich = None, context = {}):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`
     :rst:dir:`SMTP_USER` and :rst:dir:`SMTP_PASSWORD` configurations.
@@ -111,6 +111,10 @@ def send_mail(app = None, subject = "", sender = "", receivers = [], data = None
     """
 
     app = app or base.APP
+
+    # sets the sender with the smtp user value in case no values
+    # has been provided (expected behavior)
+    sender = sender or SMTP_USER
 
     # renders the (possible existing) templates in both the plain
     # and rich text object retrieving the final data to be sent
