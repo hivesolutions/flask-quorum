@@ -59,6 +59,32 @@ SMTP_PASSWORD = None
 the remote smtp server """
 
 def send_email(app = None, subject = "", sender = "", receivers = [], data = None, plain = None, rich = None, context = {}):
+    """
+    Sends an email message using the provided ``SMTP_HOST``,
+    ``SMTP_USER`` and  ``SMTP_PASSWORD`` configurations.
+
+    The email message is sent under the ``alternative`` mime
+    type so that both the plain text and the rich text (html)
+    parts are sent in the same message.
+
+    The ``plain`` and ``rich`` arguments allow the user to process
+    a template with the context provided by the ``context`` map.
+
+    :type app: Application
+    :param app: Optional application object to be used for the\
+    rendering operation as the main object for flask. In case this\
+    value is not provided the global :attr:`quorum.APP` value is\
+    used instead (fallback).
+    :type subject: String
+    :param subject: The mime subject to be sent with this message,\
+    note that if this value is not set many spam filters will consider\
+    the message as spam.
+    :type sender: String
+    :param sender: The email of the sender .....
+
+
+    """
+
     app = app or base.APP
 
     # renders the (possible existing) templates in both the plain
