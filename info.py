@@ -37,38 +37,12 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import os
-import setuptools
-
-import info
-
-setuptools.setup(
-    name = info.NAME,
-    version = info.VERSION,
-    author = info.AUTHOR,
-    author_email = info.EMAIL,
-    description = info.DESCRIPTION,
-    license = info.LICENSE,
-    keywords = info.KEYWORDS,
-    url = info.URL,
-    zip_safe = True,
-    packages = [
-        "quorum"
-    ],
-    test_suite = "quorum.test",
-    package_dir = {
-        "" : os.path.normpath("src")
-    },
-    install_requires = [
-        "flask"
-    ],
-    classifiers = [
-        "Development Status :: 3 - Alpha",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7"
-    ]
-)
+NAME = "quorum"
+VERSION = "0.1.7"
+AUTHOR = "Hive Solutions Lda."
+EMAIL = "development@hive.pt"
+DESCRIPTION = "Quorum Extensions for Flask"
+LICENSE = "GNU General Public License (GPL), Version 3"
+KEYWORDS = "quorum flask"
+URL = "http://quorum.com"
+COPYRIGHT = "2008-2012 Hive Solutions Lda."

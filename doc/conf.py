@@ -21,10 +21,21 @@
 import os
 import sys
 
+# retrieves the current directory name from
+# the current file, this is going to be used
+# in the inclusion of new directories in the path
+current_dir = os.path.dirname(__file__)
+
 # sets the base source directory in the current
 # system path variable so that linking to code
 # documentation is possible
-current_dir = os.path.dirname(__file__)
+root_dir = current_dir + "/.."
+root_dir = os.path.abspath(root_dir)
+sys.path.append(root_dir)
+
+# sets the base source directory in the current
+# system path variable so that linking to code
+# documentation is possible
 src_dir = current_dir + "/../src"
 src_dir = os.path.abspath(src_dir)
 sys.path.append(src_dir)
@@ -39,14 +50,16 @@ sys.path.append(themes_dir)
 # the docs (cloud infra-structure) one
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
+import info
+
 extensions = ["sphinx.ext.autodoc"]
 templates_path = ["_templates"]
 source_suffix = ".rst"
 master_doc = "index"
-project = u"Quorum"
-copyright = u"2013, Hive Solutions Lda."
-version = "0.1.0"
-release = "0.1.0"
+project = info.NAME
+copyright = info.COPYRIGHT
+version = info.VERSION
+release = info.VERSION
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 html_theme = "kr"
@@ -57,27 +70,27 @@ latex_elements = {}
 latex_documents = [
     (
         "index",
-        "Quorum.tex",
-        u"Quorum Documentation",
-        u"Hive Solutions Lda.",
+        info.NAME + ".tex",
+        info.NAME + " documentation",
+        info.AUTHOR,
         "manual"
     )
 ]
 man_pages = [
     (
         "index",
-        "quorum",
-        u"Quorum Documentation",
-        [u"Hive Solutions Lda."],
+        info.NAME,
+        info.NAME + " documentation",
+        [info.AUTHOR],
         1
     )
 ]
 texinfo_documents = [(
     "index",
-    "Quorum",
-    u"Quorum Documentation",
-    u"Hive Solutions Lda.",
-    "Quorum",
-    "An extension to flask for, ssl, acl, etc.",
+    info.NAME,
+    info.NAME + " documentation",
+    info.AUTHOR,
+    info.NAME,
+    info.DESCRIPTION,
     "Miscellaneous"
 )]
