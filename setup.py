@@ -53,7 +53,8 @@ setuptools.setup(
     url = info.URL,
     zip_safe = True,
     packages = [
-        "quorum"
+        "quorum",
+        "quorum.test"
     ],
     test_suite = "quorum.test",
     package_dir = {
