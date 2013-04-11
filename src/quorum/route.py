@@ -59,9 +59,9 @@ def route(*args, **kwargs):
     # creates the "new" route decorator maker method that should
     # override the old one and create a new decorator that
     # serializes all the unhandled exceptions as json
-    def _route(functione):
+    def _route(function):
         def _decorator(*args, **kwargs):
-            try: return functione(*args, **kwargs)
+            try: return function(*args, **kwargs)
             except exceptions.OperationalError, exception:
                 return flask.Response(
                     json.dumps({
