@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import sys
 import json
 import flask
 import atexit
@@ -251,7 +252,10 @@ def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     logger.setLevel(level)
 
     stream_handler = logging.StreamHandler()
-    file_handler = path and logging.FileHandler(path)
+
+    try: file_handler = path and logging.FileHandler(path)
+    except: sys.stderr.write("Problem starting logger for file '%'" % path)
+
     stream_handler and logger.addHandler(stream_handler)
     file_handler and logger.addHandler(file_handler)
 
