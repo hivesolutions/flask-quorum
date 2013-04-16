@@ -253,8 +253,11 @@ def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
 
     stream_handler = logging.StreamHandler()
 
-    try: file_handler = path and logging.FileHandler(path)
-    except: sys.stderr.write("Problem starting logger for file '%'" % path)
+    try:
+        file_handler = path and logging.FileHandler(path)
+    except:
+        sys.stderr.write("Problem starting logging for file '%'" % path)
+        file_handler = None
 
     stream_handler and logger.addHandler(stream_handler)
     file_handler and logger.addHandler(file_handler)
