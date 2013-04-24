@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
+import typesf
 import exceptions
 
 try: import pymongo
@@ -99,7 +100,11 @@ def drop_db():
         db.drop_collection(name)
 
 def dumps(*args):
-    return json.dumps(default = bson.json_util.default, *args)
+    return json.dumps(default = serialize, *args)
+
+def serialize(obj):
+    if isinstance(obj, typesf.Type): return obj.json_v()
+    return bson.json_util.default(obj)
 
 def _get_connection(url):
     global connection

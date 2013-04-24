@@ -42,7 +42,12 @@ import types
 import base64
 import tempfile
 
-class File(object):
+class Type(object):
+
+    def json_v(self):
+        return str(self)
+
+class File(Type):
 
     def __init__(self, file):
         file_t = type(file)
@@ -111,3 +116,77 @@ class File(object):
         self.data = data
         self.data_b64 = base64.b64encode(data)
         self.size = len(data)
+
+def reference(target, name = None):
+    name = name or "id"
+    meta = getattr(target, name)
+    type = meta.get("type", str)
+
+    class Reference(Type):
+        def __init__(self, id):
+            if isinstance(id, Reference): self.build_i(id)
+            else: self.build(id)
+
+        def __getattr__(self, name):
+            self.resolve()
+            exists = hasattr(self._object, name)
+            if exists: return getattr(self._object, name)
+            raise AttributeError("'%s' not found" % name)
+
+        def build(self, id):
+            self.id = id
+            self._object = None
+
+        def build_i(self, reference):
+            self.id = reference.id
+            self._object = reference._object
+
+        def json_v(self):
+            return type(self.id)
+
+        def resolve(self):
+            if self._object: return self._object
+
+            if not self.id:
+                self.object = None
+                return self.object
+
+            kwargs = {
+                name : self.id
+            }
+            self._object = target.get(**kwargs)
+            return self._object
+
+    return Reference
+
+def references(target, name = None):
+    name = name or "id"
+    meta = getattr(target, name)
+    type = meta.get("type", str)
+    reference_c = reference(target, name = name)
+
+    class References(Type):
+        def __init__(self, ids):
+            if isinstance(ids, References): self.build_i(ids)
+            else: self.build(ids)
+
+        def build(self, ids):
+            self.ids = ids
+            self.objects = []
+
+            self.set_ids(self.ids)
+
+        def build_i(self, references):
+            self.ids = references.ids
+            self.objects = references.objects
+
+        def set_ids(self, ids):
+            ids = ids or []
+            for id in ids:
+                object = reference_c(id)
+                self.objects.append(object)
+
+        def json_v(self):
+            return [object.json_v() for object in self.objects]
+
+    return References

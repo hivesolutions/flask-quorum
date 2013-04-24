@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import flask
+import traceback
 
 import base
 import exceptions
@@ -63,30 +64,42 @@ def route(*args, **kwargs):
         def _decorator(*args, **kwargs):
             try: return function(*args, **kwargs)
             except exceptions.OperationalError, exception:
+                formatted = traceback.format_exc()
+                lines = formatted.splitlines()
+
                 return flask.Response(
                     json.dumps({
                         "exception" : {
                             "name" : exception.__class__.__name__,
                             "message" : exception.message,
-                            "code" : exception.code
+                            "code" : exception.code,
+                            "traceback" : lines
                         }
                     }),
                     status = exception.code,
                     mimetype = "application/json"
                 )
             except BaseException, exception:
+                formatted = traceback.format_exc()
+                lines = formatted.splitlines()
+
                 return flask.Response(
                     json.dumps({
                         "exception" : {
                             "name" : exception.__class__.__name__,
                             "message" : str(exception),
-                            "code" : 500
+                            "code" : 500,
+                            "traceback" : lines
                         }
                     }),
                     status = 500,
                     mimetype = "application/json"
                 )
 
+        # updates the decorator name with the function name so that
+        # the reverse routing maps are correctly updated with the
+        # original names (otherwise a problem would occur in werkzeug)
+        _decorator.__name__ = function.__name__
         return decorator(_decorator)
 
     return _route
