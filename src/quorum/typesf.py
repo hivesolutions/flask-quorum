@@ -42,7 +42,7 @@ import types
 import base64
 import tempfile
 
-class File:
+class File(object):
 
     def __init__(self, file):
         file_t = type(file)

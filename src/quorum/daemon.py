@@ -43,7 +43,7 @@ import time
 import atexit
 import signal
 
-class Daemon:
+class Daemon(object):
     """
     A generic daemon class that provides the general
     daemon capabilities. In order to inherit the daemon

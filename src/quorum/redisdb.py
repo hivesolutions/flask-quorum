@@ -53,7 +53,7 @@ url = None
 """ The global variable containing the url to be used
 for the connection with the service """
 
-class RedisMemory:
+class RedisMemory(object):
     """
     "Local" in memory stub object that simulates
     the redis interface, useful for debugging.
