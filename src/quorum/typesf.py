@@ -42,6 +42,8 @@ import types
 import base64
 import tempfile
 
+import util
+
 class Type(object):
 
     def json_v(self):
@@ -171,6 +173,10 @@ def references(target, name = None):
             else: self.build(ids)
 
         def build(self, ids):
+            is_valid = not ids == None
+            is_iterable = util.is_iterable(ids)
+            if is_valid and not is_iterable: ids = [ids]
+
             self.ids = ids
             self.objects = []
 

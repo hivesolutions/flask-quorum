@@ -39,6 +39,7 @@ import amazon
 import base
 import config
 import daemon
+import defines
 import errors
 import exceptions
 import execution
@@ -64,6 +65,7 @@ from acl import *
 from base import *
 from config import *
 from daemon import *
+from defines import *
 from errors import *
 from exceptions import *
 from execution import *

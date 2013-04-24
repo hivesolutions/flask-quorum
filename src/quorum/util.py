@@ -43,6 +43,7 @@ import flask
 import string
 import random
 import thread
+import defines
 
 ALIAS = {
     "start_record" : "skip",
@@ -57,6 +58,9 @@ FIND_TYPES = {
 }
 """ The map associating the various find fields with
 their respective types """
+
+def is_iterable(object):
+    return type(object) in defines.ITERABLES
 
 def request_json(request = None):
     request = request or flask.request
@@ -95,7 +99,10 @@ def get_object(object = None, alias = False, find = False):
 
     for name, value in data_j.items(): object[name] = value
     for name, value in flask.request.files.items(): object[name] = value
-    for name, value in flask.request.form.items(): object[name] = value
+    for name, value in flask.request.form.items():
+        value_l = flask.request.form.getlist(name)
+        value = len(value_l) > 1 and value_l or value
+        object[name] = value
     for name, value in flask.request.args.items(): object[name] = value
 
     alias and resolve_alias(object)
