@@ -40,6 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import copy
 import json
 import flask
+import types
 import string
 import random
 import thread
@@ -99,11 +100,8 @@ def get_object(object = None, alias = False, find = False):
 
     for name, value in data_j.items(): object[name] = value
     for name, value in flask.request.files.items(): object[name] = value
-    for name, value in flask.request.form.items():
-        value_l = flask.request.form.getlist(name)
-        value = len(value_l) > 1 and value_l or value
-        object[name] = value
-    for name, value in flask.request.args.items(): object[name] = value
+    for name, value in flask.request.form_s.items(): object[name] = value
+    for name, value in flask.request.args_s.items(): object[name] = value
 
     alias and resolve_alias(object)
     find and find_types(object)
@@ -124,6 +122,59 @@ def find_types(object):
             continue
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
+
+def load_form(form):
+    # creates the map that is going to hold the "structured"
+    # version of the form with key value associations
+    form_s = {}
+
+    # iterates over all the form items to parse their values
+    # and populate the form structure version of it, note that
+    # for the sake of parsing the order of the elements in the
+    # for is important
+    for name, value in form.items():
+        # splits the complete name into its various components
+        # and retrieves both the final (last) element and the
+        # various partial elements from it
+        names = name.split(".")
+        final = names[-1]
+        partials = names[:-1]
+
+        # sets the initial "struct" reference as the form structured
+        # that has just been created (initial structure for iteration)
+        # then starts the iteration to retrieve or create the various
+        # intermediate structures
+        struct = form_s
+        for _name in partials:
+            _struct = struct.get(_name, {})
+            struct[_name] = _struct
+            struct = _struct
+
+        # checks if the final attribute name is set in the "struct" and in
+        # case it's it may need to be converted into a list so that the
+        # "new" value may be appended to id
+        exists = final in struct
+        if exists:
+            # retrieves the final value as the previous value and retrieves
+            # the data type from it so that it may be verified
+            previous = struct[final]
+            previous_t = type(previous)
+
+            # checks if the type of the previous field is list an in case it's
+            # not converts it into a list and then appends the value to it, then
+            # sets the previous value reference as the reference to the current value
+            previous = previous if previous_t == types.ListType else [previous]
+            previous.append(value)
+            value = previous
+
+        # sets the current value in the currently loaded "struct" element
+        # so that the reference gets properly updated
+        struct[final] = value
+
+    # retrieves the final "normalized" form structure containing
+    # a series of chained maps resulting from the parsing of the
+    # linear version of the attribute names
+    return form_s
 
 def run_thread(function, *args, **kwargs):
     return thread.start_new_thread(function, args, kwargs)

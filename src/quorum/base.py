@@ -45,6 +45,7 @@ import atexit
 import logging
 import inspect
 
+import util
 import mail
 import route
 import model
@@ -191,6 +192,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
     if models: setup_models(models)
+    app.before_request(before_request)
     app.request_class = request.Request
     app.debug = debug
     app.secret_key = secret_key
@@ -272,6 +274,10 @@ def get_log(app = None):
     app = app or APP
     is_custom = hasattr(app, "logger_q")
     return app.logger_q if is_custom else app.logger
+
+def before_request():
+    flask.request.args_s = util.load_form(flask.request.args)
+    flask.request.form_s = util.load_form(flask.request.form)
 
 def start_execution():
     # creates the thread that it's going to be used to
