@@ -106,7 +106,7 @@ def route(*args, **kwargs):
             result_t = type(result)
             if isinstance(result, model.Model):
                 result = flask.Response(
-                    result.dumps(),
+                    mongodb.dumps(result),
                     mimetype = "application/json"
                 )
             elif mongodb.is_mongo(result):
