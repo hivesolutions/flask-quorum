@@ -40,7 +40,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import copy
 import json
 import flask
-import types
 import string
 import random
 import thread
@@ -129,10 +128,18 @@ def load_form(form):
     form_s = {}
 
     # iterates over all the form items to parse their values
-    # and populate the form structure version of it, note that
+    # and populate the form structured version of it, note that
     # for the sake of parsing the order of the elements in the
-    # for is important
-    for name, value in form.items():
+    # form is relevant, in case there's multiple values for the
+    # same name they are considered as a list, otherwise they are
+    # considered as a single value
+    for name in form:
+        # retrieves the value (as a list) for the current name, then
+        # in case the sequence is larger than one element sets it,
+        # otherwise retrieves and sets the value as the first element
+        value = form.getlist(name)
+        value = value[0] if len(value) == 1 else value
+
         # splits the complete name into its various components
         # and retrieves both the final (last) element and the
         # various partial elements from it
@@ -149,23 +156,6 @@ def load_form(form):
             _struct = struct.get(_name, {})
             struct[_name] = _struct
             struct = _struct
-
-        # checks if the final attribute name is set in the "struct" and in
-        # case it's it may need to be converted into a list so that the
-        # "new" value may be appended to id
-        exists = final in struct
-        if exists:
-            # retrieves the final value as the previous value and retrieves
-            # the data type from it so that it may be verified
-            previous = struct[final]
-            previous_t = type(previous)
-
-            # checks if the type of the previous field is list an in case it's
-            # not converts it into a list and then appends the value to it, then
-            # sets the previous value reference as the reference to the current value
-            previous = previous if previous_t == types.ListType else [previous]
-            previous.append(value)
-            value = previous
 
         # sets the current value in the currently loaded "struct" element
         # so that the reference gets properly updated

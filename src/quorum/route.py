@@ -39,9 +39,11 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import flask
+import types
 import traceback
 
 import base
+import mongodb
 import exceptions
 
 def route(*args, **kwargs):
@@ -62,7 +64,7 @@ def route(*args, **kwargs):
     # serializes all the unhandled exceptions as json
     def _route(function):
         def _decorator(*args, **kwargs):
-            try: return function(*args, **kwargs)
+            try: result = function(*args, **kwargs)
             except exceptions.OperationalError, exception:
                 formatted = traceback.format_exc()
                 lines = formatted.splitlines()
@@ -95,6 +97,23 @@ def route(*args, **kwargs):
                     status = 500,
                     mimetype = "application/json"
                 )
+
+            # retrieves the type for the result that was returned from the
+            # concrete method and in case the result is either a mongo object,
+            # a dictionary or a sequence it's serialized as json, then returns
+            # the result to the caller method
+            result_t = type(result)
+            if mongodb.is_mongo(result):
+                result = flask.Response(
+                    mongodb.dumps(result),
+                    mimetype = "application/json"
+                )
+            elif result_t in (types.DictType, types.ListType, types.TupleType):
+                result = flask.Response(
+                    mongodb.dumps(result),
+                    mimetype = "application/json"
+                )
+            return result
 
         # updates the decorator name with the function name so that
         # the reverse routing maps are correctly updated with the
