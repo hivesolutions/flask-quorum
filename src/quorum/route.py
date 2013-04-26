@@ -43,6 +43,7 @@ import types
 import traceback
 
 import base
+import model
 import mongodb
 import exceptions
 
@@ -103,12 +104,17 @@ def route(*args, **kwargs):
             # a dictionary or a sequence it's serialized as json, then returns
             # the result to the caller method
             result_t = type(result)
-            if mongodb.is_mongo(result):
+            if isinstance(result, model.Model):
+                result = flask.Response(
+                    result.dumps(),
+                    mimetype = "application/json"
+                )
+            elif mongodb.is_mongo(result):
                 result = flask.Response(
                     mongodb.dumps(result),
                     mimetype = "application/json"
                 )
-            elif result_t in (types.DictType, types.ListType, types.TupleType):
+            elif result_t in (types.DictType, types.ListType, types.TupleType, types.NoneType):
                 result = flask.Response(
                     mongodb.dumps(result),
                     mimetype = "application/json"
