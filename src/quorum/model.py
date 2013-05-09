@@ -38,20 +38,22 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import copy
+import types
 
 import util
-import types
 import mongodb
 import validation
 import exceptions
 
 TYPE_DEFAULTS = {
-    str : "",
-    int : 0,
-    float : 0.0
+    str : None,
+    int : None,
+    float : None
 }
 """ The default values to be set when a type
-conversion fails for the provided string value """
+conversion fails for the provided string value
+the resulting value may be returned when a validation
+fails an so it must be used carefully """
 
 class Model(object):
 
@@ -210,8 +212,12 @@ class Model(object):
             if value == None: continue
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
-            try: model[name] = _type(value) if _type else value
-            except: model[name] = TYPE_DEFAULTS.get(_type, None)
+            try:
+                model[name] = _type(value) if _type else value
+            except:
+                default = TYPE_DEFAULTS.get(_type, None)
+                default = definition.get("default", default)
+                model[name] = default
 
         return model
 
@@ -469,6 +475,10 @@ class Model(object):
             for _safe in safes:
                 safe[_safe] = True
 
+        # retrieves the object loading it from all the available
+        # sources and then iterates over all the of the model
+        # values setting the values in the current intance's model
+        # then runs the type casting/conversion operation in it
         model = model or util.get_object()
         for name, value in model.items():
             is_safe = safe.get(name, False)

@@ -198,6 +198,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route
+    app.jinja_options = dict(
+        finalize = finalize
+    )
     APP = app
 
     return app
@@ -274,6 +277,13 @@ def get_log(app = None):
     app = app or APP
     is_custom = hasattr(app, "logger_q")
     return app.logger_q if is_custom else app.logger
+
+def finalize(value):
+    # returns an empty string as value representation
+    # for unset values, this is the default representation
+    # to be used in the template engine
+    if value == None: return ""
+    return value
 
 def before_request():
     flask.request.args_s = util.load_form(flask.request.args)

@@ -163,8 +163,6 @@ def reference(target, name = None):
 
 def references(target, name = None):
     name = name or "id"
-    meta = getattr(target, name)
-    type = meta.get("type", str)
     reference_c = reference(target, name = name)
 
     class References(Type):
@@ -189,6 +187,7 @@ def references(target, name = None):
         def set_ids(self, ids):
             ids = ids or []
             for id in ids:
+                if id == "" or id == None: continue
                 object = reference_c(id)
                 self.objects.append(object)
 
