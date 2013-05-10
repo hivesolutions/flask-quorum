@@ -78,7 +78,7 @@ class ExportManager(object):
         self.single = single
         self.multiple = multiple
 
-    def import_data(self, file_path, policy = JOIN):
+    def import_data(self, file_path, policy = IGNORE):
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
