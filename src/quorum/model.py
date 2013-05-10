@@ -121,6 +121,8 @@ class Model(object):
             ("sort", None)
         ))
 
+        cls._find_s(kwargs)
+
         collection = cls._collection()
         models = [cls.types(model) for model in collection.find(
             kwargs, skip = skip, limit = limit, sort = sort
@@ -382,6 +384,47 @@ class Model(object):
         return immutables
 
     @classmethod
+    def default(cls):
+        # in case the default are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_default" in cls.__dict__: return cls._default
+
+        # retrieves the complete hierarchy of the model to be used
+        # for the retrieval of the lowest possible default value for
+        # the current class hierarchy
+        hierarchy = cls.hierarchy()
+
+        # creates the value that is going to store the default value for
+        # the current class (in case there's one)
+        default = None
+
+        # iterates over all the classes in the current hierarchy, note
+        # that the iteration is done from the leaf nodes to the root nodes
+        # so that the lowest possible default value is found
+        for _cls in reversed(hierarchy):
+            for name in _cls.__dict__:
+                # retrieves the definition map for the current name an in
+                # case the default value is set considers it default otherwise
+                # continues the loop, nothing to be done
+                _definition = cls.definition_n(name)
+                is_default = _definition.get("default", False)
+                if not is_default: continue
+
+                # in case the default value is found sets its name in the
+                # current default value and then breaks the loop
+                default = name
+                break
+
+            # in case the default value has been found must break the external
+            # loop as nothing else remains to be found
+            if default: break
+
+        # saves the default value (name) under the class and then
+        # returns the sequence to the caller method
+        cls._default = default
+        return default
+
+    @classmethod
     def _build(cls, model, map):
         pass
 
@@ -414,6 +457,18 @@ class Model(object):
             _attrs.append(value)
 
         return _attrs
+
+    @classmethod
+    def _find_s(cls, kwargs):
+        if not "find_s" in kwargs: return
+
+        default = cls.default()
+        find_s = kwargs["find_s"]
+        if default:
+            kwargs[default] = {
+                "$regex" : find_s + ".*"
+            }
+        del kwargs["find_s"]
 
     @classmethod
     def _bases(cls):
