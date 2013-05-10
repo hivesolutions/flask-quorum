@@ -460,15 +460,48 @@ class Model(object):
 
     @classmethod
     def _find_s(cls, kwargs):
+        # in case the find string is currently not defined in the
+        # named arguments map returns immediately as nothing is
+        # meant to be done on this method
         if not "find_s" in kwargs: return
 
-        default = cls.default()
+        # retrieves the find string into a local variable, then
+        # removes the find string from the named arguments map
+        # so that it's not going to be erroneously used by the
+        # underlying find infra-structure
         find_s = kwargs["find_s"]
-        if default:
-            kwargs[default] = {
-                "$regex" : find_s + ".*"
-            }
         del kwargs["find_s"]
+
+        # retrieves the "name" of the attribute that is considered
+        # to be the default (representation) for the model in case
+        # there's none returns immediately, as it's not possible
+        # to proceed with the filter creation
+        default = cls.default()
+        if not default: return
+
+        # retrieves the definition for the default attribute and uses
+        # it to retrieve it's target data type, defaulting to the
+        # string type in case none is defined in the schema
+        definition = cls.definition_n(default)
+        default_t = definition.get("type", str)
+
+        try:
+            # in case the target date type for the default field is
+            # string the right labeled wildcard regex is used for the
+            # search otherwise the search value to be used is the exact
+            # match of the value (required type conversion)
+            if default_t == str: find_v = {"$regex" : find_s + ".*"}
+            else: find_v = default_t(find_s)
+        except:
+            # in case there's an error in the conversion for
+            # the target type value sets the search value as
+            # invalid (not going to be used in filter)
+            find_v = None
+
+        # in case there's a valid find value to be used sets
+        # the value in the named arguments map to be used by
+        # the underlying find infra-structure
+        if not find_v == None: kwargs[default] = find_v
 
     @classmethod
     def _bases(cls):
