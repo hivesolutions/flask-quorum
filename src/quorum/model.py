@@ -355,6 +355,33 @@ class Model(object):
         return safes
 
     @classmethod
+    def immutables(cls):
+        # in case the immutables are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_immutables" in cls.__dict__: return cls._immutables
+
+        # creates the list that will hold the various names that are
+        # meant to be immutable values in the data source
+        immutables = []
+
+        # retrieves the map containing the definition of the class with
+        # the name of the fields associated with their definition
+        definition = cls.definition()
+
+        # iterate over all the names in the definition to retrieve their
+        # definition and check if their are of type immutable
+        for name in definition:
+            _definition = cls.definition_n(name)
+            is_immutable = _definition.get("immutable", False)
+            if not is_immutable: continue
+            immutables.append(name)
+
+        # saves the immutables list under the class and then
+        # returns the sequence to the caller method
+        cls._immutables = immutables
+        return immutables
+
+    @classmethod
     def _build(cls, model, map):
         pass
 
@@ -517,9 +544,11 @@ class Model(object):
         is_new and self.pre_create()
         not is_new and self.pre_update()
 
-        # filters the values that are present in the current
-        # model so that only those are stored in
-        model = self._filter()
+        # filters the values that are present in the current model
+        # so that only the valid ones are stored in, invalid values
+        # are going to be removed, note that if the operation is an
+        # update operation the "immutable rules" also apply
+        model = self._filter(immutables_a = not is_new)
 
         # in case the current model is not new must create a new
         # model instance and remove the main identifier from it
@@ -643,7 +672,7 @@ class Model(object):
         # should finish the operations from a correct validation
         self.post_validate()
 
-    def _filter(self):
+    def _filter(self, immutables_a = False):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
         model = {}
@@ -661,6 +690,11 @@ class Model(object):
         # automatically incremented for every save operation
         increments = cls.increments()
 
+        # gather the set of elements that are considered immutables and
+        # that are not meant to be changed if the current operation to
+        # apply the filter is not a new operation (update operation)
+        immutables = cls.immutables()
+
         # iterates over all the increment fields and increments their
         # fields so that a new value is set on the model
         for name in increments: model[name] = cls._increment(name)
@@ -669,6 +703,7 @@ class Model(object):
         # that are not valid for the current class context
         for name, value in self.model.items():
             if not name in definition: continue
+            if immutables_a and name in immutables: continue
             value = value.json_v() if hasattr(value, "json_v") else value
             model[name] = value
 
