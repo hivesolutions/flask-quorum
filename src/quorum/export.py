@@ -45,6 +45,28 @@ import tempfile
 try: import bson
 except: bson = None
 
+IGNORE = 1
+""" Ignore strategy for conflict solving in the import operation
+basically this strategy skips importing a document that has the same
+key value as one that already exists in the collection """
+
+OVERWRITE = 2
+""" Strategy for conflict solving that overwrites (completely) a
+previously existing document in the data source if it has the same
+key value as the one being imported, this should be used carefully
+as it may create data loss """
+
+DUPLICATE = 3
+""" Conflict solving strategy that basically duplicates the entries
+in the data source even if they have the same key value, this may
+create a somehow inconsistent state and so must be used carefully """
+
+JOIN = 4
+""" Join strategy for conflict solving in document collision, that
+basically adds new fields or updates existing fields in a previously
+existing document, this strategy does not remove extra fields existing
+in the previous document """
+
 class ExportManager(object):
 
     db = None
@@ -56,22 +78,27 @@ class ExportManager(object):
         self.single = single
         self.multiple = multiple
 
-    def import_data(self, file_path):
+    def import_data(self, file_path, policy = JOIN):
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
 
         self._deploy_zip(file_path, temporary_path)
 
-        for name, _key in self.single:
+        for name, key in self.single:
             collection = self.db[name]
             source_path = os.path.join(single_path, "%s.json" % name)
             file = open(source_path, "rb")
             try: data = file.read()
             finally: file.close()
-            self._import_single(collection, data)
+            self._import_single(
+                collection,
+                data,
+                key = key,
+                policy = policy
+            )
 
-        for name, _key in self.multiple:
+        for name, key in self.multiple:
             source_directory = os.path.join(base_path, name)
             if not os.path.exists(source_directory): continue
 
@@ -88,7 +115,12 @@ class ExportManager(object):
 
                 data.append((value, _data))
 
-            self._import_multiple(collection, data)
+            self._import_multiple(
+                collection,
+                data,
+                key = key,
+                policy = policy
+            )
 
     def export_data(self, file_path):
         temporary_path = tempfile.mkdtemp()
@@ -119,15 +151,71 @@ class ExportManager(object):
 
         self._create_zip(file_path, temporary_path)
 
-    def _import_single(self, collection, data):
+    def _import_single(self, collection, data, key, policy = IGNORE):
+        # loads the provided json data as a sequence of key value items
+        # and then starts loading all the values into the data source
         data_s = json.loads(data)
         for _key, entity in data_s.items():
-            collection.insert(entity)
+            # retrieves the key value for the current entity to
+            # be inserted and then tries to retrieve an existing
+            # entity for the same key, to avoid duplicated entry
+            value = entity.get(key, None)
+            if value: entity_e = collection.find_one({key : value})
+            else: entity_e = None
 
-    def _import_multiple(self, collection, data):
+            # in case there's no existing entity for the same key
+            # (normal situation) only need to insert the new entity
+            # otherwise must apply the selected conflict policy for
+            # the resolution of the data source conflict
+            if not entity_e: collection.insert(entity)
+            elif policy == IGNORE: continue
+            elif policy == OVERWRITE:
+                collection.remove({key : value})
+                collection.insert(entity)
+            elif policy == DUPLICATE:
+                collection.insert(entity)
+            elif policy == JOIN:
+                if "_id" in entity: del entity["_id"]
+                collection.update({
+                    "_id" : entity_e["_id"]
+                }, {
+                    "$set" : entity
+                })
+
+    def _import_multiple(self, collection, data, key, policy = IGNORE):
+        # iterates over the complete set of data element to load
+        # the json contents and then load the corresponding entity
+        # value into the data source
         for _value, _data in data:
-            data_s = json.loads(_data)
-            collection.insert(data_s)
+            # loads the current data in iteration from the file
+            # as the entity to be loaded into the data source
+            entity = json.loads(_data)
+
+            # retrieves the key value for the current entity to
+            # be inserted and then tries to retrieve an existing
+            # entity for the same key, to avoid duplicated entry
+            value = entity.get(key, None)
+            if value: entity_e = collection.find_one({key : value})
+            else: entity_e = None
+
+            # in case there's no existing entity for the same key
+            # (normal situation) only need to insert the new entity
+            # otherwise must apply the selected conflict policy for
+            # the resolution of the data source conflict
+            if not entity_e: collection.insert(entity)
+            elif policy == IGNORE: continue
+            elif policy == OVERWRITE:
+                collection.remove({key : value})
+                collection.insert(entity)
+            elif policy == DUPLICATE:
+                collection.insert(entity)
+            elif policy == JOIN:
+                if "_id" in entity: del entity["_id"]
+                collection.update({
+                    "_id" : entity_e["_id"]
+                }, {
+                    "$set" : entity
+                })
 
     def _export_single(self, collection, key = "id"):
         entities = collection.find()
