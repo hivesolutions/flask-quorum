@@ -45,6 +45,18 @@ import mongodb
 import validation
 import exceptions
 
+RE = lambda v: [i for i in v if not i == ""]
+""" Simple lambda function that removes any
+empty element from the provided list value """
+
+BUILDERS = {
+    list : lambda v: RE(v) if type(v) == types.ListType else RE([v])
+}
+""" The map associating the various types with the
+custom builder functions to be used when applying
+the types function, this is relevant for the built-in
+types that are meant to avoid using the default constructor """
+
 TYPE_DEFAULTS = {
     str : None,
     int : None,
@@ -214,8 +226,9 @@ class Model(object):
             if value == None: continue
             definition = cls.definition_n(name)
             _type = definition.get("type", str)
+            builder = BUILDERS.get(_type, _type)
             try:
-                model[name] = _type(value) if _type else value
+                model[name] = builder(value) if builder else value
             except:
                 default = TYPE_DEFAULTS.get(_type, None)
                 default = definition.get("default", default)
