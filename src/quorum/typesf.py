@@ -146,6 +146,9 @@ def reference(target, name = None):
         def json_v(self):
             return type(self.id)
 
+        def value(self):
+            return type(self.id)
+
         def resolve(self):
             if self._object: return self._object
 
@@ -193,5 +196,8 @@ def references(target, name = None):
 
         def json_v(self):
             return [object.json_v() for object in self.objects]
+
+        def list(self):
+            return [object.value() for object in self.objects]
 
     return References
