@@ -438,6 +438,26 @@ class Model(object):
         return default
 
     @classmethod
+    def filter_merge(cls, name, filter, kwargs):
+        # retrieves a possible previous filter defined for the
+        # provided name in case it does exists must concatenate
+        # that previous value in an and statement
+        filter_p = kwargs.get(name, None)
+        if filter_p:
+            # retrieves the and references for the current arguments
+            # and appends the two filter values (current and previous)
+            # then deletes the current name reference in the arguments
+            # and updates the name value to the and value
+            filter_a = kwargs.get("$and", [])
+            filter = filter_a + [{name : filter}, {name : filter_p}]
+            del kwargs[name]
+            name = "$and"
+
+        # sets the currently defined filter structures in the keyword
+        # based arguments map for the currently defined name
+        kwargs[name] = filter
+
+    @classmethod
     def _build(cls, model, map):
         pass
 
@@ -513,8 +533,10 @@ class Model(object):
 
         # in case there's a valid find value to be used sets
         # the value in the named arguments map to be used by
-        # the underlying find infra-structure
-        if not find_v == None: kwargs[default] = find_v
+        # the underlying find infra-structure, note that the
+        # set is done using a "merge" with the previous values
+        if not find_v == None:
+            cls.filter_merge(default, find_v, kwargs)
 
     @classmethod
     def _bases(cls):
