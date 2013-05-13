@@ -50,6 +50,8 @@ RE = lambda v: [i for i in v if not i == ""]
 empty element from the provided list value """
 
 BUILDERS = {
+    unicode : lambda v: v.decode("utf-8") if\
+        type(v) == types.StringType else unicode(v),
     list : lambda v: RE(v) if type(v) == types.ListType else RE([v])
 }
 """ The map associating the various types with the
@@ -59,6 +61,7 @@ types that are meant to avoid using the default constructor """
 
 TYPE_DEFAULTS = {
     str : None,
+    unicode : None,
     int : None,
     float : None
 }
@@ -225,7 +228,7 @@ class Model(object):
             if name == "_id": continue
             if value == None: continue
             definition = cls.definition_n(name)
-            _type = definition.get("type", str)
+            _type = definition.get("type", unicode)
             builder = BUILDERS.get(_type, _type)
             try:
                 model[name] = builder(value) if builder else value
@@ -516,14 +519,14 @@ class Model(object):
         # it to retrieve it's target data type, defaulting to the
         # string type in case none is defined in the schema
         definition = cls.definition_n(default)
-        default_t = definition.get("type", str)
+        default_t = definition.get("type", unicode)
 
         try:
             # in case the target date type for the default field is
             # string the right labeled wildcard regex is used for the
             # search otherwise the search value to be used is the exact
             # match of the value (required type conversion)
-            if default_t == str: find_v = {"$regex" : find_s + ".*"}
+            if default_t in (str, unicode): find_v = {"$regex" : find_s + ".*"}
             else: find_v = default_t(find_s)
         except:
             # in case there's an error in the conversion for
