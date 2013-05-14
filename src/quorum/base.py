@@ -50,6 +50,7 @@ import mail
 import route
 import model
 import amazon
+import extras
 import config
 import session
 import redisdb
@@ -118,7 +119,8 @@ def run_waitress():
         port = port
     )
 
-def load(app = None, name = None, secret_key = None, execution = True, redis_session = False, mongo_database = None, logger = None, models = None, **kwargs):
+def load(app = None, name = None, secret_key = None, execution = True, redis_session = False,\
+    mongo_database = None, logger = None, models = None, **kwargs):
     """
     Initial loader function responsible for the overriding of
     the flask loading system and for the loading of configuration.
@@ -167,6 +169,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     load_all()
     load_app_config(app, kwargs)
     debug = config.conf("DEBUG", False, cast = bool)
+    force_ssl = config.conf("FORCE_SSL", False)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
     rabbit_url = config.conf("CLOUDAMQP_URL", None)
@@ -192,6 +195,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
     if mongo_database: mongodb.database = mongo_database
     if models: setup_models(models)
+    if force_ssl: extras.SSLify(app)
     app.before_request(before_request)
     app.request_class = request.Request
     app.debug = debug
