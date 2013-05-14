@@ -119,7 +119,7 @@ class File(Type):
         self.data_b64 = base64.b64encode(data)
         self.size = len(data)
 
-def reference(target, name = None):
+def reference(target, name = None, eager = False):
     name = name or "id"
     meta = getattr(target, name)
     type = meta.get("type", str)
@@ -144,7 +144,8 @@ def reference(target, name = None):
             self._object = reference._object
 
         def json_v(self):
-            return type(self.id)
+            if eager: self.resolve(); return self._object
+            else: return type(self.id)
 
         def value(self):
             return type(self.id)
@@ -164,9 +165,9 @@ def reference(target, name = None):
 
     return Reference
 
-def references(target, name = None):
+def references(target, name = None, eager = False):
     name = name or "id"
-    reference_c = reference(target, name = name)
+    reference_c = reference(target, name = name, eager = eager)
 
     class References(Type):
         def __init__(self, ids):
