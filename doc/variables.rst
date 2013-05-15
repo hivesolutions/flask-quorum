@@ -97,3 +97,18 @@ Amazon Web Services
 .. rst:directive:: .. AMAZON_BUCKET:: string
 
     TODO
+
+Pusher
+-------------------
+
+.. rst:directive:: .. PUSHER_APP_ID:: string
+
+    TODO
+
+.. rst:directive:: .. PUSHER_KEY:: string
+
+    TODO
+
+.. rst:directive:: .. PUSHER_SECRET:: string
+
+    TODO
