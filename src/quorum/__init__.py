@@ -51,6 +51,7 @@ import log
 import mail
 import model
 import mongodb
+import pusherc
 import rabbitmq
 import redisdb
 import request
@@ -91,6 +92,7 @@ from mongodb import get_connection as get_mongo
 from mongodb import get_db as get_mongo_db
 from mongodb import drop_db as drop_mongo_db
 from mongodb import dumps as dumps_mongo
+from pusherc import get_pusher as get_pusher
 from rabbitmq import get_connection as get_rabbit
 from rabbitmq import properties as properties_rabbit
 from redisdb import get_connection as get_redis

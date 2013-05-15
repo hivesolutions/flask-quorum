@@ -55,6 +55,7 @@ import config
 import session
 import redisdb
 import mongodb
+import pusherc
 import request
 import rabbitmq
 import execution
@@ -176,6 +177,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     amazon_id = config.conf("AMAZON_ID", None)
     amazon_secret = config.conf("AMAZON_SECRET", None)
     amazon_bucket = config.conf("AMAZON_BUCKET", None)
+    pusher_app_id = config.conf("PUSHER_APP_ID", None)
+    pusher_key = config.conf("PUSHER_KEY", None)
+    pusher_secret = config.conf("PUSHER_SECRET", None)
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
@@ -188,6 +192,9 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if amazon_id: amazon.id = amazon_id
     if amazon_secret: amazon.secret = amazon_secret
     if amazon_bucket: amazon.bucket_name = amazon_bucket
+    if pusher_app_id: pusherc.app_id = pusher_app_id
+    if pusher_key: pusherc.key = pusher_key
+    if pusher_secret: pusherc.secret = pusher_secret
     if smtp_host: mail.SMTP_HOST = smtp_host
     if smtp_user: mail.SMTP_USER = smtp_user
     if smtp_password: mail.SMTP_PASSWORD = smtp_password
