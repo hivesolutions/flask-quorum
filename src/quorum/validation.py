@@ -256,6 +256,6 @@ def not_duplicate(name, collection):
         _collection = db[collection]
         item = _collection.find_one({name : value})
         if not item: return True
-        if str(item["_id"]) == _id: return True
+        if str(item["_id"]) == str(_id): return True
         raise exceptions.ValidationInternalError(name, "value is duplicate")
     return validation
