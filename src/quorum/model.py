@@ -579,6 +579,7 @@ class Model(object):
                     "seq" : 1
                 }
             },
+            new = True,
             upsert = True
         )
         value = value or db.counters.find_one({
