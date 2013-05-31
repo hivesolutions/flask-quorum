@@ -170,5 +170,11 @@ class JsonError(HttpError):
         HttpError.__init__(self, "Problem requesting json data")
         self.data = data
 
+    def __str__(self):
+        exception_s = HttpError.__str__(self)
+        if not self.data: exception_s
+        exception = self.data.get("exception", {})
+        return exception.get("message", exception_s)
+
     def get_data(self):
         return self.data
