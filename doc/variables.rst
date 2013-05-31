@@ -88,7 +88,7 @@ RabbitMQ / AMQP
     .. note::
 
         An example url for rabbit would be something like
-        **amqp://root:root@dbs.hive**.
+        **amqp://root:root@db.hive**.
 
 Amazon Web Services
 -------------------
