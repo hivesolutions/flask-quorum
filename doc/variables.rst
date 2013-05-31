@@ -81,7 +81,7 @@ RabbitMQ / AMQP
 
 .. rst:directive:: .. CLOUDAMQP_URL:: string
 
-    URL used by the rabitmq library (pika) to create the connection with
+    URL used by the RabbitMQ library (pika) to create the connection with
     the server that is going to be used in the session. It should contain
     both authentication and location information.
 
