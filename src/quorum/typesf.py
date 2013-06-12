@@ -181,12 +181,14 @@ def references(target, name = None, eager = False):
 
             self.ids = ids
             self.objects = []
+            self.objects_m = {}
 
             self.set_ids(self.ids)
 
         def build_i(self, references):
             self.ids = references.ids
             self.objects = references.objects
+            self.objects_m = references.objects_m
 
         def set_ids(self, ids):
             ids = ids or []
@@ -194,11 +196,28 @@ def references(target, name = None, eager = False):
                 if id == "" or id == None: continue
                 object = reference_c(id)
                 self.objects.append(object)
+                self.objects_m[id] = object
 
         def json_v(self):
             return [object.json_v() for object in self.objects]
 
         def list(self):
             return [object.value() for object in self.objects]
+
+        def is_empty(self):
+            ids_l = len(self.ids)
+            return ids_l == 0
+
+        def append(self, id):
+            object = reference_c(id)
+            self.ids.append(id)
+            self.objects.append(object)
+            self.objects_m[id] = object
+
+        def remove(self, id):
+            object = self.objects_m[id]
+            self.ids.remove(id)
+            self.objects.remove(object)
+            del self.objects_m[id]
 
     return References
