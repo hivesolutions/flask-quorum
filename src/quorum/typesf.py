@@ -220,4 +220,7 @@ def references(target, name = None, eager = False):
             self.objects.remove(object)
             del self.objects_m[id]
 
+        def contains(self, id):
+            return id in self.objects_m
+
     return References
