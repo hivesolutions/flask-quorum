@@ -65,6 +65,10 @@ APP = None
 """ The reference to the top level application
 that is being handled by quorum """
 
+RUN_CALLED = False
+""" Flag that controls if the on run methods have already
+been called for the current execution environment """
+
 RUN_F = {}
 """ The map that will contain the various functions that
 will be called upon the start of the main run loop """
@@ -73,6 +77,12 @@ LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The logging format definition to be used by all
 the format handlers available """
 
+def call_run():
+    global RUN_CALLED
+    if RUN_CALLED: return
+    for _fname, f in RUN_F.items(): f()
+    RUN_CALLED = True
+
 def run(server = "base", fallback = "base"):
     if not APP: raise exceptions.BaseError("Application not set or runnable")
 
@@ -80,7 +90,7 @@ def run(server = "base", fallback = "base"):
     runner_f = globals().get("run_" + fallback, None)
     if not runner: raise exceptions.BaseError("Server '%s' not found" % server)
 
-    for _fname, f in RUN_F.items(): f()
+    call_run()
 
     try: runner()
     except exceptions.ServerInitError, error:
@@ -213,6 +223,10 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
         finalize = finalize
     )
     APP = app
+
+    previous = inspect.stack()[1]
+    module = inspect.getmodule(previous[0])
+    if not module.__name__ == "__main__": call_run()
 
     return app
 
