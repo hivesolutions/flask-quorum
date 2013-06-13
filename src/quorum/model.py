@@ -106,6 +106,13 @@ class Model(object):
         return instance
 
     @classmethod
+    def singleton(cls, model = None, safe = True, build = False):
+        instance = cls.get(raise_e = False)
+        if instance: instance.apply(model, safe_a = safe)
+        else: instance = cls.new(model = model, safe = safe, build = build)
+        return instance
+
+    @classmethod
     def get(cls, *args, **kwargs):
         map, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("map", False),
