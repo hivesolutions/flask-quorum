@@ -43,7 +43,7 @@ import urllib2
 
 import exceptions
 
-TIMEOUT = 10
+TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
 operations in the http connection """
 
@@ -56,8 +56,8 @@ def get_json(url, **kwargs):
         try:
             return _get_json(url, **kwargs)
         except urllib2.HTTPError, error:
-            data = error.read()
-            data_s = json.loads(data)
+            data_r = error.read()
+            data_s = json.loads(data_r)
             raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
@@ -66,17 +66,36 @@ def get_json(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def post_json(url, **kwargs):
+def post_json(url, data = None, mime = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _post_json(url, **kwargs)
+            return _post_json(url, data = data, mime = mime, **kwargs)
         except urllib2.HTTPError, error:
-            data = error.read()
-            data_s = json.loads(data)
+            data_r = error.read()
+            data_s = json.loads(data_r)
+            raise exceptions.JsonError(data_s)
+
+        # decrements the number of retries and checks if the
+        # number of retries has reached the limit
+        retries -= 1
+        if retries == 0:
+            raise exceptions.HttpError("Data retrieval not possible")
+
+def put_json(url, data = None, mime = None, **kwargs):
+    # starts the variable holding the number of
+    # retrieves to be used
+    retries = 5
+
+    while True:
+        try:
+            return _put_json(url, data = data, mime = mime, **kwargs)
+        except urllib2.HTTPError, error:
+            data_r = error.read()
+            data_s = json.loads(data_r)
             raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
@@ -94,8 +113,8 @@ def delete_json(url, **kwargs):
         try:
             return _delete_json(url, **kwargs)
         except urllib2.HTTPError, error:
-            data = error.read()
-            data_s = json.loads(data)
+            data_r = error.read()
+            data_s = json.loads(data_r)
             raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
@@ -113,11 +132,30 @@ def _get_json(url, **kwargs):
     contents_s = json.loads(contents) if contents else None
     return contents_s
 
-def _post_json(url, **kwargs):
+def _post_json(url, data = None, mime = None, **kwargs):
     values = kwargs or {}
-    data = urllib.urlencode(values, doseq = True)
-    request = urllib2.Request(url, data)
+    data_e = urllib.urlencode(values, doseq = True)
+    if data: url = url + "?" + data_e
+    else: data = data_e
+    headers = dict()
+    if mime: headers["Content-Type"] = mime
+    request = urllib2.Request(url, data, headers = headers)
     response = urllib2.urlopen(request, timeout = TIMEOUT)
+    contents = response.read()
+    contents_s = json.loads(contents)
+    return contents_s
+
+def _put_json(url, data = None, mime = None, **kwargs):
+    values = kwargs or {}
+    data_e = urllib.urlencode(values, doseq = True)
+    if data: url = url + "?" + data_e
+    else: data = data_e
+    headers = dict()
+    if mime: headers["Content-Type"] = mime
+    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    request = urllib2.Request(url, data, headers = headers)
+    request.get_method = lambda: "PUT"
+    response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
     contents_s = json.loads(contents)
     return contents_s
