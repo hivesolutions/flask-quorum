@@ -132,26 +132,46 @@ def _get_json(url, **kwargs):
     contents_s = json.loads(contents) if contents else None
     return contents_s
 
-def _post_json(url, data = None, mime = None, **kwargs):
+def _post_json(url, data = None, data_j = None, mime = None, **kwargs):
     values = kwargs or {}
     data_e = urllib.urlencode(values, doseq = True)
-    if data: url = url + "?" + data_e
-    else: data = data_e
+
+    if data:
+        url = url + "?" + data_e
+    elif data_j:
+        data = json.dumps(data_j)
+        url = url + "?" + data_e
+        mime = mime or "application/json"
+    elif data_e:
+        data = data_e
+        mime = mime or "application/x-www-form-urlencoded"
+
     headers = dict()
     if mime: headers["Content-Type"] = mime
+
     request = urllib2.Request(url, data, headers = headers)
     response = urllib2.urlopen(request, timeout = TIMEOUT)
     contents = response.read()
     contents_s = json.loads(contents)
     return contents_s
 
-def _put_json(url, data = None, mime = None, **kwargs):
+def _put_json(url, data = None, data_j = None, mime = None, **kwargs):
     values = kwargs or {}
     data_e = urllib.urlencode(values, doseq = True)
-    if data: url = url + "?" + data_e
-    else: data = data_e
+
+    if data:
+        url = url + "?" + data_e
+    elif data_j:
+        data = json.dumps(data_j)
+        url = url + "?" + data_e
+        mime = mime or "application/json"
+    elif data_e:
+        data = data_e
+        mime = mime or "application/x-www-form-urlencoded"
+
     headers = dict()
     if mime: headers["Content-Type"] = mime
+
     opener = urllib2.build_opener(urllib2.HTTPHandler)
     request = urllib2.Request(url, data, headers = headers)
     request.get_method = lambda: "PUT"
