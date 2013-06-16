@@ -66,14 +66,20 @@ def get_json(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def post_json(url, data = None, mime = None, **kwargs):
+def post_json(url, data = None, data_j = None, mime = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _post_json(url, data = data, mime = mime, **kwargs)
+            return _post_json(
+                url,
+                data = data,
+                data_j = data_j,
+                mime = mime,
+                **kwargs
+            )
         except urllib2.HTTPError, error:
             data_r = error.read()
             data_s = json.loads(data_r)
@@ -85,14 +91,20 @@ def post_json(url, data = None, mime = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def put_json(url, data = None, mime = None, **kwargs):
+def put_json(url, data = None, data_j = None, mime = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _put_json(url, data = data, mime = mime, **kwargs)
+            return _put_json(
+                url,
+                data = data,
+                data_j = data_j,
+                mime = mime,
+                **kwargs
+            )
         except urllib2.HTTPError, error:
             data_r = error.read()
             data_s = json.loads(data_r)
