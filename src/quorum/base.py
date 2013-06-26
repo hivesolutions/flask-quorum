@@ -45,6 +45,7 @@ import atexit
 import logging
 import inspect
 
+import acl
 import util
 import mail
 import route
@@ -214,6 +215,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if models: setup_models(models)
     if force_ssl: extras.SSLify(app)
     app.before_request(before_request)
+    app.context_processor(context_processor)
     app.request_class = request.Request
     app.debug = debug
     app.secret_key = secret_key
@@ -313,6 +315,12 @@ def finalize(value):
 def before_request():
     flask.request.args_s = util.load_form(flask.request.args)
     flask.request.form_s = util.load_form(flask.request.form)
+
+def context_processor():
+    return dict(
+        acl = acl.check_login,
+        conf = config.conf
+    )
 
 def start_execution():
     # creates the thread that it's going to be used to
