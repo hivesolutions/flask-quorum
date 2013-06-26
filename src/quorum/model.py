@@ -614,7 +614,7 @@ class Model(object):
 
         cls = self.__class__
         model = model or self.model
-        cls.build(self.model)
+        cls.build(model)
 
     def apply(self, model = None, safe = None, safe_a = True):
         # calls the complete set of event handlers for the current
