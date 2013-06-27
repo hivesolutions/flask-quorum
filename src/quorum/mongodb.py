@@ -109,8 +109,8 @@ def serialize(obj):
     return bson.json_util.default(obj)
 
 def is_mongo(obj):
-    if isinstance(obj, bson.ObjectId): return True
-    if isinstance(obj, bson.DBRef): return True
+    if bson and isinstance(obj, bson.ObjectId): return True
+    if bson and isinstance(obj, bson.DBRef): return True
     return False
 
 def _get_connection(url):
