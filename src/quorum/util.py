@@ -78,13 +78,15 @@ def request_json(request = None):
 
     return data_j
 
-def get_field(name, default = None):
+def get_field(name, default = None, cast = None):
     data_j = request_json()
 
     value = data_j.get(name, default)
     value = flask.request.files.get(name, value)
     value = flask.request.form.get(name, value)
     value = flask.request.args.get(name, value)
+
+    if cast: value = cast(value)
 
     return value
 
