@@ -681,8 +681,11 @@ class Model(object):
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
         # are going to be removed, note that if the operation is an
-        # update operation the "immutable rules" also apply
-        model = self._filter(immutables_a = not is_new)
+        # update operation the "immutable rules" also apply, the
+        # returned value is normalizes meaning that for instance if
+        # any relation is loaded the reference value is returned instead
+        # of the loaded relation values (required for persistence)
+        model = self._filter(immutables_a = not is_new, normalize = True)
 
         # in case the current model is not new must create a new
         # model instance and remove the main identifier from it
@@ -806,7 +809,7 @@ class Model(object):
         # should finish the operations from a correct validation
         self.post_validate()
 
-    def _filter(self, immutables_a = False):
+    def _filter(self, immutables_a = False, normalize = False):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
         model = {}
@@ -840,6 +843,16 @@ class Model(object):
             if immutables_a and name in immutables: continue
             value = value.json_v() if hasattr(value, "json_v") else value
             model[name] = value
+
+        # in case the normalize flag is set must iterate over all
+        # items to try to normalize the values by calling the reference
+        # value this will returns the reference index value instead of
+        # the normal value that would prevent normalization
+        if normalize:
+            for name, value in self.model.items():
+                if not name in definition: continue
+                value = value.ref_v() if hasattr(value, "ref_v") else value
+                model[name] = value
 
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class

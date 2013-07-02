@@ -143,6 +143,9 @@ def reference(target, name = None, eager = False):
             self.id = reference.id
             self._object = reference._object
 
+        def ref_v(self):
+            return type(self.id)
+
         def json_v(self):
             if eager: self.resolve(); return self._object
             else: return type(self.id)
@@ -197,6 +200,9 @@ def references(target, name = None, eager = False):
                 object = reference_c(id)
                 self.objects.append(object)
                 self.objects_m[id] = object
+
+        def ref_v(self):
+            return [object.ref_v() for object in self.objects]
 
         def json_v(self):
             return [object.json_v() for object in self.objects]
