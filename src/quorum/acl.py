@@ -38,8 +38,14 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
+import types
 import flask
 import functools
+
+SEQUENCE_TYPES = (types.ListType, types.TupleType)
+""" The tuple defining the various data types in
+python that are considered to be representing a
+logical sequence """
 
 def check_basic_auth(username, password):
     authorization = flask.request.authorization
@@ -49,10 +55,29 @@ def check_basic_auth(username, password):
     return True
 
 def check_login(token):
+    # retrieves the data type of the token and creates the
+    # tokens sequence value taking into account its type
+    token_type = type(token)
+    if token_type in SEQUENCE_TYPES: tokens = token
+    else: tokens = (token,)
+
+    # in case the username value is set in session and there's
+    # no token to be validated returns valid and in case the
+    # wildcard token is set also returns valid because this
+    # token provides access to all features
     if "username" in flask.session and not token: return True
     if "*" in flask.session.get("tokens", []): return True
-    if token in flask.session.get("tokens", []): return True
-    return False
+
+    # retrieves the current set of tokens set in session and
+    # then iterates over the current tokens to be validated
+    # to check if all of them are currently set in session
+    tokens_s = flask.session.get("tokens", [])
+    for token in tokens:
+        if not token in tokens_s: return False
+
+    # returns the default value as valid because if all the
+    # validation procedures have passed the check is valid
+    return True
 
 def ensure_basic_auth(username, password, json_s = False):
     check = check_basic_auth(username, password)
