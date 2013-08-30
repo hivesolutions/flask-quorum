@@ -47,6 +47,23 @@ TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
 operations in the http connection """
 
+def get(url, **kwargs):
+    # starts the variable holding the number of
+    # retrieves to be used
+    retries = 5
+
+    while True:
+        try:
+            return _get(url, **kwargs)
+        except urllib2.HTTPError:
+            raise
+
+        # decrements the number of retries and checks if the
+        # number of retries has reached the limit
+        retries -= 1
+        if retries == 0:
+            raise exceptions.HttpError("Data retrieval not possible")
+
 def get_json(url, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
@@ -135,12 +152,16 @@ def delete_json(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def _get_json(url, **kwargs):
+def _get(url, **kwargs):
     values = kwargs or {}
     data = urllib.urlencode(values, doseq = True)
     url = url + "?" + data
     response = urllib2.urlopen(url, timeout = TIMEOUT)
     contents = response.read()
+    return contents
+
+def _get_json(url, **kwargs):
+    contents = _get(url, **kwargs)
     contents_s = json.loads(contents) if contents else None
     return contents_s
 
