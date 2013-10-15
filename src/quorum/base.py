@@ -131,6 +131,19 @@ def run_waitress():
         port = port
     )
 
+def run_netius():
+    try: import netius.servers
+    except BaseException, exception:
+        raise exceptions.ServerInitError(
+            unicode(exception),
+            server = "netius"
+        )
+
+    host = config.conf("HOST", "127.0.0.1")
+    port = int(config.conf("PORT", 5000))
+    server = netius.servers.WSGIServer(APP)
+    server.serve(host = host, port = port)
+
 def load(app = None, name = None, secret_key = None, execution = True, redis_session = False,\
     mongo_database = None, logger = None, models = None, **kwargs):
     """
