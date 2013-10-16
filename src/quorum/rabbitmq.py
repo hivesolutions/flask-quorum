@@ -37,7 +37,6 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import time
 import urlparse
 
 import exceptions
@@ -45,7 +44,7 @@ import exceptions
 try: import pika
 except: pika = None
 
-RABBIT_SLEEP = 1.0
+RABBIT_TIMEOUT = 100
 """ The time the retrieval of a connection waits before
 returning this avoid possible problems with the current
 implementation of the blocking client """
@@ -58,7 +57,7 @@ url = "amqp://localhost//"
 """ The global variable containing the url to be used
 for the connection with the service """
 
-def get_connection(sleep = RABBIT_SLEEP):
+def get_connection(timeout = RABBIT_TIMEOUT):
     global connection
     if pika == None: raise exceptions.ModuleNotFound("pika")
     if connection: return connection
@@ -66,10 +65,10 @@ def get_connection(sleep = RABBIT_SLEEP):
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,
         virtual_host = url_p.path[1:],
-        credentials = pika.PlainCredentials(url_p.username, url_p.password)
+        credentials = pika.PlainCredentials(url_p.username, url_p.password),
+        socket_timeout = timeout
     )
     connection = pika.BlockingConnection(parameters)
-    if sleep: time.sleep(sleep)
     return connection
 
 def properties(*args, **kwargs):
