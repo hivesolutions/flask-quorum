@@ -65,9 +65,9 @@ def get_connection(timeout = RABBIT_TIMEOUT):
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,
         virtual_host = url_p.path[1:],
-        credentials = pika.PlainCredentials(url_p.username, url_p.password),
-        socket_timeout = timeout
+        credentials = pika.PlainCredentials(url_p.username, url_p.password)
     )
+    parameters.socket_timeout = timeout
     connection = pika.BlockingConnection(parameters)
     return connection
 
