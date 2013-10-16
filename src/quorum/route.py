@@ -121,10 +121,29 @@ def route(*args, **kwargs):
                 )
             return result
 
-        # updates the decorator name with the function name so that
-        # the reverse routing maps are correctly updated with the
-        # original names (otherwise a problem would occur in werkzeug)
-        _decorator.__name__ = function.__name__
-        return decorator(_decorator)
+        # verifies if the base value is set in the function for such
+        # situations (double decoration) the base value should be set
+        # as the already existing base decorator method otherwise keeps
+        # using the clojure based one
+        has_base = hasattr(function, "_base")
+        if has_base: base = function._base
+        else: base = _decorator
+
+        # updates the decorates with the base value, this is going to be
+        # the clojure based new view function, then in case this is a new
+        # decorator updates the name of the decorator name with the name
+        # of the base function (view function) that is getting decorated
+        # so that the original name persists (otherwise a problem would
+        # occur in werkzeug)
+        _decorator = base
+        if not has_base:
+            _decorator.__name__ = function.__name__
+
+        # runs the decorator to create a new decorator and sets the base
+        # value in it as the current base value so that it gets propagated
+        # all the way to the top decorators in sequence (pile of decorators)
+        decorated = decorator(_decorator)
+        decorated._base = base
+        return decorated
 
     return _route
