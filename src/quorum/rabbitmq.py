@@ -47,7 +47,7 @@ except: pika = None
 
 RABBIT_SLEEP = 1.0
 """ The time the retrieval of a connection waits before
-returning this avoid possible prblems with the current
+returning this avoid possible problems with the current
 implementation of the blocking client """
 
 connection = None
