@@ -87,7 +87,7 @@ def call_run():
 def run(server = None, fallback = "base"):
     if not APP: raise exceptions.BaseError("Application not set or runnable")
 
-    server = server or config.conf("SERVER", "base")
+    server = config.conf("SERVER", server) or "base"
     runner = globals().get("run_" + server, None)
     runner_f = globals().get("run_" + fallback, None)
     if not runner: raise exceptions.BaseError("Server '%s' not found" % server)
