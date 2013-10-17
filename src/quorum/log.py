@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import sys
 import logging
 import traceback
 
@@ -152,6 +153,10 @@ class MemoryHandler(logging.Handler):
         messages = self.messages_l.get(level, ()) if level else self.messages
         return messages[:count]
 
+def has_exception():
+    info = sys.exc_info()
+    return not info == (None, None, None)
+
 def debug(message, *args, **kwargs):
     logger = base.get_log()
     logger.debug(message, *args, **kwargs)
@@ -159,23 +164,27 @@ def debug(message, *args, **kwargs):
 def info(message, *args, **kwargs):
     logger = base.get_log()
     logger.info(message, *args, **kwargs)
+    if not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.debug(line, *args, **kwargs)
 
 def warning(message, *args, **kwargs):
     logger = base.get_log()
     logger.warning(message, *args, **kwargs)
+    if not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.info(line, *args, **kwargs)
 
 def error(message, *args, **kwargs):
     logger = base.get_log()
     logger.error(message, *args, **kwargs)
+    if not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.warning(line, *args, **kwargs)
 
 def critical(message, *args, **kwargs):
     logger = base.get_log()
     logger.critical(message, *args, **kwargs)
+    if not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.error(line, *args, **kwargs)
