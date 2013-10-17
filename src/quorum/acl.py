@@ -42,6 +42,8 @@ import types
 import flask
 import functools
 
+import base
+
 SEQUENCE_TYPES = (types.ListType, types.TupleType)
 """ The tuple defining the various data types in
 python that are considered to be representing a
@@ -83,6 +85,8 @@ def ensure_basic_auth(username, password, json_s = False):
     check = check_basic_auth(username, password)
     if check: return
 
+    base.APP.info("Unauthorized for operation")
+
     if json_s: return flask.Response(
             json.dumps({
                 "exception" : {
@@ -99,6 +103,8 @@ def ensure_basic_auth(username, password, json_s = False):
 
 def ensure_login(token = None, json_s = False):
     if check_login(token): return None
+
+    base.APP.info("Not enough permissions for operation '%s'" % token)
 
     if json_s:
         return flask.Response(
