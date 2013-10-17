@@ -43,11 +43,6 @@ import traceback
 
 import base
 
-LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-""" The format to be used for the logging operation in
-the app, these operations are going to be handled by
-multiple stream handlers """
-
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
 memory until they are discarded, avoid a very large
@@ -88,7 +83,7 @@ class MemoryHandler(logging.Handler):
         self.messages = []
         self.messages_l = {}
 
-        formatter = logging.Formatter(LOGGING_FORMAT)
+        formatter = logging.Formatter(base.LOGGING_FORMAT)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):

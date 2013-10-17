@@ -75,6 +75,11 @@ RUN_F = {}
 """ The map that will contain the various functions that
 will be called upon the start of the main run loop """
 
+LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
+""" The format to be used for the logging operation in
+the app, these operations are going to be handled by
+multiple stream handlers """
+
 def call_run():
     global RUN_CALLED
     if RUN_CALLED: return
@@ -293,7 +298,7 @@ def load_app_config(app, configs):
     for name, value in configs.items():
         app.config[name] = value
 
-def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMAT):
+def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = name and path_t % name
