@@ -86,7 +86,7 @@ def get_field(name, default = None, cast = None):
     value = flask.request.form.get(name, value)
     value = flask.request.args.get(name, value)
 
-    if cast: value = cast(value)
+    if cast and not value == None: value = cast(value)
 
     return value
 
