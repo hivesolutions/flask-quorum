@@ -76,9 +76,9 @@ RUN_F = {}
 will be called upon the start of the main run loop """
 
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-""" The format to be used for the logging operation in
-the app, these operations are going to be handled by
-multiple stream handlers """
+""" The logging format definition to be used by all
+the format handlers available, this string will also
+be used under the log module for handlers """
 
 def call_run():
     global RUN_CALLED
