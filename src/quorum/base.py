@@ -46,6 +46,7 @@ import logging
 import inspect
 
 import acl
+import log
 import util
 import mail
 import route
@@ -73,10 +74,6 @@ been called for the current execution environment """
 RUN_F = {}
 """ The map that will contain the various functions that
 will be called upon the start of the main run loop """
-
-LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-""" The logging format definition to be used by all
-the format handlers available """
 
 def call_run():
     global RUN_CALLED
@@ -296,10 +293,12 @@ def load_app_config(app, configs):
     for name, value in configs.items():
         app.config[name] = value
 
-def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
+def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMAT):
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = name and path_t % name
+
+    app.handlers = {}
 
     formatter = logging.Formatter(format)
     logger = logging.getLogger("quorum")
@@ -307,6 +306,7 @@ def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     logger.setLevel(level)
 
     stream_handler = logging.StreamHandler()
+    memory_handler = log.MemoryHandler()
 
     try:
         file_handler = path and logging.FileHandler(path)
@@ -315,7 +315,12 @@ def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
         file_handler = None
 
     stream_handler and logger.addHandler(stream_handler)
+    memory_handler and logger.addHandler(memory_handler)
     file_handler and logger.addHandler(file_handler)
+
+    if stream_handler: app.handlers["stream"] = stream_handler
+    if memory_handler: app.handlers["memory"] = memory_handler
+    if file_handler: app.handlers["file"] = file_handler
 
     for handler in logger.handlers:
         handler.setFormatter(formatter)
