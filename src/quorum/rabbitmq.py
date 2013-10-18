@@ -69,7 +69,13 @@ def get_connection(timeout = RABBIT_TIMEOUT):
     )
     parameters.socket_timeout = timeout
     connection = pika.BlockingConnection(parameters)
+    connection = _set_fixes(connection)
     return connection
 
 def properties(*args, **kwargs):
     return pika.BasicProperties(*args, **kwargs)
+
+def _set_fixes(connection):
+    if not hasattr(connection, "disconnect"):
+        connection.disconnect = lambda: None
+    return connection
