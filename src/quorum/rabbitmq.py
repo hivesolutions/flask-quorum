@@ -77,5 +77,5 @@ def properties(*args, **kwargs):
 
 def _set_fixes(connection):
     if not hasattr(connection, "disconnect"):
-        connection.disconnect = lambda: None
+        connection.disconnect = lambda: connection.close()
     return connection
