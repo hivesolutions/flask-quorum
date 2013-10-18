@@ -53,7 +53,7 @@ connection = None
 """ The global wide connection to the rabbit mq server
 that is meant to be used across sessions """
 
-url = "amqp://localhost//"
+url = "amqp://localhost/"
 """ The global variable containing the url to be used
 for the connection with the service """
 
@@ -76,6 +76,11 @@ def properties(*args, **kwargs):
     return pika.BasicProperties(*args, **kwargs)
 
 def _set_fixes(connection):
+    def disconnect():
+        if hasattr(connection, "_closed"): return
+        connection._closed = True
+        connection.close()
+
     if not hasattr(connection, "disconnect"):
-        connection.disconnect = lambda: connection.close()
+        connection.disconnect = disconnect
     return connection
