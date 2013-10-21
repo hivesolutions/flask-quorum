@@ -77,9 +77,7 @@ def properties(*args, **kwargs):
 
 def _set_fixes(connection):
     def disconnect():
-        if hasattr(connection, "_closed"): return
-        connection._closed = True
-        connection.close()
+        connection.socket.close()
 
     if not hasattr(connection, "disconnect"):
         connection.disconnect = disconnect
