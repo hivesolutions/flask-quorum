@@ -183,7 +183,7 @@ class Model(object):
         # map that will contain the various names of the current model
         # associated with its definition map
         for _cls in hierarchy:
-            for name, value in _cls.__dict__.items():
+            for name, value in _cls.__dict__.iteritems():
                 if name.startswith("_"): continue
                 if not type(value) == types.DictionaryType: continue
                 definition[name] = value
@@ -223,7 +223,7 @@ class Model(object):
 
     @classmethod
     def rules(cls, model, map):
-        for name, _value in model.items():
+        for name, _value in model.iteritems():
             definition = cls.definition_n(name)
             is_private = definition.get("private", False)
             if not is_private: continue
@@ -231,7 +231,7 @@ class Model(object):
 
     @classmethod
     def types(cls, model):
-        for name, value in model.items():
+        for name, value in model.iteritems():
             if name == "_id": continue
             if value == None: continue
             definition = cls.definition_n(name)
@@ -641,7 +641,7 @@ class Model(object):
         # values setting the values in the current intance's model
         # then runs the type casting/conversion operation in it
         model = model or util.get_object()
-        for name, value in model.items():
+        for name, value in model.iteritems():
             is_safe = safe.get(name, False)
             if is_safe: continue
             self.model[name] = value
@@ -838,7 +838,7 @@ class Model(object):
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
-        for name, value in self.model.items():
+        for name, value in self.model.iteritems():
             if not name in definition: continue
             if immutables_a and name in immutables: continue
             value = value.json_v() if hasattr(value, "json_v") else value
@@ -849,7 +849,7 @@ class Model(object):
         # value this will returns the reference index value instead of
         # the normal value that would prevent normalization
         if normalize:
-            for name, value in self.model.items():
+            for name, value in self.model.iteritems():
                 if not name in definition: continue
                 value = value.ref_v() if hasattr(value, "ref_v") else value
                 model[name] = value

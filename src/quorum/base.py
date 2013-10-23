@@ -83,7 +83,7 @@ be used under the log module for handlers """
 def call_run():
     global RUN_CALLED
     if RUN_CALLED: return
-    for _fname, f in RUN_F.items(): f()
+    for _fname, f in RUN_F.iteritems(): f()
     RUN_CALLED = True
 
 def run(server = None, fallback = "base"):
@@ -291,11 +291,11 @@ def load_config(offset = 1):
     finally: config_file.close()
 
 def load_environ():
-    for name, value in os.environ.items():
+    for name, value in os.environ.iteritems():
         config.config_g[name] = value
 
 def load_app_config(app, configs):
-    for name, value in configs.items():
+    for name, value in configs.iteritems():
         app.config[name] = value
 
 def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
@@ -369,7 +369,7 @@ def stop_execution():
     execution.background_t and execution.background_t.stop()
 
 def setup_models(models):
-    for _name, value in models.__dict__.items():
+    for _name, value in models.__dict__.iteritems():
         try: is_valid = issubclass(value, model.Model)
         except: is_valid = False
         if not is_valid: continue

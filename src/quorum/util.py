@@ -101,10 +101,10 @@ def get_object(object = None, alias = False, find = False):
     # handles the failure setting the value as an empty map
     data_j = request_json()
 
-    for name, value in data_j.items(): object[name] = value
-    for name, value in flask.request.files.items(): object[name] = value
-    for name, value in flask.request.form_s.items(): object[name] = value
-    for name, value in flask.request.args_s.items(): object[name] = value
+    for name, value in data_j.iteritems(): object[name] = value
+    for name, value in flask.request.files.iteritems(): object[name] = value
+    for name, value in flask.request.form_s.iteritems(): object[name] = value
+    for name, value in flask.request.args_s.iteritems(): object[name] = value
 
     alias and resolve_alias(object)
     find and find_types(object)
@@ -112,14 +112,14 @@ def get_object(object = None, alias = False, find = False):
     return object
 
 def resolve_alias(object):
-    for name, value in object.items():
+    for name, value in object.iteritems():
         if not name in ALIAS: continue
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
 
 def find_types(object):
-    for name, value in object.items():
+    for name, value in object.iteritems():
         if not name in FIND_TYPES:
             del object[name]
             continue

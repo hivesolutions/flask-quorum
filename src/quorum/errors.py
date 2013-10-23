@@ -50,7 +50,7 @@ def errors_json(function):
             return function(*args, **kwargs)
         except exceptions.ValidationError, error:
             invalid_m = {}
-            for name, _errors in error.errors.items():
+            for name, _errors in error.errors.iteritems():
                 invalid_m[name] = _errors[0]
 
             return flask.Response(
