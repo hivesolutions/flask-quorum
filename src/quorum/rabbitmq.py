@@ -57,10 +57,10 @@ url = "amqp://localhost/"
 """ The global variable containing the url to be used
 for the connection with the service """
 
-def get_connection(timeout = RABBIT_TIMEOUT):
+def get_connection(timeout = RABBIT_TIMEOUT, force = False):
     global connection
     if pika == None: raise exceptions.ModuleNotFound("pika")
-    if connection: return connection
+    if not force and connection: return connection
     url_p = urlparse.urlparse(url)
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,
