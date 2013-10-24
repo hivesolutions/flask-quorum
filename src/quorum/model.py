@@ -223,7 +223,7 @@ class Model(object):
 
     @classmethod
     def rules(cls, model, map):
-        for name, _value in model.iteritems():
+        for name, _value in model.items():
             definition = cls.definition_n(name)
             is_private = definition.get("private", False)
             if not is_private: continue
