@@ -144,7 +144,7 @@ def run_netius():
 
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
-    ssl = int(config.conf("SSL", 1)) and True or False
+    ssl = int(config.conf("SSL", 0)) and True or False
     key_file = config.conf("KEY_FILE", None)
     cer_file = config.conf("CER_FILE", None)
     server = netius.servers.WSGIServer(APP)
