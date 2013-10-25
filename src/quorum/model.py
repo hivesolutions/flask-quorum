@@ -231,7 +231,7 @@ class Model(object):
 
     @classmethod
     def types(cls, model):
-        for name, value in model.items():
+        for name, value in model.iteritems():
             if name == "_id": continue
             if value == None: continue
             definition = cls.definition_n(name)
