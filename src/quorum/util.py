@@ -112,14 +112,14 @@ def get_object(object = None, alias = False, find = False):
     return object
 
 def resolve_alias(object):
-    for name, value in object.iteritems():
+    for name, value in object.items():
         if not name in ALIAS: continue
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
 
 def find_types(object):
-    for name, value in object.iteritems():
+    for name, value in object.items():
         if not name in FIND_TYPES:
             del object[name]
             continue
