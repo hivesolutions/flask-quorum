@@ -47,7 +47,11 @@ TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
 operations in the http connection """
 
-def get(url, **kwargs):
+def try_auth(auth_callback, params):
+    if not auth_callback: raise
+    auth_callback(params)
+
+def get(url, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -55,8 +59,11 @@ def get(url, **kwargs):
     while True:
         try:
             return _get(url, **kwargs)
-        except urllib2.HTTPError:
-            raise
+        except urllib2.HTTPError, error:
+            if error.code == 403 and auth_callback:
+                try_auth(auth_callback, kwargs)
+            else:
+                raise
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -64,7 +71,7 @@ def get(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def get_json(url, **kwargs):
+def get_json(url, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -73,9 +80,12 @@ def get_json(url, **kwargs):
         try:
             return _get_json(url, **kwargs)
         except urllib2.HTTPError, error:
-            data_r = error.read()
-            data_s = json.loads(data_r)
-            raise exceptions.JsonError(data_s)
+            if error.code == 403 and auth_callback:
+                try_auth(auth_callback, kwargs)
+            else:
+                data_r = error.read()
+                data_s = json.loads(data_r)
+                raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -83,7 +93,7 @@ def get_json(url, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def post_json(url, data = None, data_j = None, mime = None, **kwargs):
+def post_json(url, data = None, data_j = None, mime = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -98,9 +108,12 @@ def post_json(url, data = None, data_j = None, mime = None, **kwargs):
                 **kwargs
             )
         except urllib2.HTTPError, error:
-            data_r = error.read()
-            data_s = json.loads(data_r)
-            raise exceptions.JsonError(data_s)
+            if error.code == 403 and auth_callback:
+                try_auth(auth_callback, kwargs)
+            else:
+                data_r = error.read()
+                data_s = json.loads(data_r)
+                raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -108,7 +121,7 @@ def post_json(url, data = None, data_j = None, mime = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def put_json(url, data = None, data_j = None, mime = None, **kwargs):
+def put_json(url, data = None, data_j = None, mime = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -123,9 +136,12 @@ def put_json(url, data = None, data_j = None, mime = None, **kwargs):
                 **kwargs
             )
         except urllib2.HTTPError, error:
-            data_r = error.read()
-            data_s = json.loads(data_r)
-            raise exceptions.JsonError(data_s)
+            if error.code == 403 and auth_callback:
+                try_auth(auth_callback, kwargs)
+            else:
+                data_r = error.read()
+                data_s = json.loads(data_r)
+                raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -133,7 +149,7 @@ def put_json(url, data = None, data_j = None, mime = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def delete_json(url, **kwargs):
+def delete_json(url, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -142,9 +158,12 @@ def delete_json(url, **kwargs):
         try:
             return _delete_json(url, **kwargs)
         except urllib2.HTTPError, error:
-            data_r = error.read()
-            data_s = json.loads(data_r)
-            raise exceptions.JsonError(data_s)
+            if error.code == 403 and auth_callback:
+                try_auth(auth_callback, kwargs)
+            else:
+                data_r = error.read()
+                data_s = json.loads(data_r)
+                raise exceptions.JsonError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
