@@ -243,6 +243,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     app.context_processor(context_processor)
     app.request_class = request.Request
     app.debug = debug
+    app.models = models
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route

@@ -42,6 +42,7 @@ import types
 import base64
 import tempfile
 
+import base
 import util
 
 class Type(object):
@@ -121,11 +122,12 @@ class File(Type):
 
 def reference(target, name = None, eager = False):
     name = name or "id"
-    meta = getattr(target, name)
-    type = meta.get("type", str)
+    target_t = type(target)
+    is_reference = target_t in types.StringTypes
 
     class Reference(Type):
         def __init__(self, id):
+            self.__start__()
             if isinstance(id, Reference): self.build_i(id)
             else: self.build(id)
 
@@ -134,6 +136,12 @@ def reference(target, name = None, eager = False):
             exists = hasattr(self._object, name)
             if exists: return getattr(self._object, name)
             raise AttributeError("'%s' not found" % name)
+
+        def __start__(self):
+            if is_reference: _target = getattr(base.APP.models, target)
+            else: _target = target
+            meta = getattr(_target, name)
+            self._type = meta.get("type", str)
 
         def build(self, id):
             self.id = id
@@ -144,14 +152,14 @@ def reference(target, name = None, eager = False):
             self._object = reference._object
 
         def ref_v(self):
-            return type(self.id)
+            return self._type(self.id)
 
         def json_v(self):
             if eager: self.resolve(); return self._object
-            else: return type(self.id)
+            else: return self._type(self.id)
 
         def value(self):
-            return type(self.id)
+            return self._type(self.id)
 
         def resolve(self):
             if self._object: return self._object
