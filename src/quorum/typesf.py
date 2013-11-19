@@ -126,6 +126,12 @@ def reference(target, name = None, eager = False):
     is_reference = target_t in types.StringTypes
 
     class Reference(Type):
+
+        _name = name
+        """ The name of the key (join) attribute for the
+        reference that is going to be created, this name
+        may latter be used to cast the value """
+
         def __init__(self, id):
             self.__start__()
             if isinstance(id, Reference): self.build_i(id)
@@ -181,6 +187,12 @@ def references(target, name = None, eager = False):
     reference_c = reference(target, name = name, eager = eager)
 
     class References(Type):
+
+        _name = name
+        """ The name of the key (join) attribute for the
+        reference that is going to be created, this name
+        may latter be used to cast the value """
+
         def __init__(self, ids):
             if isinstance(ids, References): self.build_i(ids)
             else: self.build(ids)

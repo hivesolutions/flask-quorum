@@ -841,7 +841,7 @@ class Model(object):
         for name, value in self.model.iteritems():
             if not name in definition: continue
             if immutables_a and name in immutables: continue
-            value = value.json_v() if hasattr(value, "json_v") else value
+            value = self._evaluate(name, value)
             model[name] = value
 
         # in case the normalize flag is set must iterate over all
@@ -851,9 +851,32 @@ class Model(object):
         if normalize:
             for name, value in self.model.iteritems():
                 if not name in definition: continue
-                value = value.ref_v() if hasattr(value, "ref_v") else value
-                model[name] = value
+                if not hasattr(value, "ref_v"): continue
+                model[name] = value.ref_v()
 
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class
         return model
+
+    def _evaluate(self, name, value):
+        # verifies if the current value as an iterable one in case
+        # it is runs the evaluate method for each of the values to
+        # try to resolve them into the proper representation
+        is_iterable = hasattr(value, "__iter__")
+        if is_iterable: return [self._evaluate(name, value) for value in value]
+
+        # verifies the current value's class is sub class of the model
+        # class and in case it's extracts the relation name from the
+        # value and sets it as the value in iteration
+        is_model = issubclass(value.__class__, Model)
+        if is_model:
+            meta = getattr(self.__class__, name)
+            _type = meta.get("type", str)
+            _name = _type._name
+            value = getattr(value, _name)
+
+        # iterates over all the values and retrieves the json value for
+        # each of them in case the value contains a json value retrieval
+        # method otherwise uses the normal value returning it to the caller
+        value = value.json_v() if hasattr(value, "json_v") else value
+        return value
