@@ -144,9 +144,9 @@ def reference(target, name = None, eager = False):
             raise AttributeError("'%s' not found" % name)
 
         def __start__(self):
-            if is_reference: _target = getattr(base.APP.models, target)
-            else: _target = target
-            meta = getattr(_target, name)
+            if is_reference: self._target = getattr(base.APP.models, target)
+            else: self._target = target
+            meta = getattr(self._target, name)
             self._type = meta.get("type", str)
 
         def build(self, id):
@@ -179,7 +179,7 @@ def reference(target, name = None, eager = False):
             kwargs = {
                 name : self.id
             }
-            self._object = target.get(**kwargs)
+            self._object = self._target.get(**kwargs)
             return self._object
 
     return Reference
