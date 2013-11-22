@@ -158,13 +158,15 @@ def reference(target, name = None, eager = False):
             self._object = reference._object
 
         def ref_v(self):
-            return self._type(self.id)
+            return self.value()
 
         def json_v(self):
             if eager: self.resolve(); return self._object
-            else: return self._type(self.id)
+            else: return self.value()
 
         def value(self):
+            is_empty = self.id == "" or self.id == None
+            if is_empty: return None
             return self._type(self.id)
 
         def resolve(self):
