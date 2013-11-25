@@ -137,6 +137,10 @@ def reference(target, name = None, eager = False):
             if isinstance(id, Reference): self.build_i(id)
             else: self.build(id)
 
+        def __len__(self):
+            is_empty = self.id == "" or self.id == None
+            return 0 if is_empty else 1
+
         def __getattr__(self, name):
             self.resolve()
             exists = hasattr(self._object, name)
@@ -198,6 +202,9 @@ def references(target, name = None, eager = False):
         def __init__(self, ids):
             if isinstance(ids, References): self.build_i(ids)
             else: self.build(ids)
+
+        def __len__(self):
+            return self.objects.__len__()
 
         def build(self, ids):
             is_valid = not ids == None
