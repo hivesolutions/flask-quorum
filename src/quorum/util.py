@@ -65,6 +65,10 @@ def is_iterable(object):
     return type(object) in defines.ITERABLES
 
 def request_json(request = None):
+    # retrieves the proper request object, either the provided
+    # request or the default flask request object and then in
+    # case the the json data is already in the request properties
+    # it is used (cached value) otherwise continues with the parse
     request = request or flask.request
     if "_data_j" in request.properties: return request.properties["_data_j"]
 
@@ -76,6 +80,8 @@ def request_json(request = None):
     except: data_j = {}
     request.properties["_data_j"] = data_j
 
+    # returns the json data object to the caller method so that it
+    # may be used as the parsed value (post information)
     return data_j
 
 def get_field(name, default = None, cast = None):
