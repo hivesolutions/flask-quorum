@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
+import types
 import urllib
 import urllib2
 
@@ -93,7 +94,15 @@ def get_json(url, auth_callback = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def post_json(url, data = None, data_j = None, mime = None, auth_callback = None, **kwargs):
+def post_json(
+    url,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None,
+    auth_callback = None,
+    **kwargs
+):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -104,6 +113,7 @@ def post_json(url, data = None, data_j = None, mime = None, auth_callback = None
                 url,
                 data = data,
                 data_j = data_j,
+                data_m = data_m,
                 mime = mime,
                 **kwargs
             )
@@ -121,7 +131,15 @@ def post_json(url, data = None, data_j = None, mime = None, auth_callback = None
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def put_json(url, data = None, data_j = None, mime = None, auth_callback = None, **kwargs):
+def put_json(
+    url,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None,
+    auth_callback = None,
+    **kwargs
+):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
@@ -132,6 +150,7 @@ def put_json(url, data = None, data_j = None, mime = None, auth_callback = None,
                 url,
                 data = data,
                 data_j = data_j,
+                data_m = data_m,
                 mime = mime,
                 **kwargs
             )
@@ -184,7 +203,14 @@ def _get_json(url, **kwargs):
     contents_s = json.loads(contents) if contents else None
     return contents_s
 
-def _post_json(url, data = None, data_j = None, mime = None, **kwargs):
+def _post_json(
+    url,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None,
+    **kwargs
+):
     values = kwargs or {}
     data_e = urllib.urlencode(values, doseq = True)
 
@@ -194,6 +220,10 @@ def _post_json(url, data = None, data_j = None, mime = None, **kwargs):
         data = json.dumps(data_j)
         url = url + "?" + data_e
         mime = mime or "application/json"
+    elif data_m:
+        url = url + "?" + data_e
+        content_type, data = _encode_multipart(data_m)
+        mime = mime or content_type
     elif data_e:
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
@@ -207,7 +237,14 @@ def _post_json(url, data = None, data_j = None, mime = None, **kwargs):
     contents_s = json.loads(contents)
     return contents_s
 
-def _put_json(url, data = None, data_j = None, mime = None, **kwargs):
+def _put_json(
+    url,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None,
+    **kwargs
+):
     values = kwargs or {}
     data_e = urllib.urlencode(values, doseq = True)
 
@@ -217,6 +254,10 @@ def _put_json(url, data = None, data_j = None, mime = None, **kwargs):
         data = json.dumps(data_j)
         url = url + "?" + data_e
         mime = mime or "application/json"
+    elif data_m:
+        url = url + "?" + data_e
+        content_type, data = _encode_multipart(data_m)
+        mime = mime or content_type
     elif data_e:
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
@@ -243,3 +284,33 @@ def _delete_json(url, **kwargs):
     contents = response.read()
     contents_s = json.loads(contents)
     return contents_s
+
+def _encode_multipart(fields):
+    boundary = "----------lLGEUgQPzMCZPTCtTbusAGQswgbVTCdJcCIDhUcwYboCyogW"
+    buffer = []
+
+    for key, value in fields.iteritems():
+        value_t = type(value)
+
+        if value_t == types.TupleType: is_file = True
+        else: is_file = False
+
+        if is_file:
+            header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
+                (key, value[0])
+            value = value[1]
+        else:
+            header = "Content-Disposition: form-data; name=\"%s\"" % key
+            value = unicode(value).encode("utf-8")
+
+        buffer.append("--" + boundary)
+        buffer.append(header)
+        buffer.append("")
+        buffer.append(value)
+
+    buffer.append("--" + boundary + "--")
+    buffer.append("")
+    body = "\r\n".join(buffer)
+    content_type = "multipart/form-data; boundary=%s" % boundary
+
+    return content_type, body
