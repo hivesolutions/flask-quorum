@@ -353,7 +353,8 @@ def before_request():
 def context_processor():
     return dict(
         acl = acl.check_login,
-        conf = config.conf
+        conf = config.conf,
+        nl_to_br = util.nl_to_br
     )
 
 def start_execution():

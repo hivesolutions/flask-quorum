@@ -199,3 +199,21 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
     """
 
     return "".join(random.choice(chars) for _index in range(size))
+
+def nl_to_br(value):
+    """
+    Replaces the occurrences of the newline character in the
+    string with the html break line character.
+
+    This is useful for one trying to convert a plain text
+    representation of a string into html representation.
+
+    @type value: String
+    @param value: The base value that is going to be used in
+    the conversion to the html value.
+    @rtype: String
+    @return: The string containing the newline characters replaced
+    with line breaking html tags.
+    """
+
+    return value.replace("\n", "<br/>\n")
