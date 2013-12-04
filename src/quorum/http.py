@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import types
+import random
+import string
 import urllib
 import urllib2
 
@@ -47,6 +49,10 @@ import exceptions
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
 operations in the http connection """
+
+RANGE = random.choice(string.ascii_letters + string.digits)
+""" The range of characters that are going to be used in
+the generation of the boundary value for the mime """
 
 def try_auth(auth_callback, params):
     if not auth_callback: raise
@@ -286,7 +292,7 @@ def _delete_json(url, **kwargs):
     return contents_s
 
 def _encode_multipart(fields):
-    boundary = "----------lLGEUgQPzMCZPTCtTbusAGQswgbVTCdJcCIDhUcwYboCyogW"
+    boundary = _create_boundary(fields)
     buffer = []
 
     for key, value in fields.iteritems():
@@ -314,3 +320,26 @@ def _encode_multipart(fields):
     content_type = "multipart/form-data; boundary=%s" % boundary
 
     return content_type, body
+
+def _create_boundary(fields, size = 32):
+    while True:
+        base = "".join(RANGE for _x in range(size))
+        boundary = "----------" + base
+        result = _try_boundary(fields, boundary)
+        if result: break
+
+    return boundary
+
+def _try_boundary(fields, boundary):
+    for key, value in fields.iteritems():
+        value_t = type(value)
+
+        if value_t == types.TupleType: is_file = True
+        else: is_file = False
+
+        if is_file: value = value[1]
+
+        if not key.find(boundary) == -1: return False
+        if not value.find(boundary) == -1: return False
+
+    return True
