@@ -228,7 +228,7 @@ def _post_json(
         mime = mime or "application/json"
     elif data_m:
         url = url + "?" + data_e
-        content_type, data = _encode_multipart(data_m)
+        content_type, data = _encode_multipart(data_m, doseq = True)
         mime = mime or content_type
     elif data_e:
         data = data_e
@@ -262,7 +262,7 @@ def _put_json(
         mime = mime or "application/json"
     elif data_m:
         url = url + "?" + data_e
-        content_type, data = _encode_multipart(data_m)
+        content_type, data = _encode_multipart(data_m, doseq = True)
         mime = mime or content_type
     elif data_e:
         data = data_e
@@ -291,28 +291,32 @@ def _delete_json(url, **kwargs):
     contents_s = json.loads(contents)
     return contents_s
 
-def _encode_multipart(fields):
-    boundary = _create_boundary(fields)
+def _encode_multipart(fields, doseq = False):
+    boundary = _create_boundary(fields, doseq = doseq)
     buffer = []
 
-    for key, value in fields.iteritems():
-        value_t = type(value)
+    for key, values in fields.iteritems():
+        is_list = doseq and type(values) == types.ListType
+        values = values if is_list else [values]
 
-        if value_t == types.TupleType: is_file = True
-        else: is_file = False
+        for value in values:
+            value_t = type(value)
 
-        if is_file:
-            header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
-                (key, value[0])
-            value = value[1]
-        else:
-            header = "Content-Disposition: form-data; name=\"%s\"" % key
-            value = unicode(value).encode("utf-8")
+            if value_t == types.TupleType: is_file = True
+            else: is_file = False
 
-        buffer.append("--" + boundary)
-        buffer.append(header)
-        buffer.append("")
-        buffer.append(value)
+            if is_file:
+                header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
+                    (key, value[0])
+                value = value[1]
+            else:
+                header = "Content-Disposition: form-data; name=\"%s\"" % key
+                value = unicode(value).encode("utf-8")
+
+            buffer.append("--" + boundary)
+            buffer.append(header)
+            buffer.append("")
+            buffer.append(value)
 
     buffer.append("--" + boundary + "--")
     buffer.append("")
@@ -321,27 +325,31 @@ def _encode_multipart(fields):
 
     return content_type, body
 
-def _create_boundary(fields, size = 32):
+def _create_boundary(fields, size = 32, doseq = False):
     while True:
         base = "".join(random.choice(RANGE) for _value in range(size))
         boundary = "----------" + base
-        result = _try_boundary(fields, boundary)
+        result = _try_boundary(fields, boundary, doseq = doseq)
         if result: break
 
     return boundary
 
-def _try_boundary(fields, boundary):
-    for key, value in fields.iteritems():
-        value_t = type(value)
+def _try_boundary(fields, boundary, doseq = False):
+    for key, values in fields.iteritems():
+        is_list = doseq and type(values) == types.ListType
+        values = values if is_list else [values]
 
-        if value_t == types.TupleType: is_file = True
-        else: is_file = False
+        for value in values:
+            value_t = type(value)
 
-        if is_file: name = value[0]; value = value[1]
-        else: name = ""; value = unicode(value).encode("utf-8")
+            if value_t == types.TupleType: is_file = True
+            else: is_file = False
 
-        if not key.find(boundary) == -1: return False
-        if not name.find(boundary) == -1: return False
-        if not value.find(boundary) == -1: return False
+            if is_file: name = value[0]; value = value[1]
+            else: name = ""; value = unicode(value).encode("utf-8")
+
+            if not key.find(boundary) == -1: return False
+            if not name.find(boundary) == -1: return False
+            if not value.find(boundary) == -1: return False
 
     return True
