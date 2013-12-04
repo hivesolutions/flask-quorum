@@ -50,7 +50,7 @@ TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
 operations in the http connection """
 
-RANGE = random.choice(string.ascii_letters + string.digits)
+RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
 
@@ -323,7 +323,7 @@ def _encode_multipart(fields):
 
 def _create_boundary(fields, size = 32):
     while True:
-        base = "".join(RANGE for _x in range(size))
+        base = "".join(random.choice(RANGE) for _value in range(size))
         boundary = "----------" + base
         result = _try_boundary(fields, boundary)
         if result: break
@@ -337,9 +337,11 @@ def _try_boundary(fields, boundary):
         if value_t == types.TupleType: is_file = True
         else: is_file = False
 
-        if is_file: value = value[1]
+        if is_file: name = value[0]; value = value[1]
+        else: name = ""; value = unicode(value).encode("utf-8")
 
         if not key.find(boundary) == -1: return False
+        if not name.find(boundary) == -1: return False
         if not value.find(boundary) == -1: return False
 
     return True
