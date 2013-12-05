@@ -11,6 +11,7 @@ Current Versions
 
     * New support for :func:`quorum.exists_amazon_key` and :func:`quorum.clear_amazon_bucket` calls
     * Better unit testing for ``amazon.py``
+    * Support for the SERVER_* environment variables
 
 0.1.7
 ^^^^^

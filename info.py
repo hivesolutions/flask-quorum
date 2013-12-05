@@ -38,7 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 NAME = "quorum"
-VERSION = "0.1.7"
+VERSION = "0.1.8"
 AUTHOR = "Hive Solutions Lda."
 EMAIL = "development@hive.pt"
 DESCRIPTION = "Quorum Extensions for Flask"

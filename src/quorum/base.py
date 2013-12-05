@@ -142,12 +142,17 @@ def run_netius():
             server = "netius"
         )
 
+    kwargs = dict()
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
     ssl = int(config.conf("SSL", 0)) and True or False
     key_file = config.conf("KEY_FILE", None)
     cer_file = config.conf("CER_FILE", None)
-    server = netius.servers.WSGIServer(APP)
+    servers = config.conf_prefix("SERVER_")
+    for name, value in servers.iteritems():
+        name_s = name.lower()[7:]
+        kwargs[name_s] = value
+    server = netius.servers.WSGIServer(APP, **kwargs)
     server.serve(
         host = host,
         port = port,
