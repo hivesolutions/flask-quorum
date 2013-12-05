@@ -46,5 +46,12 @@ def conf(name, default = None, cast = None):
     value = cast(value) if cast else value
     return value
 
+def conf_prefix(prefix):
+    config = dict()
+    for name, value in config_g.iteritems():
+        if not name.startswith(prefix): continue
+        config[name] = value
+    return config
+
 def confs(name, value):
     config_g[name] = value
