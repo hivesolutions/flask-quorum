@@ -233,8 +233,10 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected
     name = name + "-" + instance if instance else name
+    prefix = instance + "-" if instance else ""
     suffix = "-" + instance if instance else ""
     level = debug and logging.DEBUG or logging.WARN
+    logger = logger and prefix + logger
 
     # creates the initial app reference using the provided one or
     # creating a new one from the provided/computed name
