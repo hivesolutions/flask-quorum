@@ -206,11 +206,16 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     global APP
     if APP: return APP
 
-    app = app or flask.Flask(name)
-
+    # runs the initial loading of the configuration from all
+    # the currently available sources (eg: file, environment, etc.)
     load_all()
-    load_app_config(app, kwargs)
+
+    # retrieves the value of all the configuration considered
+    # to be base and that are going to be used in the loading
+    # of the current application (with default values)
     debug = config.conf("DEBUG", False, cast = bool)
+    name = config.conf("NAME", name)
+    instance = config.conf("INSTANCE", None)
     force_ssl = config.conf("FORCE_SSL", False)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
@@ -224,9 +229,20 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
+
+    # creates the proper values according to the currently provided
+    # ones so that they match the ones that are expected
+    name = name + "-" + instance if instance else name
+    suffix = "-" + instance if instance else ""
     level = debug and logging.DEBUG or logging.WARN
 
+    # creates the initial app reference using the provided one or
+    # creating a new one from the provided/computed name
+    app = app or flask.Flask(name)
+
+    load_app_config(app, kwargs)
     start_log(app, name = logger, level = level)
+
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if rabbit_url: rabbitmq.url = rabbit_url
@@ -241,7 +257,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     if smtp_password: mail.SMTP_PASSWORD = smtp_password
     if execution: start_execution()
     if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
-    if mongo_database: mongodb.database = mongo_database
+    if mongo_database: mongodb.database = mongo_database + suffix
     if models: setup_models(models)
     if force_ssl: extras.SSLify(app)
     app.before_request(before_request)

@@ -4,6 +4,19 @@ Configuration Variables
 Global
 ------
 
+.. rst:directive:: .. NAME:: string (default = None)
+
+    String that is going to be used to identify the app
+    for the internal structures a fallback value should
+    be defined by the developer of the app.
+
+.. rst:directive:: .. INSTANCE:: string (default = None)
+
+    The descriptive value of the instance that is going
+    to be executed. This value should provide the required
+    mechanisms to correctly separate to virtually different
+    running instance (eg: databases, log files, etc.).
+
 .. rst:directive:: .. DEBUG:: boolean (default = False)
 
     If the application should be ran under the run mode.
