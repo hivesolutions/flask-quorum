@@ -323,38 +323,65 @@ def load_app_config(app, configs):
         app.config[name] = value
 
 def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
+    # "resolves" the proper logger file path tkaing into account
+    # the currently defined operative system, should uses the sytem
+    # level path in case the operative system is unix based
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
     path = name and path_t % name
 
-    app.handlers = {}
+    # creates the map that is going to be used to store the
+    # various handlers registered for the logger
+    app.handlers = dict()
 
+    # creates the formatter object from the provided string
+    # so that it may be used in the various handlers
     formatter = logging.Formatter(format)
-    logger = logging.getLogger("quorum")
+
+    # retrieves the reference to the logger object currently
+    # associated with the app and disable the parent in it and
+    # sets the proper debug level, note that the logger is
+    # going to be shared between quorum and flask (common logger)
+    logger = app.logger if hasattr(app, "logger") else logging.getLogger("quorum")
     logger.parent = None
     logger.setLevel(level)
 
+    # creates both the stream and the memory based handlers that
+    # are going to be used for the current logger
     stream_handler = logging.StreamHandler()
     memory_handler = log.MemoryHandler()
 
     try:
+        # tries to create the file handler for the logger with the
+        # resolve path (operation may fail for permissions)
         file_handler = path and logging.FileHandler(path)
     except:
+        # in case there's an error creating the file handler for
+        # the logger prints an error message indicating the problem
         sys.stderr.write("Problem starting logging for file '%s'\n" % path)
         file_handler = None
 
-    stream_handler and logger.addHandler(stream_handler)
-    memory_handler and logger.addHandler(memory_handler)
-    file_handler and logger.addHandler(file_handler)
+    # adds the various created handler to the current logger so that
+    # they are going to be used when using the logger for output
+    if stream_handler: logger.addHandler(stream_handler)
+    if memory_handler: logger.addHandler(memory_handler)
+    if file_handler: logger.addHandler(file_handler)
 
+    # for each of the handlers adds them to the handlers map in case
+    # they are valid and defined (no problem in construction)
     if stream_handler: app.handlers["stream"] = stream_handler
     if memory_handler: app.handlers["memory"] = memory_handler
     if file_handler: app.handlers["file"] = file_handler
 
+    # iterates over the complete set of handlers currently
+    # registered in the logger to properly set the formatter
+    # and the level for all of them (as specified)
     for handler in logger.handlers:
         handler.setFormatter(formatter)
         handler.setLevel(level)
 
+    # sets the current logger in the top level app value so that
+    # this logger is going to be used as the quorum logger
     app.logger_q = logger
 
 def get_log(app = None):
