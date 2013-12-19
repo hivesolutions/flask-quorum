@@ -179,6 +179,34 @@ def load_form(form):
 def run_thread(function, *args, **kwargs):
     return thread.start_new_thread(function, args, kwargs)
 
+def camel_to_underscore(camel):
+    """
+    Converts the provided camel cased based value into
+    a normalized underscore based string.
+
+    This is useful as most of the python string standards
+    are compliant with the underscore strategy.
+
+    @type camel: String
+    @param camel: The camel cased string that is going to be
+    converted into an underscore based string.
+    @rtype: String
+    @return The underscore based string resulting from the
+    conversion of the provided camel cased one.
+    """
+
+    values = []
+    camel_l = len(camel)
+
+    for index in xrange(camel_l):
+        char = camel[index]
+        is_upper = char.isupper()
+
+        if is_upper and not index == 0: values.append("_")
+        values.append(char)
+
+    return "".join(values).lower()
+
 def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
     """
     Generates a random identifier (may be used as password) with

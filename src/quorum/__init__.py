@@ -52,6 +52,7 @@ import log
 import mail
 import model
 import mongodb
+import observer
 import pusherc
 import rabbitmq
 import redisdb
@@ -77,6 +78,7 @@ from jsonf import *
 from log import *
 from mail import *
 from model import *
+from observer import *
 from typesf import *
 from unit_test import *
 from util import *
