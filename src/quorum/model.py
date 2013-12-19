@@ -74,7 +74,9 @@ fails an so it must be used carefully """
 class Model(observer.Observable):
 
     def __init__(self, model = None):
+        self.__dict__["_events"] = {}
         self.__dict__["model"] = model or {}
+        observer.Observable.__init__(self)
 
     def __getattribute__(self, name):
         try:
@@ -595,13 +597,13 @@ class Model(observer.Observable):
         # the current class and in case the object is not
         # the bases set returns the set immediately
         bases = cls.__bases__
-        if not object in bases: return bases
+        if not observer.Observable in bases: return bases
 
         # converts the base classes into a list and removes
         # the object class from it, then returns the new bases
         # list (without the object class)
         bases = list(bases)
-        bases.remove(object)
+        bases.remove(observer.Observable)
         return bases
 
     @classmethod

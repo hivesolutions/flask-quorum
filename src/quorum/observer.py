@@ -53,12 +53,12 @@ class Observable(object):
     and should avoid variable naming collision.
     """
 
-    _events = {}
+    _events_g = {}
     """ The dictionary containing the global association
     between the global event names and the handler methods """
 
     def __init__(self, *args, **kwargs):
-        self.events = {}
+        self._events = {}
 
     @classmethod
     def name_f(cls, name):
@@ -70,30 +70,30 @@ class Observable(object):
     @classmethod
     def bind_g(cls, name, method):
         name_f = cls.name_f(name)
-        methods = cls._events.get(name_f, [])
+        methods = cls._events_g.get(name_f, [])
         methods.append(method)
-        cls._events[name_f] = methods
+        cls._events_g[name_f] = methods
 
     @classmethod
     def unbind_g(cls, name, method = None):
         name_f = cls.name_f(name)
-        methods = cls._events.get(name_f, [])
+        methods = cls._events_g.get(name_f, [])
         if method: methods.remove(method)
         else: del methods[:]
 
     @classmethod
     def trigger_g(cls, name, *args, **kwargs):
         name_f = cls.name_f(name)
-        methods = cls._events.get(name_f, [])
+        methods = cls._events_g.get(name_f, [])
         for method in methods: method(*args, **kwargs)
 
     def bind(self, name, method):
-        methods = self.events.get(name, [])
+        methods = self._events.get(name, [])
         methods.append(method)
-        self.events[name] = methods
+        self._events[name] = methods
 
     def unbind(self, name, method = None):
-        methods = self.events.get(name, [])
+        methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
 
@@ -102,6 +102,6 @@ class Observable(object):
         self.trigger_l(name, cls)
 
     def trigger_l(self, name, level, *args, **kwargs):
-        methods = self.events.get(name, [])
+        methods = self._events.get(name, [])
         for method in methods: method(*args, **kwargs)
         level.trigger_g(name, self, *args, **kwargs)
