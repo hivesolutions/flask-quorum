@@ -280,7 +280,7 @@ def no_self(name):
         value = object.get(name, None)
         if value == None: return True
         values = value.ids if hasattr(value, "ids") else value
-        if not id in values: return True
+        if not _id in values: return True
         raise exceptions.ValidationInternalError(
             name, "contains self"
         )
