@@ -62,7 +62,7 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 """ The url regex used to validate
 if the provided value is in fact an URL/URI """
 
-def validate(method = None, methods = [], object = None, build = True):
+def validate(method = None, methods = [], object = None, ctx = None, build = True):
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
     # an extra level of indirection
@@ -88,7 +88,7 @@ def validate(method = None, methods = [], object = None, build = True):
         for name, value in flask.request.args.iteritems(): object[name] = value
 
     for method in methods:
-        try: method(object)
+        try: method(object, ctx = ctx)
         except exceptions.ValidationInternalError, error:
             errors.append((error.name, error.message))
 
@@ -111,7 +111,7 @@ def validate_b(method = None, methods = [], object = None, build = True):
     return result
 
 def eq(name, value_c):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == value_c: return True
         raise exceptions.ValidationInternalError(
@@ -120,7 +120,7 @@ def eq(name, value_c):
     return validation
 
 def gt(name, value_c):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value > value_c: return True
         raise exceptions.ValidationInternalError(
@@ -129,7 +129,7 @@ def gt(name, value_c):
     return validation
 
 def gte(name, value_c):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value >= value_c: return True
         raise exceptions.ValidationInternalError(
@@ -138,7 +138,7 @@ def gte(name, value_c):
     return validation
 
 def lt(name, value_c):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value < value_c: return True
         raise exceptions.ValidationInternalError(
@@ -147,7 +147,7 @@ def lt(name, value_c):
     return validation
 
 def lte(name, value_c):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value <= value_c: return True
         raise exceptions.ValidationInternalError(
@@ -156,14 +156,14 @@ def lte(name, value_c):
     return validation
 
 def not_null(name):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if not value == None: return True
         raise exceptions.ValidationInternalError(name, "value is not set")
     return validation
 
 def not_empty(name):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value): return True
@@ -171,7 +171,7 @@ def not_empty(name):
     return validation
 
 def is_in(name, values):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value in values: return True
@@ -179,7 +179,7 @@ def is_in(name, values):
     return validation
 
 def is_email(name):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if EMAIL_REGEX.match(value): return True
@@ -187,7 +187,7 @@ def is_email(name):
     return validation
 
 def is_url(name):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if URL_REGEX.match(value): return True
@@ -195,7 +195,7 @@ def is_url(name):
     return validation
 
 def is_regex(name, regex):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         match = re.match(regex, value)
@@ -206,7 +206,7 @@ def is_regex(name, regex):
     return validation
 
 def string_gt(name, size):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value) > size: return True
@@ -216,7 +216,7 @@ def string_gt(name, size):
     return validation
 
 def string_lt(name, size):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value) < size: return True
@@ -226,7 +226,7 @@ def string_lt(name, size):
     return validation
 
 def equals(first_name, second_name):
-    def validation(object):
+    def validation(object, ctx):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
         if first_value == None: return True
@@ -238,7 +238,7 @@ def equals(first_name, second_name):
     return validation
 
 def not_past(name):
-    def validation(object):
+    def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value >= datetime.datetime.utcnow(): return True
@@ -248,7 +248,7 @@ def not_past(name):
     return validation
 
 def not_duplicate(name, collection):
-    def validation(object):
+    def validation(object, ctx):
         _id = object.get("_id", None)
         value = object.get(name, None)
         if value == None: return True
@@ -262,11 +262,25 @@ def not_duplicate(name, collection):
         )
     return validation
 
-def all_different(name):
-    def validation(object):
+def all_different(name, name_ref = None):
+    def validation(object, ctx):
+        # uses the currently provided context to retrieve
+        # the definition of the name to be validation and
+        # in it's a valid relation type tries to retrieve
+        # the underlying referenced name otherwise default
+        # to the provided one or the id name
+        cls = ctx.__class__
+        definition = cls.definition_n(name)
+        type = definition.get("type", unicode)
+        _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
+
         value = object.get(name, None)
         if value == None: return True
-        values = value.ids if hasattr(value, "ids") else value
+        if len(value) == 0: return True
+        if hasattr(value, "ids"): values = value.ids
+        else: values = [getattr(_value, _name_ref) if hasattr(_value, _name_ref) else _value\
+            for _value in value]
+
         values_set = set(values)
         if len(value) == len(values_set): return True
         raise exceptions.ValidationInternalError(
@@ -274,13 +288,31 @@ def all_different(name):
         )
     return validation
 
-def no_self(name):
-    def validation(object):
-        _id = object.get("id", None)
+def no_self(name, name_ref = None):
+    def validation(object, ctx):
+        # uses the currently provided context to retrieve
+        # the definition of the name to be validation and
+        # in it's a valid relation type tries to retrieve
+        # the underlying referenced name otherwise default
+        # to the provided one or the id name
+        cls = ctx.__class__
+        definition = cls.definition_n(name)
+        type = definition.get("type", unicode)
+        _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
+
+        _id = object.get(_name_ref, None)
         value = object.get(name, None)
+        if _id == None: return True
         if value == None: return True
-        values = value.ids if hasattr(value, "ids") else value
-        if not _id in values: return True
+        if hasattr(value, "ids"):
+            values = value.ids
+            exists = _id in values
+        else:
+            values = [getattr(_value, _name_ref) if hasattr(_value, _name_ref) else _value\
+                for _value in value]
+            exists = _id in values
+
+        if not exists: return True
         raise exceptions.ValidationInternalError(
             name, "contains self"
         )
