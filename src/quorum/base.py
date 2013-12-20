@@ -339,11 +339,13 @@ def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     formatter = logging.Formatter(format)
 
     # retrieves the reference to the logger object currently
-    # associated with the app and disable the parent in it and
+    # associated with the app and disable the parent in it,
+    # then removes the complete set of associated handlers and
     # sets the proper debug level, note that the logger is
     # going to be shared between quorum and flask (common logger)
     logger = app.logger if hasattr(app, "logger") else logging.getLogger("quorum")
     logger.parent = None
+    logger.handlers = []
     logger.setLevel(level)
 
     # creates both the stream and the memory based handlers that
