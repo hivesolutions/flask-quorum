@@ -96,7 +96,7 @@ class RedisShelve(RedisMemory):
 
     def __init__(self, path = "redis.shelve"):
         RedisMemory.__init__(self)
-        self.values = shelve.open(path)
+        self.values = shelve.open(path, writeback = True)
 
     def close(self):
         self.values.close()
