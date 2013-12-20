@@ -323,8 +323,8 @@ def load_app_config(app, configs):
         app.config[name] = value
 
 def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
-    # "resolves" the proper logger file path tkaing into account
-    # the currently defined operative system, should uses the sytem
+    # "resolves" the proper logger file path taking into account
+    # the currently defined operative system, should uses the system
     # level path in case the operative system is unix based
     if os.name == "nt": path_t = "%s"
     else: path_t = "/var/log/%s"
