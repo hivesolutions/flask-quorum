@@ -152,6 +152,8 @@ def run_netius():
     for name, value in servers.iteritems():
         name_s = name.lower()[7:]
         kwargs[name_s] = value
+    kwargs["handlers"] = get_handlers()
+    kwargs["level"] = get_level()
     server = netius.servers.WSGIServer(APP, **kwargs)
     server.serve(
         host = host,
@@ -161,8 +163,17 @@ def run_netius():
         cer_file = cer_file
     )
 
-def load(app = None, name = None, secret_key = None, execution = True, redis_session = False,\
-    mongo_database = None, logger = None, models = None, **kwargs):
+def load(
+    app = None,
+    name = None,
+    secret_key = None,
+    execution = True,
+    redis_session = False,
+    mongo_database = None,
+    logger = None,
+    models = None,
+    **kwargs
+):
     """
     Initial loader function responsible for the overriding of
     the flask loading system and for the loading of configuration.
@@ -214,6 +225,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     # to be base and that are going to be used in the loading
     # of the current application (with default values)
     debug = config.conf("DEBUG", False, cast = bool)
+    level_s = config.conf("LEVEL", "WARNING")
     name = config.conf("NAME", name)
     instance = config.conf("INSTANCE", None)
     force_ssl = config.conf("FORCE_SSL", False)
@@ -235,7 +247,7 @@ def load(app = None, name = None, secret_key = None, execution = True, redis_ses
     name = name + "-" + instance if instance else name
     prefix = instance + "-" if instance else ""
     suffix = "-" + instance if instance else ""
-    level = debug and logging.DEBUG or logging.WARN
+    level = debug and logging.DEBUG or logging.getLevelName(level_s)
     logger = logger and prefix + logger
 
     # creates the initial app reference using the provided one or
@@ -390,6 +402,14 @@ def get_log(app = None):
     app = app or APP
     is_custom = hasattr(app, "logger_q")
     return app.logger_q if is_custom else app.logger
+
+def get_level(app = None):
+    logger = get_log(app = app)
+    return logger.level
+
+def get_handlers(app = None):
+    logger = get_log(app = app)
+    return logger.handlers
 
 def finalize(value):
     # returns an empty string as value representation
