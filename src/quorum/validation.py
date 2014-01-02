@@ -182,6 +182,7 @@ def is_email(name):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
+        if value == "": return True
         if EMAIL_REGEX.match(value): return True
         raise exceptions.ValidationInternalError(name, "value is not a valid email")
     return validation
@@ -190,6 +191,7 @@ def is_url(name):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
+        if value == "": return True
         if URL_REGEX.match(value): return True
         raise exceptions.ValidationInternalError(name, "value is not a valid url")
     return validation
@@ -198,6 +200,7 @@ def is_regex(name, regex):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
+        if value == "": return True
         match = re.match(regex, value)
         if match: return True
         raise exceptions.ValidationInternalError(
