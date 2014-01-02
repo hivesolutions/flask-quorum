@@ -113,6 +113,7 @@ def validate_b(method = None, methods = [], object = None, build = True):
 def eq(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        if value == None: return True
         if value == value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be equal to %s" % str(value_c)
@@ -122,6 +123,7 @@ def eq(name, value_c):
 def gt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        if value == None: return True
         if value > value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than %s" % str(value_c)
@@ -131,6 +133,7 @@ def gt(name, value_c):
 def gte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        if value == None: return True
         if value >= value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than or equal to %s" % str(value_c)
@@ -140,6 +143,7 @@ def gte(name, value_c):
 def lt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        if value == None: return True
         if value < value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % str(value_c)
@@ -149,6 +153,7 @@ def lt(name, value_c):
 def lte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        if value == None: return True
         if value <= value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than or equal to %s" % str(value_c)
