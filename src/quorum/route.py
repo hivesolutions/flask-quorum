@@ -42,6 +42,7 @@ import flask
 import types
 import traceback
 
+import log
 import base
 import model
 import mongodb
@@ -67,9 +68,22 @@ def route(*args, **kwargs):
         def _decorator(*args, **kwargs):
             try: result = function(*args, **kwargs)
             except exceptions.OperationalError, exception:
+                # prints a warning message to the current logger about the exception
+                # that is being handled, note that the traceback is also logger, allowing
+                # further debugging information to be printed (extra traceability)
+                log.info(
+                    "Operational problem while routing request - %s" % unicode(exception),
+                    log_trace = True
+                )
+
+                # retrieves the formatted version of the traceback information and then
+                # splits this information into the various lines that are contained in it
                 formatted = traceback.format_exc()
                 lines = formatted.splitlines()
 
+                # creates a new response object containing the information about the exception
+                # this is going to include the proper exception message, code and also the set
+                # of lines that compose the traceback of the exception
                 return flask.Response(
                     json.dumps({
                         "exception" : {
@@ -83,9 +97,22 @@ def route(*args, **kwargs):
                     mimetype = "application/json"
                 )
             except BaseException, exception:
+                # prints a warning message to the current logger about the exception
+                # that is being handled, note that the traceback is also logger, allowing
+                # further debugging information to be printed (extra traceability)
+                log.warning(
+                    "Problem while routing request - %s" % unicode(exception),
+                    log_trace = True
+                )
+
+                # retrieves the formatted version of the traceback information and then
+                # splits this information into the various lines that are contained in it
                 formatted = traceback.format_exc()
                 lines = formatted.splitlines()
 
+                # creates the response object that is going to be returned to the client indicating
+                # that an undefined exception has just been raised, note that the error code
+                # is the internal server error one (undefined exception)
                 return flask.Response(
                     json.dumps({
                         "exception" : {
