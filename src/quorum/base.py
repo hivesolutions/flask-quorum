@@ -250,8 +250,17 @@ def load(
     level = debug and logging.DEBUG or logging.getLevelName(level_s)
     logger = logger and prefix + logger
 
+    # retrieves the last stack element as the previous element and
+    # uses it to retrieve the module that has triggered the loading
+    previous = inspect.stack()[1]
+    module = inspect.getmodule(previous[0])
+
+    # uses the module to retrieve the base path for the execution of
+    # the app, this is going to be used to calculate relative paths
+    path = os.path.dirname(module.__file__)
+
     # creates the initial app reference using the provided one or
-    # creating a new one from the provided/computed name
+    # creates a new one from the provided/computed name
     app = app or flask.Flask(name)
 
     load_app_config(app, kwargs)
@@ -279,6 +288,8 @@ def load(
     app.request_class = request.Request
     app.debug = debug
     app.models = models
+    app.module = module
+    app.path = path
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route
@@ -287,10 +298,11 @@ def load(
     )
     APP = app
 
-    previous = inspect.stack()[1]
-    module = inspect.getmodule(previous[0])
+    # verifies if the module that has called the method is not
+    # of type main and in case it's not calls the runner methods
+    # immediately so that the proper initialization is done, then
+    # returns the app reference object to the caller method
     if not module.__name__ == "__main__": call_run()
-
     return app
 
 def unload():
