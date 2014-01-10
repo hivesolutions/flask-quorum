@@ -46,6 +46,7 @@ import thread
 import defines
 
 ALIAS = {
+    "filter_def" : "find_d",
     "filter_string" : "find_s",
     "start_record" : "skip",
     "number_records" : "limit"
@@ -56,7 +57,8 @@ between the normalized manned and the quorum manner """
 FIND_TYPES = {
     "skip" : int,
     "limit" : int,
-    "find_s" : str
+    "find_s" : str,
+    "find_d" : str
 }
 """ The map associating the various find fields with
 their respective types """
