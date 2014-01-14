@@ -119,6 +119,24 @@ def get_object(object = None, alias = False, find = False):
 
     return object
 
+def is_mobile():
+    """
+    Verifies if the current user agent string represents a
+    mobile agent, for that a series of regular expressions
+    are matched against the user agent string.
+
+    @rtype: bool
+    @return: If the current user agent string represents a
+    mobile browser or a regular (desktop) one.
+    """
+
+    user_agent = flask.request.headers.get("User-Agent", "")
+    prefix = user_agent[:4]
+    mobile = defines.MOBILE_REGEX.search(user_agent)
+    mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
+    is_mobile = True if mobile or mobile_prefix else False
+    return is_mobile
+
 def resolve_alias(object):
     for name, value in object.items():
         if not name in ALIAS: continue
