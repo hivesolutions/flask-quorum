@@ -87,15 +87,25 @@ def request_json(request = None):
     return data_j
 
 def get_field(name, default = None, cast = None):
+    # tries to retrieve the json based representation of the provided
+    # request from all the possible sources, this is required because
+    # it's going to be used to try to retrieve a field from it
     data_j = request_json()
 
+    # tries to retrieve the requested field from all the requested sources
+    # the order of retrieval should respect the importance of each of the
+    # sources (from the least important to the most important)
     value = data_j.get(name, default)
     value = flask.request.files.get(name, value)
     value = flask.request.form.get(name, value)
     value = flask.request.args.get(name, value)
 
+    # in case the cast type value is set and the value is not invalid tries
+    # to cast the value into the requested cast type
     if cast and not value == None: value = cast(value)
 
+    # returns the final value to the caller method to be used, note that the
+    # caller method should be aware of the sources used in the field retrieval
     return value
 
 def get_object(object = None, alias = False, find = False):
