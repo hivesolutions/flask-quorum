@@ -450,8 +450,14 @@ def date_time(value, format = "%d/%m/%Y"):
     to represent the provided value.
     """
 
+    # tries to convert the provided string value into a float
+    # in case it fails the proper string value is returned
+    # immediately as a fallback procedure
     try: value_f = float(value)
     except: return value
-    date_time_s = datetime.datetime.utcfromtimestamp(value_f)
 
+    # creates the date time structure from the provided float
+    # value and then formats the date time according to the
+    # provided format and returns the resulting string
+    date_time_s = datetime.datetime.utcfromtimestamp(value_f)
     return date_time_s.strftime(format)
