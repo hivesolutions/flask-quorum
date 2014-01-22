@@ -119,14 +119,22 @@ def get_object(object = None, alias = False, find = False):
     # handles the failure setting the value as an empty map
     data_j = request_json()
 
+    # uses all the values referencing data in the request to try
+    # to populate the object this way it may be constructed using
+    # any of theses strategies (easier for the developer)
     for name, value in data_j.iteritems(): object[name] = value
     for name, value in flask.request.files.iteritems(): object[name] = value
     for name, value in flask.request.form_s.iteritems(): object[name] = value
     for name, value in flask.request.args_s.iteritems(): object[name] = value
 
+    # in case the alias flag is set tries to resolve the attribute
+    # alias and in case the find types are set converts the find
+    # based attributes using the currently defined mapping map
     alias and resolve_alias(object)
     find and find_types(object)
 
+    # returns the constructed object to the caller method this object
+    # should be a structured representation of the data in the request
     return object
 
 def is_mobile():
