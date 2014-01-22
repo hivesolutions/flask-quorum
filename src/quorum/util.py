@@ -44,6 +44,8 @@ import flask
 import string
 import random
 import thread
+import datetime
+
 import defines
 
 ALIAS = {
@@ -428,3 +430,28 @@ def nl_to_br(value):
     """
 
     return value.replace("\n", "<br/>\n")
+
+def date_time(value, format = "%d/%m/%Y"):
+    """
+    Formats the provided as a date string according to the
+    provided date format.
+
+    Assumes that the provided value represents a float string
+    and that may be used as the based timestamp for conversion.
+
+    @type value: String
+    @param value: The base timestamp value string that is going
+    to be used for the conversion of the date string.
+    @type format: String
+    @param format: The format string that is going to be used
+    when formatting the date time value.
+    @rtype: String
+    @return: The resulting date time string that may be used
+    to represent the provided value.
+    """
+
+    try: value_f = float(value)
+    except: return value
+    date_time_s = datetime.datetime.utcfromtimestamp(value_f)
+
+    return date_time_s.strftime(format)

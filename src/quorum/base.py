@@ -438,7 +438,8 @@ def context_processor():
     return dict(
         acl = acl.check_login,
         conf = config.conf,
-        nl_to_br = util.nl_to_br
+        nl_to_br = util.nl_to_br,
+        date_time = util.date_time
     )
 
 def start_execution():
