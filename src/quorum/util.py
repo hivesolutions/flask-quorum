@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import copy
 import json
+import types
 import flask
 import string
 import random
@@ -108,7 +109,7 @@ def get_field(name, default = None, cast = None):
     # caller method should be aware of the sources used in the field retrieval
     return value
 
-def get_object(object = None, alias = False, find = False):
+def get_object(object = None, alias = False, find = False, norm = True):
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
     # otherwise used an empty map (form validation)
@@ -132,6 +133,11 @@ def get_object(object = None, alias = False, find = False):
     # based attributes using the currently defined mapping map
     alias and resolve_alias(object)
     find and find_types(object)
+
+    # in case the normalization flag is set runs the normalization
+    # of the provided object so that sequences are properly handled
+    # as define in the specification (this allows multiple references)
+    norm and norm_object(object)
 
     # returns the constructed object to the caller method this object
     # should be a structured representation of the data in the request
@@ -169,6 +175,51 @@ def find_types(object):
             continue
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
+
+def norm_object(object):
+    # iterates over all the key value association in the
+    # object, trying to find the ones that refer sequences
+    # so that they may be normalized
+    for name, value in object.items():
+        # verifies if the current name references a sequence
+        # and if that's not the case continues the loop trying
+        # to find any other sequence based value
+        if not name.endswith("[]"): continue
+
+        # removes the current reference to the name as the value
+        # is not in the valid structure and then normalizes the
+        # name by removing the extra sequence indication value
+        del object[name]
+        name = name[:-2]
+
+        # in case the current value is not valid (empty) the object
+        # is set with an empty list for the current iteration as this
+        # is considered to be the default value
+        if not value: object[name] = []; continue
+
+        # retrieves the complete set of values for the current
+        # iteration cycle and uses it to measure the number of
+        # dictionary elements that are going to be contained in
+        # the sequence to be "generated", then uses this (size)
+        # value to pre-generate the complete set of dictionaries
+        values = value.values()
+        first = values[0] if values else None
+        first_t = type(first)
+        size = len(first) if first_t == types.ListType else 0
+        if size == 0: list = [value]
+        else: list = [dict() for _index in xrange(size)]
+
+        # sets the list of generates dictionaries in the object for
+        # the newly normalized name of structure
+        object[name] = list
+
+        # iterates over the complete set of key value pairs in the
+        # value to gather the value into the various objects that
+        # are contained in the sequence (normalization process)
+        for key, value in value.items():
+            for index in xrange(size):
+                _object = list[index]
+                _object[key] = value[index]
 
 def load_form(form):
     # creates the map that is going to hold the "structured"
