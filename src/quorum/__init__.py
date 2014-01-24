@@ -47,6 +47,7 @@ import export
 import extras
 import formats
 import http
+import info
 import jsonf
 import log
 import mail
@@ -75,6 +76,7 @@ from exceptions import *
 from execution import *
 from formats import *
 from http import *
+from info import *
 from jsonf import *
 from log import *
 from mail import *
