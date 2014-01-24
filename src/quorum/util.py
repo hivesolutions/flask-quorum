@@ -438,6 +438,7 @@ def set_locale():
     # than the proper setting of the os locale is done with the
     # fallback for exception being silent (non critical)
     if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
+    else: locale_n += ".utf8"
     try: locale.setlocale(locale.LC_ALL, locale_n)
     except: pass
 
