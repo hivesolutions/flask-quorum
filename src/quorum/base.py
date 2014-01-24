@@ -187,6 +187,7 @@ def load(
     mongo_database = None,
     logger = None,
     models = None,
+    safe = False,
     **kwargs
 ):
     """
@@ -205,7 +206,7 @@ def load(
     :param name: The name to be used to describe the application\
     for the management of internal values.
     :type locales: List
-    :param locales: The list containing the various locale strings for
+    :param locales: The list containing the various locale strings for\
     the locales available for the application to be loaded.
     :type secret_key: String
     :param secret_key: The secret seed value to be used for cryptographic\
@@ -226,6 +227,10 @@ def load(
     :type models: Module
     :param models: The module containing the complete set of model classes to\
     be used by the data infra-structure (eg: ``mongo``).
+    :type safe: bool
+    :param safe: If the application should be run in a safe mode meaning that\
+    extra validations will be done to ensure proper execution, typically these\
+    kind of validations have a performance impacts (not recommended).
     :rtype: Application
     :return: The application that is used by the loaded quorum environment in\
     case one was provided that is retrieved, otherwise the newly created one is\
@@ -309,6 +314,7 @@ def load(
     app.context_processor(context_processor)
     app.request_class = request.Request
     app.locales = locales
+    app.safe = safe
     app.debug = debug
     app.models = models
     app.module = module
@@ -460,7 +466,7 @@ def before_request():
     util.set_locale()
 
 def after_request(response):
-    util.reset_locale()
+    if APP.safe: util.reset_locale()
     return response
 
 def context_processor():
