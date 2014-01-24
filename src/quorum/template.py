@@ -43,8 +43,13 @@ import flask
 import base
 
 def render_template(name, *args, **kwargs):
+    # runs the resolution process in the provided template name
+    # so that the proper name is going to be used when rendering
+    # the template, then retrieves the underlying flask render
+    # template function and calls it with the new resolved name
     name = template_resolve(name)
-    return flask.render_template(name, *args, **kwargs)
+    render_template = getattr(flask, "_render_template")
+    return render_template(name, *args, **kwargs)
 
 def template_resolve(template):
     """

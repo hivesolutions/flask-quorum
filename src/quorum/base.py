@@ -59,6 +59,7 @@ import redisdb
 import mongodb
 import pusherc
 import request
+import template
 import rabbitmq
 import execution
 import exceptions
@@ -79,6 +80,19 @@ LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The logging format definition to be used by all
 the format handlers available, this string will also
 be used under the log module for handlers """
+
+def monkey():
+    """
+    Runs the dirty job of monkey patching the flask module
+    so that some of its functions get redirected to new
+    quorum functions that add extra behavior.
+
+    This is an internal function and should be changed only
+    when handling the internals of the quorum framework.
+    """
+
+    flask._render_template = flask.render_template
+    flask.render_template = template.render_template
 
 def call_run():
     global RUN_CALLED
@@ -488,3 +502,9 @@ def onrun(function):
     if fname in RUN_F: return
     RUN_F[fname] = function
     return function
+
+# runs the monkey patching of the flask module so that it
+# may be used according to the quorum specification, this
+# is used in order to avoid minimal effort in the conversion
+# of old flask based applications (reverse compatibility)
+monkey()
