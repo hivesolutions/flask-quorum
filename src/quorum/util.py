@@ -37,11 +37,13 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
 import copy
 import json
 import types
 import flask
 import string
+import locale
 import random
 import thread
 import datetime
@@ -360,6 +362,87 @@ def load_form(form):
     # a series of chained maps resulting from the parsing of the
     # linear version of the attribute names
     return form_s
+
+def load_locale(available, fallback = "en_us"):
+    # tries to gather the best locale value using the currently
+    # available strategies and in case the retrieved local is part
+    # of the valid locales for the app returns the locale, otherwise
+    # returns the fallback value instead
+    locale = get_locale(fallback = fallback)
+    if locale in available: return locale
+    return fallback
+
+def get_locale(fallback = "en_us"):
+    # tries to retrieve the locale value from the provided url
+    # parameters (this is the highest priority) and in case it
+    # exists returns this locale immediately
+    locale = flask.request.args.get("locale", None)
+    if locale: return locale
+
+    # uses the currently loaded session to try to gather the locale
+    # value from it and in case it's valid and exists returns it
+    locale = flask.session.get("locale", None)
+    if locale: return locale
+
+    # gathers the complete set of language values set in the accept
+    # language header and in case there's at least one value returned
+    # returns the first of these values as the locale
+    langs = get_langs()
+    if langs: return langs[0]
+
+    # in case this code entry is reached all the strategies for locale
+    # retrieval have failed and so the fallback value is returned
+    return fallback
+
+def get_langs():
+    # gathers the value of the accept language header and in case
+    # it's not defined returns immediately as no language can be
+    # determined using the currently provided headers
+    accept_language = flask.request.headers.get("Accept-Language", None)
+    if not accept_language: return ()
+
+    # starts the list that is going to be used to store the various
+    # languages "recovered" from the accept language header, note that
+    # the order of these languages should be from the most relevant to
+    # the least relevant as defined in http specification
+    langs = []
+
+    # splits the accept language header into the various components of
+    # it and then iterates over each of them splitting each of the
+    # components into the proper language string and priority
+    parts = accept_language.split(",")
+    for part in parts:
+        values = part.split(";", 1)
+        value_l = len(values)
+        if value_l == 1: lang, = values
+        else: lang, _priority = values
+        lang = lang.replace("-", "_")
+        lang = lang.lower()
+        langs.append(lang)
+
+    # returns the complete list of languages that have been extracted
+    # from the accept language header these list may be empty in case
+    # the header was not parsed correctly or there's no contents in it
+    return langs
+
+def set_locale():
+    # normalizes the current locale string by converting the
+    # last part of the locale string to an uppercase representation
+    # and then re-joining the various components of it
+    values = flask.request.locale.split("_", 1)
+    if len(values) > 1: values[1] = values[1].upper()
+    locale_n = "_".join(values)
+
+    # in case the current operative system is windows based an
+    # extra locale conversion operation must be performed, after
+    # than the proper setting of the os locale is done with the
+    # fallback for exception being silent (non critical)
+    if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
+    try: locale.setlocale(locale.LC_ALL, locale_n)
+    except: pass
+
+def reset_locale():
+    locale.setlocale(locale.LC_ALL, "")
 
 def run_thread(function, *args, **kwargs):
     return thread.start_new_thread(function, args, kwargs)

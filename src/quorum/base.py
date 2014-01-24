@@ -166,6 +166,7 @@ def run_netius():
 def load(
     app = None,
     name = None,
+    locales = ("en_us",),
     secret_key = None,
     execution = True,
     redis_session = False,
@@ -189,6 +190,9 @@ def load(
     :type name: String
     :param name: The name to be used to describe the application\
     for the management of internal values.
+    :type locales: List
+    :param locales: The list containing the various locale strings for
+    the locales available for the application to be loaded.
     :type secret_key: String
     :param secret_key: The secret seed value to be used for cryptographic\
     operations under flask (eg: client side sessions) this value should\
@@ -263,6 +267,9 @@ def load(
     # creates a new one from the provided/computed name
     app = app or flask.Flask(name)
 
+    # loads the app configuration from the provided keyword arguments
+    # map and then starts the logging process with the requested logger
+    # and with the provided "verbosity" level
     load_app_config(app, kwargs)
     start_log(app, name = logger, level = level)
 
@@ -284,8 +291,10 @@ def load(
     if models: setup_models(models)
     if force_ssl: extras.SSLify(app)
     app.before_request(before_request)
+    app.after_request(after_request)
     app.context_processor(context_processor)
     app.request_class = request.Request
+    app.locales = locales
     app.debug = debug
     app.models = models
     app.module = module
@@ -433,6 +442,12 @@ def finalize(value):
 def before_request():
     flask.request.args_s = util.load_form(flask.request.args)
     flask.request.form_s = util.load_form(flask.request.form)
+    flask.request.locale = util.load_locale(APP.locales)
+    util.set_locale()
+
+def after_request(response):
+    util.reset_locale()
+    return response
 
 def context_processor():
     return dict(
@@ -461,6 +476,9 @@ def setup_models(models):
         except: is_valid = False
         if not is_valid: continue
         value.setup()
+
+def templates_path():
+    return os.path.join(APP.root_path, APP.template_folder)
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)

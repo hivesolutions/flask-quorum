@@ -59,6 +59,7 @@ import redisdb
 import request
 import route
 import session
+import template
 import typesf
 import unit_test
 import util
@@ -80,6 +81,7 @@ from mail import *
 from model import *
 from observer import *
 from typesf import *
+from template import *
 from unit_test import *
 from util import *
 from validation import *
