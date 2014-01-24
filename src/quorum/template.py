@@ -42,14 +42,14 @@ import flask
 
 import base
 
-def render_template(name, *args, **kwargs):
+def render_template(template_name_or_list, **context):
     # runs the resolution process in the provided template name
     # so that the proper name is going to be used when rendering
     # the template, then retrieves the underlying flask render
     # template function and calls it with the new resolved name
-    name = template_resolve(name)
+    template_name_or_list = template_resolve(template_name_or_list)
     render_template = getattr(flask, "_render_template")
-    return render_template(name, *args, **kwargs)
+    return render_template(template_name_or_list, **context)
 
 def template_resolve(template):
     """
