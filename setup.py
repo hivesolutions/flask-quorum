@@ -66,7 +66,6 @@ setuptools.setup(
     package_dir = {
         "" : os.path.normpath("src")
     },
-    data_files = [('bitmaps', ['bm/b1.gif', 'bm/b2.gif'])],
     install_requires = [
         "flask"
     ],
