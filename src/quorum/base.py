@@ -292,6 +292,11 @@ def load(
     load_app_config(app, kwargs)
     start_log(app, name = logger, level = level)
 
+    # loads the complete set of bundle localized in the proper path into
+    # the current app environment, this is a blocking operation and may
+    # take some time to be performed completely
+    load_bundles(app)
+
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if rabbit_url: rabbitmq.url = rabbit_url
@@ -312,6 +317,7 @@ def load(
     app.before_request(before_request)
     app.after_request(after_request)
     app.context_processor(context_processor)
+    app.template_filter("locale")(util.to_locale)
     app.request_class = request.Request
     app.locales = locales
     app.safe = safe
@@ -374,6 +380,49 @@ def load_environ():
 def load_app_config(app, configs):
     for name, value in configs.iteritems():
         app.config[name] = value
+
+def load_bundles(app, offset = 2):
+    # creates the base dictionary that will handle all the loaded
+    # bundle information and sets it in the current application
+    # object reference so that may be used latter on
+    bundles = dict()
+    app.bundles = bundles
+
+    # inspects the current stack to obtain the reference to the base
+    # application module and then uses it to calculate the base path
+    # for the application, from there re-constructs the path to the
+    # bundle file and verifies its own existence
+    element = inspect.stack()[offset]
+    module = inspect.getmodule(element[0])
+    base_folder = os.path.dirname(module.__file__)
+    bundles_path = os.path.join(base_folder, "bundles")
+    if not os.path.exists(bundles_path): return
+
+    # list the bundles directory files and iterates over each of the
+    # files to load its own contents into the bundles "registry"
+    paths = os.listdir(bundles_path)
+    for path in paths:
+        # joins the current (base) bundles path with the current path
+        # in iteration to create the full path to the file and opens
+        # it trying to read its json based contents
+        path_f = os.path.join(bundles_path, path)
+        file = open(path_f, "rb")
+        try: data_j = json.load(file)
+        except: continue
+        finally: file.close()
+
+        # unpacks the current path in iteration into the base name,
+        # locale string and file extension to be used in the registration
+        # of the data in the bundles registry
+        try: _base, locale, _extension = path.split(".", 2)
+        except: continue
+
+        # retrieves a possible existing map for the current locale in the
+        # registry and updates such map with the loaded data, then re-updates
+        # the reference to the locale in the current bundle registry
+        bundle = bundles.get(locale, {})
+        bundle.update(data_j)
+        bundles[locale] = bundle
 
 def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
     # "resolves" the proper logger file path taking into account
@@ -452,6 +501,9 @@ def get_handlers(app = None):
     logger = get_log(app = app)
     return logger.handlers
 
+def get_bundle(name):
+    return APP.bundles.get(name, None)
+
 def finalize(value):
     # returns an empty string as value representation
     # for unset values, this is the default representation
@@ -473,6 +525,7 @@ def context_processor():
     return dict(
         acl = acl.check_login,
         conf = config.conf,
+        locale = util.to_locale,
         nl_to_br = util.nl_to_br,
         date_time = util.date_time
     )
@@ -499,6 +552,9 @@ def setup_models(models):
 
 def templates_path():
     return os.path.join(APP.root_path, APP.template_folder)
+
+def bundles_path():
+    return os.path.join(APP.root_path, "bundles")
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)

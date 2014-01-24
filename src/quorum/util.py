@@ -48,6 +48,7 @@ import random
 import thread
 import datetime
 
+import base
 import defines
 
 ALIAS = {
@@ -496,6 +497,29 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
     """
 
     return "".join(random.choice(chars) for _index in range(size))
+
+def to_locale(value):
+    """
+    Utility function used to localize the provided value according
+    to the currently loaded set of bundles, the bundles are loaded
+    at the application start time from the proper sources.
+
+    In case the value is not localizable (no valid bundle available)
+    it is returned as it is without change.
+
+    @type value: String
+    @param value: The value that is going to be localized according
+    to the current application environment, this may be a normal
+    english dictionary string or a variable reference.
+    @rtype: String
+    @return: The localized value for the current environment or the
+    proper (original) value in case no localization was possible.
+    """
+
+    locale = flask.request.locale
+    bundle = base.get_bundle(locale)
+    if not bundle: return value
+    return bundle.get(value, value)
 
 def nl_to_br(value):
     """
