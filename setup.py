@@ -38,7 +38,13 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import sys
 import setuptools
+
+BASE_PATH = os.path.realpath(__file__)
+BASE_DIR = os.path.dirname(BASE_PATH)
+QUORUM_DIR = os.path.join(BASE_DIR, "src", "quorum")
+sys.path.insert(0, QUORUM_DIR)
 
 import info
 
@@ -60,6 +66,7 @@ setuptools.setup(
     package_dir = {
         "" : os.path.normpath("src")
     },
+    data_files = [('bitmaps', ['bm/b1.gif', 'bm/b2.gif'])],
     install_requires = [
         "flask"
     ],
