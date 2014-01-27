@@ -112,6 +112,9 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         # be able to correctly modify it
         domain = self.get_cookie_domain(app)
 
+        # in case the session is no longer value must delete
+        # the reference in the redis object and delete the cookie
+        # from the current response object
         if not session:
             self.redis.delete(self.prefix + session.sid)
             if session.modified: response.delete_cookie(
@@ -120,6 +123,10 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
             )
             return
 
+        # retrieves the redis expiration date from the provided
+        # session object and the expiration value for the cookie
+        # and then serializes the dictionary version of the session
+        # so that it may be set as a string value in redis
         redis_expire = self.get_redis_expiration_time(app, session)
         cookie_expire = self.get_expiration_time(app, session)
         value = self.serializer.dumps(dict(session))
@@ -130,6 +137,9 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
             int(total_seconds)
         )
 
+        # sets the proper cookie value (with session identifier) in the
+        # response object so that the client may be able to re-use the
+        # session object latter for operations
         response.set_cookie(
             app.session_cookie_name,
             session.sid,
