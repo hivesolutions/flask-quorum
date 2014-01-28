@@ -98,9 +98,11 @@ def ensure_basic_auth(username, password, json_s = False):
         )
     else:
         return flask.redirect(
-            flask.url_for("login"),
-            next = flask.request.path,
-            error = "Session expired or invalid"
+            flask.url_for(
+                "login",
+                next = flask.request.path,
+                error = "Session expired or invalid"
+            )
         )
 
 def ensure_login(token = None, json_s = False):
@@ -120,9 +122,11 @@ def ensure_login(token = None, json_s = False):
         )
     else:
         return flask.redirect(
-            flask.url_for("login"),
-            next = flask.request.path,
-            error = "Session expired or invalid"
+            flask.url_for(
+                "login",
+                next = flask.request.path,
+                error = "Session expired or invalid"
+            )
         )
 
 def ensure_user(username):
