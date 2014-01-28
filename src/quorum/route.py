@@ -163,8 +163,8 @@ def route(*args, **kwargs):
         # as the already existing base decorator method otherwise keeps
         # using the clojure based one
         has_base = hasattr(function, "_base")
-        if has_base: base = function._base
-        else: base = _decorator
+        if has_base: _base = function._base
+        else: _base = _decorator
 
         # updates the decorates with the base value, this is going to be
         # the clojure based new view function, then in case this is a new
@@ -172,7 +172,7 @@ def route(*args, **kwargs):
         # of the base function (view function) that is getting decorated
         # so that the original name persists (otherwise a problem would
         # occur in werkzeug)
-        _decorator = base
+        _decorator = _base
         if not has_base:
             _decorator.__name__ = function.__name__
 
@@ -180,7 +180,7 @@ def route(*args, **kwargs):
         # value in it as the current base value so that it gets propagated
         # all the way to the top decorators in sequence (pile of decorators)
         decorated = decorator(_decorator)
-        decorated._base = base
+        decorated._base = _base
         return decorated
 
     return _route
