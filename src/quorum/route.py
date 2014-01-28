@@ -68,6 +68,11 @@ def route(*args, **kwargs):
         def _decorator(*args, **kwargs):
             try: result = function(*args, **kwargs)
             except exceptions.OperationalError, exception:
+                # runs the default handling of the user exception in the flask
+                # infra-structure so that the proper exception callbacks are called
+                # in case they exist and are properly registered
+                base.APP.handle_user_exception(exception)
+
                 # prints a warning message to the current logger about the exception
                 # that is being handled, note that the traceback is also logger, allowing
                 # further debugging information to be printed (extra traceability)
@@ -97,6 +102,11 @@ def route(*args, **kwargs):
                     mimetype = "application/json"
                 )
             except BaseException, exception:
+                # runs the default handling of the user exception in the flask
+                # infra-structure so that the proper exception callbacks are called
+                # in case they exist and are properly registered
+                base.APP.handle_user_exception(exception)
+
                 # prints a warning message to the current logger about the exception
                 # that is being handled, note that the traceback is also logger, allowing
                 # further debugging information to be printed (extra traceability)
