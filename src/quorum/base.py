@@ -45,6 +45,8 @@ import atexit
 import logging
 import inspect
 
+import werkzeug.debug
+
 import acl
 import log
 import util
@@ -119,6 +121,25 @@ def run(server = None, fallback = "base"):
         )
         runner_f and runner_f()
 
+def prepare_app():
+    """
+    Prepares the global application object encapsulating
+    it with the proper decorators so that it is enabled
+    with the proper features (eg: debugging capabilities).
+
+    This method should be called and the returned application
+    object used instead of the global one.
+
+    @rtype: Application
+    @return: The decorated application object with the proper
+    capabilities enabled, this object should be used for the
+    serving operations instead of the global one.
+    """
+
+    app = APP
+    if app.debug: app = werkzeug.debug.DebuggedApplication(app, True)
+    return app
+
 def run_base():
     debug = config.conf("DEBUG", False, cast = bool)
     reloader = config.conf("RELOADER", False, cast = bool)
@@ -142,8 +163,16 @@ def run_waitress():
 
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
+
+    # prepares the application object so that it becomes ready
+    # to be executed by the server in the proper way
+    app = prepare_app()
+
+    # starts the serving process for the waitress server with
+    # the proper network configuration values, note that no ssl
+    # support is currently available for waitress
     waitress.serve(
-        APP,
+        app,
         host = host,
         port = port
     )
@@ -168,7 +197,16 @@ def run_netius():
         kwargs[name_s] = value
     kwargs["handlers"] = get_handlers()
     kwargs["level"] = get_level()
-    server = netius.servers.WSGIServer(APP, **kwargs)
+
+    # prepares the application object so that it becomes ready
+    # to be executed by the server in the proper way
+    app = prepare_app()
+
+    # creates the netius wsgi server reference using the provided
+    # application object and the constructed keyword arguments
+    # and then call the serve method starting the event loop with
+    # the proper network configuration
+    server = netius.servers.WSGIServer(app, **kwargs)
     server.serve(
         host = host,
         port = port,
@@ -248,6 +286,7 @@ def load(
     # to be base and that are going to be used in the loading
     # of the current application (with default values)
     debug = config.conf("DEBUG", False, cast = bool)
+    reloader = config.conf("RELOADER", False, cast = bool)
     level_s = config.conf("LEVEL", "WARNING")
     name = config.conf("NAME", name)
     instance = config.conf("INSTANCE", None)
@@ -270,7 +309,7 @@ def load(
     name = name + "-" + instance if instance else name
     prefix = instance + "-" if instance else ""
     suffix = "-" + instance if instance else ""
-    level = debug and logging.DEBUG or logging.getLevelName(level_s)
+    level = logging.DEBUG if debug else logging.getLevelName(level_s)
     logger = logger and prefix + logger
 
     # retrieves the last stack element as the previous element and
@@ -322,6 +361,8 @@ def load(
     app.locales = locales
     app.safe = safe
     app.debug = debug
+    app.use_debugger = debug
+    app.use_reloader = reloader
     app.models = models
     app.module = module
     app.path = path
