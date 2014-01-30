@@ -56,7 +56,7 @@ def check_basic_auth(username, password):
     if not authorization.password == password: return False
     return True
 
-def check_login(token):
+def check_login(token = None):
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
     token_type = type(token)
@@ -106,7 +106,7 @@ def ensure_basic_auth(username, password, json_s = False):
         )
 
 def ensure_login(token = None, json_s = False):
-    if check_login(token): return None
+    if check_login(token = token): return None
 
     log.info("Not enough permissions for operation '%s'" % token)
 
