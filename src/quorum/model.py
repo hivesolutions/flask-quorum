@@ -87,7 +87,7 @@ OPERATORS = {
     "lesser_equal" : "$lte",
     "is_null" : None,
     "is_not_null" : "$ne",
-     "contains" : "$all"
+    "contains" : "$all"
 }
 """ The map containing the mapping association between the
 normalized version of the operators and the infra-structure
