@@ -51,21 +51,40 @@ import datetime
 import base
 import defines
 
+SORT_MAP = dict(
+    ascending = 1,
+    descending = -1,
+)
+""" The map associating the normalized (text) way of
+representing sorting with the current infra-structure
+number way of representing the same information """
+
+def to_sort(sort_s):
+    values = sort_s.split(":", 1)
+    name, direction = values
+    if name == "default": return None
+    values[1] = SORT_MAP.get(direction, 1)
+    return [tuple(values)]
+
 ALIAS = {
+    "filters" : "find_d",
+    "filters[]" : "find_d",
     "filter_def" : "find_d",
     "filter_string" : "find_s",
+    "order" : "sort",
     "start_record" : "skip",
     "number_records" : "limit"
 }
 """ The map containing the various attribute alias
 between the normalized manned and the quorum manner """
 
-FIND_TYPES = {
-    "skip" : int,
-    "limit" : int,
-    "find_s" : str,
-    "find_d" : str
-}
+FIND_TYPES = dict(
+    skip = int,
+    limit = int,
+    find_s = str,
+    find_d = str,
+    sort = to_sort
+)
 """ The map associating the various find fields with
 their respective types """
 
@@ -174,12 +193,28 @@ def resolve_alias(object):
         del object[name]
 
 def find_types(object):
+    # iterates over all the name and values of the object
+    # trying to convert each of the find types into the
+    # appropriate representation for the infra-structure
     for name, value in object.items():
+        # in case the current find name is not present
+        # in the find types map it's removed from the
+        # object as it is considered to be invalid
         if not name in FIND_TYPES:
             del object[name]
             continue
+
+        # retrieves the find (data) type associated with
+        # the current find name and "runs" the conversion
+        # method retrieving the resulting value
         find_type = FIND_TYPES[name]
-        object[name] = find_type(value)
+        value = find_type(value)
+
+        # in case the value resulting from the conversion
+        # is invalid the name is removed from the find object
+        # because it's not considered to be valid
+        if value == None: del object[name]
+        else: object[name] = value
 
 def norm_object(object):
     # iterates over all the key value association in the
