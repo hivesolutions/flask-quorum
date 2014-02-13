@@ -208,7 +208,7 @@ class Model(observer.Observable):
         model = collection.find_one(
             kwargs, skip = skip, limit = limit, sort = sort
         )
-        if not model and raise_e: raise RuntimeError("%s not found" % cls.__name__)
+        if not model and raise_e: raise exceptions.NotFoundError("%s not found")
         if not model and not raise_e: return model
         cls.types(model)
         cls.fill(model)
@@ -870,7 +870,7 @@ class Model(observer.Observable):
         """
 
         if self.is_new(): return
-        raise RuntimeError("Instance is not new, identifier is set")
+        raise exceptions.OperationalError("Instance is not new, identifier is set")
 
     def save(self, validate = True):
         # checks if the instance to be saved is a new instance
@@ -934,7 +934,7 @@ class Model(observer.Observable):
 
     def reload(self):
         is_new = self.is_new()
-        if is_new: raise RuntimeError("Can't reload a new model entity")
+        if is_new: exceptions.OperationalError("Can't reload a new model entity")
         cls = self.__class__
         return cls.get(_id = self._id)
 

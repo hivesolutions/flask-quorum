@@ -96,6 +96,16 @@ class OperationalError(BaseError):
         BaseError.__init__(self, message)
         self.code = code
 
+class NotFoundError(OperationalError):
+    """
+    Error originated from an operation that was not able
+    to be performed because it was not able to found the
+    requested entity/value as defined by specification.
+    """
+
+    def __init__(self, message, code = 404):
+        OperationalError.__init__(self, message, code = code)
+
 class ValidationError(OperationalError):
     """
     Error raised when a validation on the model fails
