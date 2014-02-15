@@ -208,7 +208,9 @@ class Model(observer.Observable):
         model = collection.find_one(
             kwargs, skip = skip, limit = limit, sort = sort
         )
-        if not model and raise_e: raise exceptions.NotFoundError("%s not found")
+        if not model and raise_e: raise exceptions.NotFoundError(
+            "%s not found" % cls.__name__
+        )
         if not model and not raise_e: return model
         cls.types(model)
         cls.fill(model)
