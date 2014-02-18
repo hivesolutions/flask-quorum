@@ -132,7 +132,7 @@ def get_field(name, default = None, cast = None):
 
     # in case the cast type value is set and the value is not invalid tries
     # to cast the value into the requested cast type
-    if cast and not value == None: value = cast(value)
+    if cast and not value in (None, ""): value = cast(value)
 
     # returns the final value to the caller method to be used, note that the
     # caller method should be aware of the sources used in the field retrieval
