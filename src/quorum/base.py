@@ -83,6 +83,31 @@ LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 the format handlers available, this string will also
 be used under the log module for handlers """
 
+ESCAPE_EXTENSIONS = (
+    ".xml",
+    ".html",
+    ".xhtml",
+    ".xml.tpl",
+    ".html.tpl",
+    ".xhtml.tpl"
+)
+""" The sequence containing the various extensions
+for which the autoescape mode will be enabled  by
+default as expected by the end developer """
+
+class Quorum(flask.Flask):
+    """
+    The top level application class that inherits from the
+    flask based one. Should be responsible for the implementation
+    of some of the modifications to the original application
+    object infra-structure.
+    """
+
+    def select_jinja_autoescape(self, filename):
+        if filename == None: return False
+        if filename.endswith(ESCAPE_EXTENSIONS): return True
+        return self.select_jinja_autoescape(self, filename)
+
 def monkey():
     """
     Runs the dirty job of monkey patching the flask module
@@ -323,7 +348,7 @@ def load(
 
     # creates the initial app reference using the provided one or
     # creates a new one from the provided/computed name
-    app = app or flask.Flask(name)
+    app = app or Quorum(name)
 
     # loads the app configuration from the provided keyword arguments
     # map and then starts the logging process with the requested logger
@@ -335,6 +360,11 @@ def load(
     # the current app environment, this is a blocking operation and may
     # take some time to be performed completely
     load_bundles(app)
+
+    # sets the various eval context filters as such by setting their eval
+    # context filter flag to true the jinja infra-structure will handle
+    # the rest of the operations so that it's properly used
+    util.nl_to_br_jinja.evalcontextfilter = True
 
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
@@ -357,6 +387,7 @@ def load(
     app.after_request(after_request)
     app.context_processor(context_processor)
     app.template_filter("locale")(util.to_locale)
+    app.template_filter("nl_to_br")(util.nl_to_br_jinja)
     app.request_class = request.Request
     app.locales = locales
     app.safe = safe
