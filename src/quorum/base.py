@@ -585,11 +585,56 @@ def stop_execution():
     execution.background_t and execution.background_t.stop()
 
 def setup_models(models):
+    _models_c = models_c(models = models)
+    for model_c in _models_c: model_c.setup()
+
+def models_c(models = None):
+    # retrieves the proper models defaulting to the current
+    # application models in case they are not defined
+    models = models or APP.models
+
+    # creates the list that will hold the various model
+    # class discovered through module analysis
+    models_c = []
+
+    # iterates over the complete set of items in the models
+    # modules to find the ones that inherit from the base
+    # model class for those are the real models
     for _name, value in models.__dict__.iteritems():
+        # verifies if the current value in iteration inherits
+        # from the top level model in case it does not continues
+        # the loop as there's nothing to be done
         try: is_valid = issubclass(value, model.Model)
         except: is_valid = False
         if not is_valid: continue
-        value.setup()
+
+        # adds the current value in iteration as a new class
+        # to the list that hold the various model classes
+        models_c.append(value)
+
+    # returns the list containing the various model classes
+    # to the caller method as expected by definition
+    return models_c
+
+def resolve(identifier = "id"):
+    # creates the list that will hold the definition of the current
+    # model classes with a sequence of name and identifier values
+    entities = []
+
+    # retrieves the complete set of model classes registered
+    # for the current application and for each of them retrieves
+    # the name of it and creates a tuple with the name and the
+    # identifier attribute name adding then the tuple to the
+    # list of entities tuples (resolution list)
+    _models_c = models_c()
+    for model_c in _models_c:
+        name = model_c._name()
+        tuple = (name, identifier)
+        entities.append(tuple)
+
+    # returns the resolution list to the caller method as requested
+    # by the call to this method
+    return entities
 
 def templates_path():
     return os.path.join(APP.root_path, APP.template_folder)
