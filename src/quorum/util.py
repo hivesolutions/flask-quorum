@@ -600,6 +600,7 @@ def nl_to_br_jinja(eval_ctx, value):
     with line breaking html tags.
     """
 
+    if eval_ctx.autoescape: value = unicode(jinja2.escape(value))
     value = nl_to_br(value)
     if eval_ctx.autoescape: value = jinja2.Markup(value)
     return value
