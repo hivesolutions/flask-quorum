@@ -616,7 +616,7 @@ def models_c(models = None):
     # to the caller method as expected by definition
     return models_c
 
-def resolve(identifier = "id"):
+def resolve(identifier = "_id"):
     # creates the list that will hold the definition of the current
     # model classes with a sequence of name and identifier values
     entities = []
