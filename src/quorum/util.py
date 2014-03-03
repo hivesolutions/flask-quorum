@@ -634,4 +634,4 @@ def date_time(value, format = "%d/%m/%Y"):
     # value and then formats the date time according to the
     # provided format and returns the resulting string
     date_time_s = datetime.datetime.utcfromtimestamp(value_f)
-    return date_time_s.strftime(format)
+    return date_time_s.strftime(format).decode("utf-8")
