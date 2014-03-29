@@ -356,6 +356,11 @@ def load(
     load_app_config(app, kwargs)
     start_log(app, name = logger, level = level)
 
+    # loads the various paths associated with the application into the
+    # current environment to reduce the amount of issues related with
+    # the importing of modules and other resources
+    load_paths(app)
+
     # loads the complete set of bundle localized in the proper path into
     # the current app environment, this is a blocking operation and may
     # take some time to be performed completely
@@ -452,6 +457,9 @@ def load_environ():
 def load_app_config(app, configs):
     for name, value in configs.iteritems():
         app.config[name] = value
+
+def load_paths(app):
+    if not app.root_path in sys.path: sys.path.insert(0, app.root_path)
 
 def load_bundles(app, offset = 2):
     # creates the base dictionary that will handle all the loaded
