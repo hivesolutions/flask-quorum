@@ -320,6 +320,7 @@ def not_duplicate(name, collection):
         _id = object.get("_id", None)
         value = object.get(name, None)
         if value == None: return True
+        if value == "": return True
         db = mongodb.get_db()
         _collection = db[collection]
         item = _collection.find_one({name : value})
