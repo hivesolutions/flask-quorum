@@ -37,11 +37,19 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+CASTS = {
+    bool : lambda v: v if type(v) == bool else v == "1"
+}
+""" The map containing the various cast method
+operation associated with the various data types,
+they provide a different type of casting strategy """
+
 config_g = {}
 """ The map containing the various global wide
 configuration for the current application """
 
 def conf(name, default = None, cast = None):
+    cast = CASTS.get(cast, cast)
     value = config_g.get(name, default)
     value = cast(value) if cast else value
     return value
