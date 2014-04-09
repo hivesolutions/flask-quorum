@@ -489,6 +489,18 @@ def set_locale():
 def reset_locale():
     locale.setlocale(locale.LC_ALL, "")
 
+def anotate_async(response):
+    # verifies if the current response contains the location header
+    # meaning that a redirection will occur, and if that's not the
+    # case this function returns immediately to avoid problems
+    if not "Location" in response.headers: return
+
+    # checks if the current request is "marked" as asynchronous, for
+    # such cases a special redirection process is applies to avoid the
+    # typical problems with automated redirection using "ajax"
+    is_async = True if get_field("async") else False
+    if is_async: response.status_code = 280
+
 def run_thread(function, *args, **kwargs):
     return thread.start_new_thread(function, args, kwargs)
 

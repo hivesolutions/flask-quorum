@@ -599,6 +599,7 @@ def before_request():
 
 def after_request(response):
     if APP.safe: util.reset_locale()
+    util.anotate_async(response)
     return response
 
 def context_processor():
