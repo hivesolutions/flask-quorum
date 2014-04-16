@@ -117,6 +117,18 @@ class Model(observer.Observable):
         self.__dict__["model"] = model or {}
         observer.Observable.__init__(self)
 
+    def __str__(self):
+        cls = self.__class__
+        default = cls.default()
+        if not default: return cls._name()
+        return self.model[default]
+
+    def __unicode__(self):
+        cls = self.__class__
+        default = cls.default()
+        if not default: return cls._name()
+        return self.model[default]
+
     def __getattribute__(self, name):
         try:
             model = object.__getattribute__(self, "model")
