@@ -54,12 +54,14 @@ import mail
 import model
 import mongodb
 import observer
+import ordered
 import pusherc
 import rabbitmq
 import redisdb
 import request
 import route
 import session
+import structures
 import template
 import typesf
 import unit_test
@@ -82,6 +84,8 @@ from log import *
 from mail import *
 from model import *
 from observer import *
+from ordered import *
+from structures import *
 from typesf import *
 from template import *
 from unit_test import *
