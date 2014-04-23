@@ -47,24 +47,25 @@ import inspect
 
 import werkzeug.debug
 
-import acl
-import log
-import util
-import mail
-import route
-import model
-import amazon
-import extras
-import config
-import session
-import redisdb
-import mongodb
-import pusherc
-import request
-import template
-import rabbitmq
-import execution
-import exceptions
+from quorum import acl
+from quorum import log
+from quorum import util
+from quorum import mail
+from quorum import route
+from quorum import model
+from quorum import legacy
+from quorum import amazon
+from quorum import extras
+from quorum import config
+from quorum import session
+from quorum import redisdb
+from quorum import mongodb
+from quorum import pusherc
+from quorum import request
+from quorum import template
+from quorum import rabbitmq
+from quorum import execution
+from quorum import exceptions
 
 APP = None
 """ The reference to the top level application
@@ -141,7 +142,7 @@ def run(server = None, fallback = "base"):
     except exceptions.ServerInitError, error:
         APP.logger.warn(
             "Server '%s' failed to start (%s) falling back to '%s'" % (
-                server, unicode(error), fallback
+                server, legacy.UNICODE(error), fallback
             )
         )
         runner_f and runner_f()
@@ -182,7 +183,7 @@ def run_waitress():
     try: import waitress
     except BaseException, exception:
         raise exceptions.ServerInitError(
-            unicode(exception),
+            legacy.UNICODE(exception),
             server = "waitress"
         )
 
@@ -206,7 +207,7 @@ def run_netius():
     try: import netius.servers
     except BaseException, exception:
         raise exceptions.ServerInitError(
-            unicode(exception),
+            legacy.UNICODE(exception),
             server = "netius"
         )
 
@@ -616,13 +617,15 @@ def start_execution():
     # execute the various background tasks and starts
     # it, providing the mechanism for execution
     execution.background_t = execution.ExecutionThread()
-    execution.background_t.start()
+    background_t = execution.background_t
+    background_t.start()
 
 @atexit.register
 def stop_execution():
     # stop the execution thread so that it's possible to
     # the process to return the calling
-    execution.background_t and execution.background_t.stop()
+    background_t = execution.background_t
+    background_t and background_t.stop()
 
 def setup_models(models):
     _models_c = models_c(models = models)

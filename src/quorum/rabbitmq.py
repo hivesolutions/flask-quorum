@@ -37,9 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import urlparse
-
-import exceptions
+from quorum import legacy
+from quorum import exceptions
 
 try: import pika
 except: pika = None
@@ -61,7 +60,7 @@ def get_connection(force = False, timeout = RABBIT_TIMEOUT):
     global connection
     if pika == None: raise exceptions.ModuleNotFound("pika")
     if not force and connection: return connection
-    url_p = urlparse.urlparse(url)
+    url_p = legacy.urlparse(url)
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,
         virtual_host = url_p.path[1:],

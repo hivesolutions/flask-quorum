@@ -34,78 +34,78 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import acl
-import amazon
-import base
-import config
-import daemon
-import defines
-import errors
-import exceptions
-import execution
-import export
-import extras
-import formats
-import http
-import info
-import jsonf
-import log
-import mail
-import model
-import mongodb
-import observer
-import ordered
-import pusherc
-import rabbitmq
-import redisdb
-import request
-import route
-import session
-import structures
-import template
-import typesf
-import unit_test
-import util
-import validation
+from . import acl
+from . import amazon
+from . import base
+from . import config
+from . import daemon
+from . import defines
+from . import errors
+from . import exceptions
+from . import execution
+from . import export
+from . import extras
+from . import formats
+from . import http
+from . import info
+from . import jsonf
+from . import log
+from . import mail
+from . import model
+from . import mongodb
+from . import observer
+from . import ordered
+from . import pusherc
+from . import rabbitmq
+from . import redisdb
+from . import request
+from . import route
+from . import session
+from . import structures
+from . import template
+from . import typesf
+from . import unit_test
+from . import util
+from . import validation
 
-from acl import *
-from base import *
-from config import *
-from daemon import *
-from defines import *
-from errors import *
-from exceptions import *
-from execution import *
-from formats import *
-from http import *
-from info import *
-from jsonf import *
-from log import *
-from mail import *
-from model import *
-from observer import *
-from ordered import *
-from structures import *
-from typesf import *
-from template import *
-from unit_test import *
-from util import *
-from validation import *
+from .acl import *
+from .base import *
+from .config import *
+from .daemon import *
+from .defines import *
+from .errors import *
+from .exceptions import *
+from .execution import *
+from .formats import *
+from .http import *
+from .info import *
+from .jsonf import *
+from .log import *
+from .mail import *
+from .model import *
+from .observer import *
+from .ordered import *
+from .structures import *
+from .typesf import *
+from .template import *
+from .unit_test import *
+from .util import *
+from .validation import *
 
-from amazon import get_connection as get_amazon
-from amazon import get_bucket as get_amazon_bucket
-from amazon import clear_bucket as clear_amazon_bucket
-from amazon import get_key as get_amazon_key
-from amazon import exists_key as exists_amazon_key
-from amazon import delete_key as delete_amazon_key
-from execution import insert_work as run_back
-from execution import insert_work as run_background
-from mongodb import get_connection as get_mongo
-from mongodb import get_db as get_mongo_db
-from mongodb import drop_db as drop_mongo_db
-from mongodb import dumps as dumps_mongo
-from pusherc import get_pusher as get_pusher
-from rabbitmq import get_connection as get_rabbit
-from rabbitmq import properties as properties_rabbit
-from redisdb import get_connection as get_redis
-from redisdb import dumps as dumps_redis
+from .amazon import get_connection as get_amazon
+from .amazon import get_bucket as get_amazon_bucket
+from .amazon import clear_bucket as clear_amazon_bucket
+from .amazon import get_key as get_amazon_key
+from .amazon import exists_key as exists_amazon_key
+from .amazon import delete_key as delete_amazon_key
+from .execution import insert_work as run_back
+from .execution import insert_work as run_background
+from .mongodb import get_connection as get_mongo
+from .mongodb import get_db as get_mongo_db
+from .mongodb import drop_db as drop_mongo_db
+from .mongodb import dumps as dumps_mongo
+from .pusherc import get_pusher as get_pusher
+from .rabbitmq import get_connection as get_rabbit
+from .rabbitmq import properties as properties_rabbit
+from .redisdb import get_connection as get_redis
+from .redisdb import dumps as dumps_redis

@@ -38,13 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
-import types
 import flask
 import functools
 
-import log
+from quorum import log
 
-SEQUENCE_TYPES = (types.ListType, types.TupleType)
+SEQUENCE_TYPES = (list, tuple)
 """ The tuple defining the various data types in
 python that are considered to be representing a
 logical sequence """

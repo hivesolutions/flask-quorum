@@ -38,13 +38,11 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
-import types
 import random
 import string
-import urllib
-import urllib2
 
-import exceptions
+from quorum import legacy
+from quorum import exceptions
 
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
@@ -54,7 +52,7 @@ RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
 
-SEQUENCE_TYPES = (types.ListType, types.TupleType)
+SEQUENCE_TYPES = (list, tuple)
 """ The sequence defining the various types that are
 considered to be sequence based for python """
 
@@ -70,7 +68,7 @@ def get(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _get(url, **kwargs)
-        except urllib2.HTTPError, error:
+        except legacy.HTTPError, error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -90,7 +88,7 @@ def get_json(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _get_json(url, **kwargs)
-        except urllib2.HTTPError, error:
+        except legacy.HTTPError, error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -127,7 +125,7 @@ def post_json(
                 mime = mime,
                 **kwargs
             )
-        except urllib2.HTTPError, error:
+        except legacy.HTTPError, error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -164,7 +162,7 @@ def put_json(
                 mime = mime,
                 **kwargs
             )
-        except urllib2.HTTPError, error:
+        except legacy.HTTPError, error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -186,7 +184,7 @@ def delete_json(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _delete_json(url, **kwargs)
-        except urllib2.HTTPError, error:
+        except legacy.HTTPError, error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -204,7 +202,7 @@ def _get(url, **kwargs):
     values = kwargs or {}
     data = _urlencode(values)
     url = url + "?" + data
-    response = urllib2.urlopen(url, timeout = TIMEOUT)
+    response = legacy.urlopen(url, timeout = TIMEOUT)
     contents = response.read()
     return contents
 
@@ -242,8 +240,8 @@ def _post_json(
     if mime: headers["Content-Type"] = mime
 
     url = _encode(url)
-    request = urllib2.Request(url, data, headers = headers)
-    response = urllib2.urlopen(request, timeout = TIMEOUT)
+    request = legacy.Request(url, data, headers = headers)
+    response = legacy.urlopen(request, timeout = TIMEOUT)
     contents = response.read()
     contents_s = json.loads(contents)
     return contents_s
@@ -277,8 +275,8 @@ def _put_json(
     if mime: headers["Content-Type"] = mime
 
     url = _encode(url)
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(url, data, headers = headers)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url, data, headers = headers)
     request.get_method = lambda: "PUT"
     response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
@@ -290,8 +288,8 @@ def _delete_json(url, **kwargs):
     data = _urlencode(values)
     url = url + "?" + data
     url = _encode(url)
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(url)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url)
     request.get_method = lambda: "DELETE"
     response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
@@ -300,13 +298,13 @@ def _delete_json(url, **kwargs):
 
 def _urlencode(values):
     # creates the dictionary that will hold the final
-    # dictionary of values (without the unset and´
+    # dictionary of values (without the unset andÂ´
     # invalid values)
     final = dict()
 
     # iterates over all the items in the values map to
     # try to filter the values that are not valid
-    for key, value in values.iteritems():
+    for key, value in values.items():
         # creates the list that will hold the valid values
         # of the current key in iteration (sanitized values)
         _values = []
@@ -314,7 +312,7 @@ def _urlencode(values):
         # in case the current data type of the key is unicode
         # the value must be converted into a string using the
         # default utf encoding strategy (as defined)
-        if type(key) == types.UnicodeType: key = key.encode("utf-8")
+        if type(key) == legacy.UNICODE: key = key.encode("utf-8")
 
         # verifies the type of the current value and in case
         # it's sequence based converts it into a list using
@@ -330,7 +328,7 @@ def _urlencode(values):
         # a simple string using the default utf encoder
         for _value in value:
             if _value == None: continue
-            is_unicode = type(_value) == types.UnicodeType
+            is_unicode = type(_value) == legacy.UNICODE
             if is_unicode: _value = _value.encode("utf-8")
             _values.append(_value)
 
@@ -341,20 +339,20 @@ def _urlencode(values):
     # runs the encoding with sequence support on the final map
     # of sanitized values and returns the encoded result to the
     # caller method as the encoded value
-    return urllib.urlencode(final, doseq = True)
+    return legacy.urlencode(final, doseq = True)
 
 def _encode_multipart(fields, doseq = False):
     boundary = _create_boundary(fields, doseq = doseq)
     buffer = []
 
-    for key, values in fields.iteritems():
-        is_list = doseq and type(values) == types.ListType
+    for key, values in fields.items():
+        is_list = doseq and type(values) == list
         values = values if is_list else [values]
 
         for value in values:
             value_t = type(value)
 
-            if value_t == types.TupleType: is_file = True
+            if value_t == tuple: is_file = True
             else: is_file = False
 
             if is_file:
@@ -387,14 +385,14 @@ def _create_boundary(fields, size = 32, doseq = False):
     return boundary
 
 def _try_boundary(fields, boundary, doseq = False):
-    for key, values in fields.iteritems():
-        is_list = doseq and type(values) == types.ListType
+    for key, values in fields.items():
+        is_list = doseq and type(values) == list
         values = values if is_list else [values]
 
         for value in values:
             value_t = type(value)
 
-            if value_t == types.TupleType: is_file = True
+            if value_t == tuple: is_file = True
             else: is_file = False
 
             if is_file: name = value[0]; value = value[1]
@@ -408,6 +406,6 @@ def _try_boundary(fields, boundary, doseq = False):
 
 def _encode(value, encoding = "utf-8"):
     value_t = type(value)
-    if value_t == types.StringType: return value
-    elif value_t == types.UnicodeType: return value.encode(encoding)
-    return str(value)
+    if value_t == legacy.BYTES: return value
+    elif value_t == legacy.UNICODE: return value.encode(encoding)
+    return legacy.bytes(str(value))

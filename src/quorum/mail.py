@@ -43,8 +43,8 @@ import smtplib
 import email.mime.multipart
 import email.mime.text
 
-import base
-import execution
+from quorum import base
+from quorum import execution
 
 SMTP_HOST = "localhost"
 """ The host to be used in the smtp connection with
@@ -58,7 +58,16 @@ SMTP_PASSWORD = None
 """ The password to be used in the authentication with
 the remote smtp server """
 
-def send_mail(app = None, subject = "", sender = None, receivers = [], data = None, plain = None, rich = None, context = {}):
+def send_mail(
+    app = None,
+    subject = "",
+    sender = None,
+    receivers = [],
+    data = None,
+    plain = None,
+    rich = None,
+    context = {}
+):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`,
     :rst:dir:`SMTP_USER` and :rst:dir:`SMTP_PASSWORD` configurations.

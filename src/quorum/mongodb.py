@@ -39,9 +39,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-import model
-import typesf
-import exceptions
+from quorum import model
+from quorum import typesf
+from quorum import exceptions
 
 try: import pymongo
 except: pymongo = None

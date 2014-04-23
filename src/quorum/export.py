@@ -39,9 +39,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import json
-import types
 import zipfile
 import tempfile
+
+from quorum import legacy
 
 try: import bson
 except: bson = None
@@ -239,8 +240,8 @@ class ExportManager(object):
 
     def _to_key(self, key):
         key_t = type(key)
-        if key_t in types.StringTypes: return key
-        key = unicode(key)
+        if key_t in legacy.STRINGS: return key
+        key = legacy.UNICODE(key)
         return key
 
     def _deploy_zip(self, zip_path, path):

@@ -41,7 +41,7 @@ import json
 import flask
 import functools
 
-import exceptions
+from quorum import exceptions
 
 def errors_json(function):
     @functools.wraps(function)

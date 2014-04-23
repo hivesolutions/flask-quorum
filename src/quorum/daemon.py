@@ -90,8 +90,9 @@ class Daemon(object):
 
     def daemonize(self, register = True):
         """
-        Do the UNIX double-fork magic, see Stevens "Advanced
-        Programming in the UNIX Environment" for details (ISBN 0201563177).
+        Do the UNIX double-fork magic, check Stevens "Advanced
+        Programming in the UNIX Environment" for details (ISBN
+        0201563177).
 
         This is considered the main method for the execution
         of the daemon strategy.

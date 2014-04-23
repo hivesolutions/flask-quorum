@@ -42,11 +42,11 @@ import flask
 import types
 import traceback
 
-import log
-import base
-import model
-import mongodb
-import exceptions
+from quorum import log
+from quorum import base
+from quorum import model
+from quorum import mongodb
+from quorum import exceptions
 
 def route(*args, **kwargs):
     # verifies if the request decorator should be of type
@@ -151,7 +151,7 @@ def route(*args, **kwargs):
                     mongodb.dumps(result),
                     mimetype = "application/json"
                 )
-            elif result_t in (types.DictType, types.ListType, types.TupleType, types.NoneType):
+            elif result_t in (dict, list, tuple, type(None)):
                 result = flask.Response(
                     mongodb.dumps(result),
                     mimetype = "application/json"

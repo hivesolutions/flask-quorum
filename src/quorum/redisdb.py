@@ -40,7 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import json
 import shelve
 
-import exceptions
+from quorum import exceptions
 
 try: import redis
 except: redis = None
