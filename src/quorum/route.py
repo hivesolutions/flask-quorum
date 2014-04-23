@@ -39,12 +39,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import flask
-import types
 import traceback
 
 from quorum import log
-from quorum import base
 from quorum import model
+from quorum import common
+from quorum import legacy
 from quorum import mongodb
 from quorum import exceptions
 
@@ -53,13 +53,13 @@ def route(*args, **kwargs):
     # json serializer in case it should not returns the old
     # route decorator (default behavior)
     is_json = kwargs.get("json", False)
-    if not is_json: return base.APP.old_route(*args, **kwargs)
+    if not is_json: return common.base().APP.old_route(*args, **kwargs)
 
     # removes the json keyword argument from the list of arguments
     # (to avoid errors) and then calls the old route method to obtain
     # the "normal" decorator
     del kwargs["json"]
-    decorator = base.APP.old_route(*args, **kwargs)
+    decorator = common.base().APP.old_route(*args, **kwargs)
 
     # creates the "new" route decorator maker method that should
     # override the old one and create a new decorator that
@@ -71,13 +71,13 @@ def route(*args, **kwargs):
                 # runs the default handling of the user exception in the flask
                 # infra-structure so that the proper exception callbacks are called
                 # in case they exist and are properly registered
-                base.APP.handle_user_exception(exception)
+                common.base().APP.handle_user_exception(exception)
 
                 # prints a warning message to the current logger about the exception
                 # that is being handled, note that the traceback is also logger, allowing
                 # further debugging information to be printed (extra traceability)
                 log.info(
-                    "Operational problem while routing request - %s" % unicode(exception),
+                    "Operational problem while routing request - %s" % legacy.UNICODE(exception),
                     log_trace = True
                 )
 
@@ -105,13 +105,13 @@ def route(*args, **kwargs):
                 # runs the default handling of the user exception in the flask
                 # infra-structure so that the proper exception callbacks are called
                 # in case they exist and are properly registered
-                base.APP.handle_user_exception(exception)
+                common.base().APP.handle_user_exception(exception)
 
                 # prints a warning message to the current logger about the exception
                 # that is being handled, note that the traceback is also logger, allowing
                 # further debugging information to be printed (extra traceability)
                 log.warning(
-                    "Problem while routing request - %s" % unicode(exception),
+                    "Problem while routing request - %s" % legacy.UNICODE(exception),
                     log_trace = True
                 )
 

@@ -44,13 +44,13 @@ import flask
 import string
 import locale
 import random
-import thread
 import datetime
+import threading
 
 import jinja2
 
-from quorum import base
 from quorum import legacy
+from quorum import common
 from quorum import defines
 
 SORT_MAP = dict(
@@ -502,7 +502,11 @@ def anotate_async(response):
     if is_async: response.status_code = 280
 
 def run_thread(function, *args, **kwargs):
-    return thread.start_new_thread(function, args, kwargs)
+    return threading.Thread(
+        target = function,
+        args = args,
+        kwargs = kwargs
+    ).start()
 
 def camel_to_underscore(camel):
     """
@@ -572,7 +576,7 @@ def to_locale(value):
     """
 
     locale = flask.request.locale
-    bundle = base.get_bundle(locale)
+    bundle = common.base().get_bundle(locale)
     if not bundle: return value
     return bundle.get(value, value)
 

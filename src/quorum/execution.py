@@ -37,10 +37,11 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import log
 import time
 import heapq
 import threading
+
+from quorum import log
 
 BACKGROUND = []
 """ The list containing the various global registered

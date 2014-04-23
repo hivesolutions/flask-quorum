@@ -49,6 +49,7 @@ from . import formats
 from . import http
 from . import info
 from . import jsonf
+from . import legacy
 from . import log
 from . import mail
 from . import model
@@ -80,6 +81,7 @@ from .formats import *
 from .http import *
 from .info import *
 from .jsonf import *
+from .legacy import *
 from .log import *
 from .mail import *
 from .model import *

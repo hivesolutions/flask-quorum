@@ -43,7 +43,7 @@ import smtplib
 import email.mime.multipart
 import email.mime.text
 
-from quorum import base
+from quorum import common
 from quorum import execution
 
 SMTP_HOST = "localhost"
@@ -119,7 +119,7 @@ def send_mail(
     the ``plain`` and the ``rich``.
     """
 
-    app = app or base.APP
+    app = app or common.base().APP
 
     # sets the sender with the smtp user value in case no values
     # has been provided (expected behavior)

@@ -41,7 +41,7 @@ import sys
 import logging
 import traceback
 
-import base
+from quorum import common
 
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
@@ -83,7 +83,7 @@ class MemoryHandler(logging.Handler):
         self.messages = []
         self.messages_l = {}
 
-        formatter = logging.Formatter(base.LOGGING_FORMAT)
+        formatter = logging.Formatter(common.base().LOGGING_FORMAT)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):
@@ -153,32 +153,32 @@ def has_exception():
     return not info == (None, None, None)
 
 def debug(message, log_trace = False, *args, **kwargs):
-    logger = base.get_log()
+    logger = common.base().get_log()
     logger.debug(message, *args, **kwargs)
 
 def info(message, log_trace = False, *args, **kwargs):
-    logger = base.get_log()
+    logger = common.base().get_log()
     logger.info(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.debug(line, *args, **kwargs)
 
 def warning(message, log_trace = False, *args, **kwargs):
-    logger = base.get_log()
+    logger = common.base().get_log()
     logger.warning(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.info(line, *args, **kwargs)
 
 def error(message, log_trace = False, *args, **kwargs):
-    logger = base.get_log()
+    logger = common.base().get_log()
     logger.error(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
     for line in lines: logger.warning(line, *args, **kwargs)
 
 def critical(message, log_trace = False, *args, **kwargs):
-    logger = base.get_log()
+    logger = common.base().get_log()
     logger.critical(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
