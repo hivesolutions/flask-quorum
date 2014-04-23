@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-import base
+from quorum import base
 
 def load_json(*args, **kwargs):
     path = base.base_path(*args, **kwargs)
