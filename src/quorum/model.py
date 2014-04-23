@@ -42,7 +42,6 @@ import datetime
 
 from quorum import util
 from quorum import legacy
-from quorum import common
 from quorum import mongodb
 from quorum import ordered
 from quorum import observer
