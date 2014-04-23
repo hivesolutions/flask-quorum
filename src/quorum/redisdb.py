@@ -107,7 +107,7 @@ class RedisShelve(RedisMemory):
 
     def delete(self, name):
         name_s = str(name)
-        if not self.values.has_key(name_s): return
+        if not name_s in self.values: return
         del self.values[name_s]
 
 def get_connection():
