@@ -38,24 +38,25 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import copy
-import types
 import datetime
 
-import util
-import mongodb
-import ordered
-import observer
-import validation
-import exceptions
+from quorum import util
+from quorum import legacy
+from quorum import common
+from quorum import mongodb
+from quorum import ordered
+from quorum import observer
+from quorum import validation
+from quorum import exceptions
 
 RE = lambda v: [i for i in v if not i == ""]
 """ Simple lambda function that removes any
 empty element from the provided list value """
 
 BUILDERS = {
-    unicode : lambda v: v.decode("utf-8") if\
-        type(v) == types.StringType else unicode(v),
-    list : lambda v: RE(v) if type(v) == types.ListType else RE([v])
+    legacy.UNICODE : lambda v: v.decode("utf-8") if\
+        type(v) == legacy.BYTES else legacy.UNICODE(v),
+    list : lambda v: RE(v) if type(v) == list else RE([v])
 }
 """ The map associating the various types with the
 custom builder functions to be used when applying
@@ -74,8 +75,8 @@ the current model specification, the resulting value for
 each of these functions should preferably be a string """
 
 TYPE_DEFAULTS = {
-    str : None,
-    unicode : None,
+    legacy.BYTES : None,
+    legacy.UNICODE : None,
     int : None,
     float : None,
     list : [],
@@ -111,9 +112,9 @@ the operator must be ignored and not used explicitly """
 VALUE_METHODS = {
     "in" : lambda v, t: [t(v) for v in v.split(";")],
     "not_in" : lambda v, t: [t(v) for v in v.split(";")],
-    "like" : lambda v, t: ".*" + unicode(v) + ".*",
-    "llike" : lambda v, t: unicode(v) + ".*",
-    "rlike" : lambda v, t: ".*" + unicode(v),
+    "like" : lambda v, t: ".*" + legacy.UNICODE(v) + ".*",
+    "llike" : lambda v, t: legacy.UNICODE(v) + ".*",
+    "rlike" : lambda v, t: ".*" + legacy.UNICODE(v),
     "is_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
     "contains" : lambda v, t: [v for v in v.split(";")]
@@ -122,7 +123,7 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-class Model(observer.Observable):
+class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
@@ -132,8 +133,6 @@ class Model(observer.Observable):
     The data should always be store in a dictionary oriented
     structure while it's not persisted in the database.
     """
-
-    __metaclass__ = ordered.Ordered
 
     def __init__(self, model = None):
         self.__dict__["_events"] = {}
@@ -296,7 +295,7 @@ class Model(observer.Observable):
     def ordered(cls):
         ordered = list(cls._ordered)
 
-        for name, value in cls.__dict__.iteritems():
+        for name, value in cls.__dict__.items():
             if name.startswith("_"): continue
             if not isinstance(value, dict): continue
             if name in ordered: continue
@@ -351,7 +350,7 @@ class Model(observer.Observable):
         # map that will contain the various names of the current model
         # associated with its definition map
         for _cls in hierarchy:
-            for name, value in _cls.__dict__.iteritems():
+            for name, value in _cls.__dict__.items():
                 if name.startswith("_"): continue
                 if not isinstance(value, dict): continue
                 definition[name] = value
@@ -426,7 +425,7 @@ class Model(observer.Observable):
 
     @classmethod
     def rules(cls, model, map):
-        for name, _value in model.items():
+        for name, _value in legacy.eager(model.items()):
             definition = cls.definition_n(name)
             is_private = definition.get("private", False)
             if not is_private: continue
@@ -436,12 +435,12 @@ class Model(observer.Observable):
     def types(cls, model):
         definition = cls.definition()
 
-        for name, value in model.iteritems():
+        for name, value in legacy.eager(model.items()):
             if name == "_id": continue
             if value == None: continue
             if not name in definition: continue
             _definition = cls.definition_n(name)
-            _type = _definition.get("type", unicode)
+            _type = _definition.get("type", legacy.UNICODE)
             builder = BUILDERS.get(_type, _type)
             try:
                 model[name] = builder(value) if builder else value
@@ -466,7 +465,7 @@ class Model(observer.Observable):
         """
 
         definition = cls.definition()
-        for name, _definition in definition.iteritems():
+        for name, _definition in definition.items():
             if name in model: continue
             _type = _definition.get("type")
             default = TYPE_DEFAULTS.get(_type, None)
@@ -703,7 +702,7 @@ class Model(observer.Observable):
     @classmethod
     def _meta(cls, model, map):
         definition = cls.definition()
-        for key, value in model.items():
+        for key, value in legacy.eager(model.items()):
             definition = cls.definition_n(key)
             meta = definition.get("meta", None)
             mapper = METAS.get(meta, None)
@@ -765,14 +764,14 @@ class Model(observer.Observable):
         # it to retrieve it's target data type, defaulting to the
         # string type in case none is defined in the schema
         definition = cls.definition_n(default)
-        default_t = definition.get("type", unicode)
+        default_t = definition.get("type", legacy.UNICODE)
 
         try:
             # in case the target date type for the default field is
             # string the right labeled wildcard regex is used for the
             # search otherwise the search value to be used is the exact
             # match of the value (required type conversion)
-            if default_t in (str, unicode): find_v = {"$regex" : find_s + ".*"}
+            if default_t in legacy.STRINGS: find_v = {"$regex" : find_s + ".*"}
             else: find_v = default_t(find_s)
         except:
             # in case there's an error in the conversion for
@@ -804,7 +803,7 @@ class Model(observer.Observable):
         # verifies that the data type for the find definition is a
         # valid sequence and in case its not converts it into one
         # so that it may be used in sequence valid logic
-        if not type(find_d) == types.ListType: find_d = [find_d]
+        if not type(find_d) == list: find_d = [find_d]
 
         # iterates over all the filters defined in the filter definition
         # so that they may be used to update the provided arguments with
@@ -819,7 +818,7 @@ class Model(observer.Observable):
             # it to retrieve it's target data type that is going to be
             # used for the proper conversion
             definition = cls.definition_n(name)
-            name_t = definition.get("type", unicode)
+            name_t = definition.get("type", legacy.UNICODE)
 
             # retrieves the method that is going to be used for value mapping
             # or conversion based on the current operator and then converts
@@ -857,16 +856,15 @@ class Model(observer.Observable):
 
         # retrieves the complete set of base classes for
         # the current class and in case the observable is
-        # not the bases set returns the set immediately
+        # not in the bases set returns the set immediately
+        # as the top level model has not been reached yet
         bases = cls.__bases__
-        if not observer.Observable in bases: return bases
+        if not bases == Model.__bases__: return bases
 
-        # converts the base classes into a list and removes
-        # the observable class from it, then returns the
-        # new bases list/tuple (without the object class)
-        bases = list(bases)
-        bases.remove(observer.Observable)
-        return tuple(bases)
+        # returns an empty tuple to the caller method as the
+        # top level class has been reached and the class is
+        # considered to have no "valid" base classes
+        return ()
 
     @classmethod
     def _increment(cls, name):
@@ -943,7 +941,7 @@ class Model(observer.Observable):
         # values setting the values in the current intance's model
         # then runs the type casting/conversion operation in it
         model = model or util.get_object()
-        for name, value in model.iteritems():
+        for name, value in legacy.eager(model.items()):
             is_safe = safe.get(name, False)
             if is_safe: continue
             self.model[name] = value
@@ -1153,7 +1151,7 @@ class Model(observer.Observable):
                 ctx = self,
                 build = False
             )
-            for key, value in _errors.iteritems():
+            for key, value in _errors.items():
                 errors_l = errors.get(key, [])
                 _errors_l = value
                 errors_l.extend(_errors_l)
@@ -1201,7 +1199,7 @@ class Model(observer.Observable):
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
-        for name, value in self.model.iteritems():
+        for name, value in legacy.eager(self.model.items()):
             if not name in definition: continue
             if immutables_a and name in immutables: continue
             value = self._evaluate(name, value)
@@ -1212,7 +1210,7 @@ class Model(observer.Observable):
         # value this will returns the reference index value instead of
         # the normal value that would prevent normalization
         if normalize:
-            for name, value in self.model.iteritems():
+            for name, value in legacy.eager(self.model.items()):
                 if not name in definition: continue
                 if not hasattr(value, "ref_v"): continue
                 model[name] = value.ref_v()
@@ -1222,10 +1220,11 @@ class Model(observer.Observable):
         return model
 
     def _evaluate(self, name, value):
-        # verifies if the current value as an iterable one in case
+        # verifies if the current value is an iterable one in case
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
         is_iterable = hasattr(value, "__iter__")
+        is_iterable = is_iterable and not type(value) in legacy.STRINGS
         if is_iterable: return [self._evaluate(name, value) for value in value]
 
         # verifies the current value's class is sub class of the model
@@ -1234,7 +1233,7 @@ class Model(observer.Observable):
         is_model = issubclass(value.__class__, Model)
         if is_model:
             meta = getattr(self.__class__, name)
-            _type = meta.get("type", str)
+            _type = meta.get("type", legacy.BYTES)
             _name = _type._name
             value = getattr(value, _name)
 
