@@ -40,7 +40,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import copy
 import json
-import types
 import flask
 import string
 import locale
@@ -50,8 +49,9 @@ import datetime
 
 import jinja2
 
-import base
-import defines
+from quorum import base
+from quorum import legacy
+from quorum import defines
 
 SORT_MAP = dict(
     ascending = 1,
@@ -63,7 +63,7 @@ number way of representing the same information """
 
 def to_find(find_s):
     find_t = type(find_s)
-    if find_t == types.ListType: return find_s
+    if find_t == list: return find_s
     return [find_s]
 
 def to_sort(sort_s):
@@ -254,7 +254,7 @@ def norm_object(object):
         first = leafs_l[0] if leafs_l else (None, [])
         _fqn, values = first
         size = len(values)
-        list = [dict() for _index in xrange(size)]
+        list = [dict() for _index in range(size)]
 
         # sets the list of generates dictionaries in the object for
         # the newly normalized name of structure
@@ -264,7 +264,7 @@ def norm_object(object):
         # leafs list to gather the value into the various objects that
         # are contained in the sequence (normalization process)
         for _name, _value in leafs_l:
-            for index in xrange(size):
+            for index in range(size):
                 _object = list[index]
                 _name_l = _name.split(".")
                 set_object(_object, _name_l, _value[index])
@@ -345,7 +345,7 @@ def leafs(object):
         # be performed retrieving the leafs of the value and
         # then incrementing the name with the current prefix
         value_t = type(value)
-        if value_t == types.DictType:
+        if value_t == dict:
             _leafs = leafs(value)
             _leafs = [(name + "." + _name, value) for _name, value in _leafs]
             leafs_l.extend(_leafs)
@@ -355,7 +355,7 @@ def leafs(object):
         # (properly validated for sequence presence)
         else:
             value_t = type(value)
-            if not value_t == types.ListType: value = [value]
+            if not value_t == list: value = [value]
             leafs_l.append((name, value))
 
     # returns the list of leaf nodes that was "just" created
@@ -523,7 +523,7 @@ def camel_to_underscore(camel):
     values = []
     camel_l = len(camel)
 
-    for index in xrange(camel_l):
+    for index in range(camel_l):
         char = camel[index]
         is_upper = char.isupper()
 
@@ -612,7 +612,7 @@ def nl_to_br_jinja(eval_ctx, value):
     with line breaking html tags.
     """
 
-    if eval_ctx.autoescape: value = unicode(jinja2.escape(value))
+    if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
     value = nl_to_br(value)
     if eval_ctx.autoescape: value = jinja2.Markup(value)
     return value

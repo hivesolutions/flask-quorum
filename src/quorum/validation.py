@@ -42,9 +42,10 @@ import copy
 import flask
 import datetime
 
-import util
-import mongodb
-import exceptions
+from quorum import util
+from quorum import legacy
+from quorum import mongodb
+from quorum import exceptions
 
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
 """ The simple regex value used to validate
@@ -359,7 +360,7 @@ def all_different(name, name_ref = None):
         # to the provided one or the id name
         cls = ctx.__class__
         definition = cls.definition_n(name)
-        type = definition.get("type", unicode)
+        type = definition.get("type", legacy.UNICODE)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
         # tries to retrieve both the value for the identifier
@@ -400,7 +401,7 @@ def no_self(name, name_ref = None):
         # to the provided one or the id name
         cls = ctx.__class__
         definition = cls.definition_n(name)
-        type = definition.get("type", unicode)
+        type = definition.get("type", legacy.UNICODE)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
         # tries to retrieve both the value for the identifier
