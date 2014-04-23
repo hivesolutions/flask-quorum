@@ -335,7 +335,7 @@ def load(
     name = name + "-" + instance if instance else name
     prefix = instance + "-" if instance else ""
     suffix = "-" + instance if instance else ""
-    level = logging.DEBUG if debug else logging.getLevelName(level_s)
+    level = logging.DEBUG if debug else _level(level_s)
     logger = logger and prefix + logger
 
     # retrieves the last stack element as the previous element and
@@ -697,6 +697,30 @@ def onrun(function):
     if fname in RUN_F: return
     RUN_F[fname] = function
     return function
+
+def _level(level):
+    """
+    Converts the provided logging level value into the best
+    representation of it, so that it may be used to update
+    a logger's level of representation.
+
+    This method takes into account the current interpreter
+    version so that no problem occur.
+
+    :type level: String/int
+    :param level: The level value that is meant to be converted
+    into the best representation possible.
+    :rtype: int
+    :return: The best representation of the level so that it may
+    be used freely for the setting of logging levels under the
+    current running interpreter.
+    """
+
+    level_t = type(level)
+    if level_t == int: return level
+    if hasattr(logging, "_checkLevel"):
+        return logging._checkLevel(level)
+    return logging.getLevelName(level)
 
 # runs the monkey patching of the flask module so that it
 # may be used according to the quorum specification, this
