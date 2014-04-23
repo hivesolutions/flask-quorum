@@ -193,7 +193,7 @@ def is_mobile():
     return is_mobile
 
 def resolve_alias(object):
-    for name, value in object.items():
+    for name, value in legacy.eager(object.items()):
         if not name in ALIAS: continue
         _alias = ALIAS[name]
         object[_alias] = value
@@ -203,7 +203,7 @@ def find_types(object):
     # iterates over all the name and values of the object
     # trying to convert each of the find types into the
     # appropriate representation for the infra-structure
-    for name, value in object.items():
+    for name, value in legacy.eager(object.items()):
         # in case the current find name is not present
         # in the find types map it's removed from the
         # object as it is considered to be invalid
@@ -227,7 +227,7 @@ def norm_object(object):
     # iterates over all the key value association in the
     # object, trying to find the ones that refer sequences
     # so that they may be normalized
-    for name, value in object.items():
+    for name, value in legacy.eager(object.items()):
         # verifies if the current name references a sequence
         # and if that's not the case continues the loop trying
         # to find any other sequence based value
