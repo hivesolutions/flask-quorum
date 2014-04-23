@@ -122,13 +122,12 @@ def validate_b(method = None, methods = [], object = None, build = True):
     return result
 
 def type_c(first, second):
-    return not type(first) == type(second)
+    return type(first) == type(second)
 
 def eq(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
-        if type_c(value, value_c): return True
         if value == value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be equal to %s" % str(value_c)
@@ -138,9 +137,10 @@ def eq(name, value_c):
 def gt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        match = type_c(value, value_c)
         if value == None: return True
         if type_c(value, value_c): return True
-        if value > value_c: return True
+        if match and value > value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than %s" % str(value_c)
         )
@@ -149,9 +149,9 @@ def gt(name, value_c):
 def gte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        match = type_c(value, value_c)
         if value == None: return True
-        if type_c(value, value_c): return True
-        if value >= value_c: return True
+        if match and value >= value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than or equal to %s" % str(value_c)
         )
@@ -160,9 +160,9 @@ def gte(name, value_c):
 def lt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        match = type_c(value, value_c)
         if value == None: return True
-        if type_c(value, value_c): return True
-        if value < value_c: return True
+        if match and value < value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % str(value_c)
         )
@@ -171,9 +171,9 @@ def lt(name, value_c):
 def lte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
+        match = type_c(value, value_c)
         if value == None: return True
-        if type_c(value, value_c): return True
-        if value <= value_c: return True
+        if match and value <= value_c: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than or equal to %s" % str(value_c)
         )
@@ -257,9 +257,10 @@ def field_gt(name, field):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
+        match = type_c(name, field_v)
         if name_v == None: return True
         if field_v == None: return True
-        if name_v > field_v: return True
+        if match and name_v > field_v: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than %s" % field
         )
@@ -269,10 +270,10 @@ def field_gte(name, field):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
+        match = type_c(name, field_v)
         if name_v == None: return True
         if field_v == None: return True
-        if type_c(name, field_v): return True
-        if name_v >= field_v: return True
+        if match and name_v >= field_v: return True
         raise exceptions.ValidationInternalError(
             name, "must be greater or equal than %s" % field
         )
@@ -282,10 +283,10 @@ def field_lt(name, field):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
+        match = type_c(name, field_v)
         if name_v == None: return True
         if field_v == None: return True
-        if type_c(name, field_v): return True
-        if name_v < field_v: return True
+        if match and name_v < field_v: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % field
         )
@@ -295,10 +296,10 @@ def field_lte(name, field):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
+        match = type_c(name, field_v)
         if name_v == None: return True
         if field_v == None: return True
-        if type_c(name, field_v): return True
-        if name_v <= field_v: return True
+        if match and name_v <= field_v: return True
         raise exceptions.ValidationInternalError(
             name, "must be less or equal than %s" % field
         )
@@ -330,7 +331,6 @@ def equals(first_name, second_name):
         second_value = object.get(second_name, None)
         if first_value == None: return True
         if second_value == None: return True
-        if type_c(first_value, second_value): return True
         if first_value == second_value: return True
         raise exceptions.ValidationInternalError(
             first_name, "value is not equals to %s" % second_name
