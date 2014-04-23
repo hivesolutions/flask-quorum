@@ -79,11 +79,6 @@ RUN_F = {}
 """ The map that will contain the various functions that
 will be called upon the start of the main run loop """
 
-LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-""" The logging format definition to be used by all
-the format handlers available, this string will also
-be used under the log module for handlers """
-
 ESCAPE_EXTENSIONS = (
     ".xml",
     ".html",
@@ -509,7 +504,7 @@ def load_bundles(app, offset = 2):
         bundle.update(data_j)
         bundles[locale] = bundle
 
-def start_log(app, name = None, level = logging.WARN, format = LOGGING_FORMAT):
+def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMAT):
     # "resolves" the proper logger file path taking into account
     # the currently defined operative system, should uses the system
     # level path in case the operative system is unix based
@@ -647,7 +642,7 @@ def models_c(models = None):
     # iterates over the complete set of items in the models
     # modules to find the ones that inherit from the base
     # model class for those are the real models
-    for _name, value in models.__dict__.iteritems():
+    for _name, value in models.__dict__.items():
         # verifies if the current value in iteration inherits
         # from the top level model in case it does not continues
         # the loop as there's nothing to be done

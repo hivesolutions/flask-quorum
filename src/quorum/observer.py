@@ -107,7 +107,7 @@ class Observable(object):
         else: del methods[:]
 
     def unbind_all(self):
-        for methods in self._events.itervalues(): del methods[:]
+        for methods in self._events.values(): del methods[:]
         self._events.clear()
 
     def trigger(self, name, *args, **kwargs):

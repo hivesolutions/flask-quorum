@@ -43,6 +43,11 @@ import traceback
 
 from quorum import common
 
+LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
+""" The logging format definition to be used by all
+the format handlers available, this string will also
+be used under the log module for handlers """
+
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
 memory until they are discarded, avoid a very large
@@ -83,7 +88,7 @@ class MemoryHandler(logging.Handler):
         self.messages = []
         self.messages_l = {}
 
-        formatter = logging.Formatter(common.base().LOGGING_FORMAT)
+        formatter = logging.Formatter(LOGGING_FORMAT)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):

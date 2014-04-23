@@ -44,7 +44,3 @@ def base():
 def model():
     from appier import model
     return model
-
-def util():
-    from appier import util
-    return util
