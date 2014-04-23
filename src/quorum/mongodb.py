@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-from quorum import model
+from quorum import common
 from quorum import typesf
 from quorum import exceptions
 
@@ -104,7 +104,7 @@ def dumps(*args):
     return json.dumps(default = serialize, *args)
 
 def serialize(obj):
-    if isinstance(obj, model.Model): return obj.model
+    if isinstance(obj, common.model().Model): return obj.model
     if isinstance(obj, typesf.Type): return obj.json_v()
     return bson.json_util.default(obj)
 
