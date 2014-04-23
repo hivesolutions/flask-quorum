@@ -40,7 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import flask
 
-import base
+from quorum import common
 
 def render_template(template_name_or_list, **context):
     # runs the resolution process in the provided template name
@@ -86,7 +86,7 @@ def template_resolve(template):
     # retrieves the base templates path from the base infra-structure this
     # is going to be used in the resolution of the complete template file
     # file in order to verify existence of the file
-    templates_path = base.templates_path()
+    templates_path = common.base().templates_path()
 
     # "joins" the target path and the templates (base) path to create
     # the fill path to the target template, then verifies if it exists
