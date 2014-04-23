@@ -132,9 +132,9 @@ class Daemon(object):
         # redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
-        si = file(self.stdin, "r")
-        so = file(self.stdout, "a+")
-        se = file(self.stderr, "a+", 0)
+        si = open(self.stdin, "rb")
+        so = open(self.stdout, "ab+")
+        se = open(self.stderr, "ab+", 0)
         os.dup2(si.fileno(), sys.stdin.fileno())
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
@@ -144,14 +144,14 @@ class Daemon(object):
         register and atexit.register(self.cleanup)
         register and signal.signal(signal.SIGTERM, self.cleanup_s)
         pid = str(os.getpid())
-        file(self.pidfile, "w+").write("%s\n" % pid)
+        open(self.pidfile, "wb+").write("%s\n" % pid)
 
     def start(self, register = True):
         try:
             # checks for a pidfile to check if the daemon
             # already runs, in such case retrieves the pid
             # of the executing daemon
-            pid_file = file(self.pidfile, "r")
+            pid_file = open(self.pidfile, "rb")
             pid_contents = pid_file.read().strip()
             pid = int(pid_contents)
             pid_file.close()
@@ -176,7 +176,7 @@ class Daemon(object):
             # checks for a pidfile to check if the daemon
             # already runs, in such case retrieves the pid
             # of the executing daemon
-            pid_file = file(self.pidfile, "r")
+            pid_file = open(self.pidfile, "rb")
             pid_contents = pid_file.read().strip()
             pid = int(pid_contents)
             pid_file.close()

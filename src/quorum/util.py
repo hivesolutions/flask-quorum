@@ -61,6 +61,8 @@ SORT_MAP = dict(
 representing sorting with the current infra-structure
 number way of representing the same information """
 
+defines = defines
+
 def to_find(find_s):
     find_t = type(find_s)
     if find_t == list: return find_s
