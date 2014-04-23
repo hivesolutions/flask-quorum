@@ -141,7 +141,7 @@ class ExecutionThread(threading.Thread):
                 # execution fails (must be done to log the error) then
                 # sets the error flag with the exception variable
                 try: callable(*args, **kwargs)
-                except BaseException, exception:
+                except BaseException as exception:
                     error = exception
                     log.warning(str(exception) + "\n")
 

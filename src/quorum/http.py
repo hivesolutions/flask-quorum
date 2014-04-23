@@ -68,7 +68,7 @@ def get(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _get(url, **kwargs)
-        except legacy.HTTPError, error:
+        except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -88,7 +88,7 @@ def get_json(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _get_json(url, **kwargs)
-        except legacy.HTTPError, error:
+        except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -125,7 +125,7 @@ def post_json(
                 mime = mime,
                 **kwargs
             )
-        except legacy.HTTPError, error:
+        except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -162,7 +162,7 @@ def put_json(
                 mime = mime,
                 **kwargs
             )
-        except legacy.HTTPError, error:
+        except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
@@ -184,7 +184,7 @@ def delete_json(url, auth_callback = None, **kwargs):
     while True:
         try:
             return _delete_json(url, **kwargs)
-        except legacy.HTTPError, error:
+        except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:

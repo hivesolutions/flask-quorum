@@ -48,7 +48,7 @@ def errors_json(function):
     def interceptor(*args, **kwargs):
         try:
             return function(*args, **kwargs)
-        except exceptions.ValidationError, error:
+        except exceptions.ValidationError as error:
             invalid_m = {}
             for name, _errors in error.errors.iteritems():
                 invalid_m[name] = _errors[0]
@@ -65,7 +65,7 @@ def errors_json(function):
                 status = error.code,
                 mimetype = "application/json"
             )
-        except exceptions.OperationalError, error:
+        except exceptions.OperationalError as error:
             return flask.Response(
                 json.dumps({
                     "error" : error.message,

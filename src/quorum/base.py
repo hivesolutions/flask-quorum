@@ -139,7 +139,7 @@ def run(server = None, fallback = "base"):
     call_run()
 
     try: runner()
-    except exceptions.ServerInitError, error:
+    except exceptions.ServerInitError as error:
         APP.logger.warn(
             "Server '%s' failed to start (%s) falling back to '%s'" % (
                 server, legacy.UNICODE(error), fallback
@@ -181,7 +181,7 @@ def run_base():
 
 def run_waitress():
     try: import waitress
-    except BaseException, exception:
+    except BaseException as exception:
         raise exceptions.ServerInitError(
             legacy.UNICODE(exception),
             server = "waitress"
@@ -205,7 +205,7 @@ def run_waitress():
 
 def run_netius():
     try: import netius.servers
-    except BaseException, exception:
+    except BaseException as exception:
         raise exceptions.ServerInitError(
             legacy.UNICODE(exception),
             server = "netius"
