@@ -42,9 +42,9 @@ import base64
 import hashlib
 import tempfile
 
-from quorum import base
 from quorum import util
 from quorum import legacy
+from quorum import common
 
 class Type(object):
 
@@ -403,7 +403,7 @@ def reference(target, name = None, eager = False):
             self.__dict__[name] = value
 
         def __start__(self):
-            if is_reference: self._target = getattr(base.APP.models, target)
+            if is_reference: self._target = getattr(common.base().APP.models, target)
             else: self._target = target
             meta = getattr(self._target, name)
             self._type = meta.get("type", str)
