@@ -440,23 +440,27 @@ def load_all():
     load_config(3)
     load_environ()
 
-def load_config(offset = 1):
+def load_config(offset = 1, encoding = "utf-8"):
     element = inspect.stack()[offset]
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
     config_path = os.path.join(base_folder, "quorum.json")
 
     if not os.path.exists(config_path): return
-    config_file = open(config_path, "rb")
-    try: config.config_g = json.load(config_file)
-    finally: config_file.close()
+
+    file = open(config_path, "rb")
+    try: data = file.read()
+    finally: file.close()
+
+    data = data.decode(encoding)
+    config.config_g = json.loads(data)
 
 def load_environ():
-    for name, value in os.environ.iteritems():
+    for name, value in os.environ.items():
         config.config_g[name] = value
 
 def load_app_config(app, configs):
-    for name, value in configs.iteritems():
+    for name, value in configs.items():
         app.config[name] = value
 
 def load_paths(app):
