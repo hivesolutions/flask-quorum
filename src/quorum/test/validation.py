@@ -173,7 +173,8 @@ class ValidationTest(quorum.TestCase):
             object = object,
             build = False
         )
-        self.assertTrue(result)
+        if quorum.PYTHON_3: self.assertFalse(result)
+        else: self.assertTrue(result)
 
         object = dict(age = 1.99)
         result = quorum.validation.validate_b(
@@ -225,7 +226,8 @@ class ValidationTest(quorum.TestCase):
             object = object,
             build = False
         )
-        self.assertTrue(result)
+        if quorum.PYTHON_3: self.assertFalse(result)
+        else: self.assertTrue(result)
 
         object = dict(age = 1.99)
         result = quorum.validation.validate_b(

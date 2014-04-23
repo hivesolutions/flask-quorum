@@ -123,7 +123,7 @@ def validate_b(method = None, methods = [], object = None, build = True):
 
 def safe(comparision):
     try: return comparision()
-    except TypeError: return False 
+    except TypeError: return False
 
 def eq(name, value_c):
     def validation(object, ctx):
