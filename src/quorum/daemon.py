@@ -192,7 +192,7 @@ class Daemon(object):
             while True:
                 os.kill(pid, signal.SIGTERM) #@UndefinedVariable
                 time.sleep(0.1)
-        except OSError, error:
+        except OSError as error:
             error = str(error)
             if error.find("No such process") > 0:
                 pid_exists = os.path.exists(self.pidfile)
