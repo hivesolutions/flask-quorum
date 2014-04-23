@@ -38,9 +38,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 def base():
-    from appier import base
+    from quorum import base
     return base
 
 def model():
-    from appier import model
+    from quorum import model
     return model

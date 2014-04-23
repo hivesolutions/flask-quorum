@@ -120,7 +120,7 @@ def monkey():
 def call_run():
     global RUN_CALLED
     if RUN_CALLED: return
-    for _fname, f in RUN_F.iteritems(): f()
+    for _fname, f in RUN_F.items(): f()
     RUN_CALLED = True
 
 def run(server = None, fallback = "base"):
@@ -213,7 +213,7 @@ def run_netius():
     key_file = config.conf("KEY_FILE", None)
     cer_file = config.conf("CER_FILE", None)
     servers = config.conf_prefix("SERVER_")
-    for name, value in servers.iteritems():
+    for name, value in servers.items():
         name_s = name.lower()[7:]
         kwargs[name_s] = value
     kwargs["handlers"] = get_handlers()

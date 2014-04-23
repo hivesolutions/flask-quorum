@@ -56,7 +56,7 @@ def conf(name, default = None, cast = None):
 
 def conf_prefix(prefix):
     config = dict()
-    for name, value in config_g.iteritems():
+    for name, value in config_g.items():
         if not name.startswith(prefix): continue
         config[name] = value
     return config

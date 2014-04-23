@@ -157,7 +157,7 @@ class ExportManager(object):
         # loads the provided json data as a sequence of key value items
         # and then starts loading all the values into the data source
         data_s = json.loads(data)
-        for _key, entity in data_s.iteritems():
+        for _key, entity in data_s.items():
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
             # entity for the same key, to avoid duplicated entry

@@ -154,10 +154,10 @@ def get_object(object = None, alias = False, find = False, norm = True):
     # uses all the values referencing data in the request to try
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
-    for name, value in data_j.iteritems(): object[name] = value
-    for name, value in flask.request.files.iteritems(): object[name] = value
-    for name, value in flask.request.form_s.iteritems(): object[name] = value
-    for name, value in flask.request.args_s.iteritems(): object[name] = value
+    for name, value in data_j.items(): object[name] = value
+    for name, value in flask.request.files.items(): object[name] = value
+    for name, value in flask.request.form_s.items(): object[name] = value
+    for name, value in flask.request.args_s.items(): object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find

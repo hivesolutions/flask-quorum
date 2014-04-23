@@ -93,10 +93,10 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
         # handles the failure setting the value as an empty map
         data_j = util.request_json()
 
-        for name, value in data_j.iteritems(): object[name] = value
-        for name, value in flask.request.files.iteritems(): object[name] = value
-        for name, value in flask.request.form.iteritems(): object[name] = value
-        for name, value in flask.request.args.iteritems(): object[name] = value
+        for name, value in data_j.items(): object[name] = value
+        for name, value in flask.request.files.items(): object[name] = value
+        for name, value in flask.request.form.items(): object[name] = value
+        for name, value in flask.request.args.items(): object[name] = value
 
     for method in methods:
         try: method(object, ctx = ctx)
