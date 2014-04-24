@@ -17,9 +17,22 @@ Global
     mechanisms to correctly separate to virtually different
     running instance (eg: databases, log files, etc.).
 
+.. rst:directive:: .. LEVEL:: string (default = "INFO")
+
+    Defines the verbosity level that is going to be used while
+    running the application's logger. It also provides a way of
+    defining if the application is running for production where
+    production is `INFO` or more verbose levels.
+
 .. rst:directive:: .. DEBUG:: boolean (default = False)
 
     If the application should be ran under the run mode.
+
+    .. note::
+
+        This variable is considered to be deprecated and the
+        :rst:dir:`LEVEL` variable should be used instead with
+        the DEBUG level set.
 
 .. rst:directive:: .. PORT:: integer (default = 5000)
 
@@ -87,7 +100,15 @@ Redis
 
 .. rst:directive:: .. REDISTOGO_URL:: string
 
-    TODO
+    The URL that described the connection to be used with the REDIS
+    key value database, this URL is going to be used under the
+    redis-py infra-structure.
+
+    .. note::
+
+        An example url for rabbit would be something like
+        **redis://root:root@db.hive/**.
+
 
 RabbitMQ / AMQP
 ---------------
