@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
+import base64
 import random
 import string
 
@@ -207,8 +208,7 @@ def _get(url, **kwargs):
     return contents
 
 def _get_json(url, **kwargs):
-    contents = _get(url, **kwargs)
-    return _result(contents, force = True)
+    return _method_empty("GET", url, **kwargs)
 
 def _post_json(
     url,
@@ -218,31 +218,15 @@ def _post_json(
     mime = None,
     **kwargs
 ):
-    values = kwargs or {}
-    data_e = _urlencode(values)
-
-    if data:
-        url = url + "?" + data_e
-    elif data_j:
-        data = json.dumps(data_j)
-        url = url + "?" + data_e
-        mime = mime or "application/json"
-    elif data_m:
-        url = url + "?" + data_e
-        content_type, data = _encode_multipart(data_m, doseq = True)
-        mime = mime or content_type
-    elif data_e:
-        data = data_e
-        mime = mime or "application/x-www-form-urlencoded"
-
-    headers = dict()
-    if mime: headers["Content-Type"] = mime
-
-    url = _encode(url)
-    request = legacy.Request(url, data, headers = headers)
-    response = legacy.urlopen(request, timeout = TIMEOUT)
-    contents = response.read()
-    return _result(contents, force = True)
+    return _method_payload(
+        "POST",
+        url,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        mime = mime,
+        **kwargs
+    )
 
 def _put_json(
     url,
@@ -252,7 +236,47 @@ def _put_json(
     mime = None,
     **kwargs
 ):
+    return _method_payload(
+        "PUT",
+        url,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        mime = mime,
+        **kwargs
+    )
+
+def _delete_json(url, **kwargs):
+    return _method_empty("DELETE", url, **kwargs)
+
+def _method_empty(name, url, **kwargs):
     values = kwargs or {}
+    data = _urlencode(values)
+    url, authorization = _parse_url(url)
+    headers = dict()
+    if authorization: headers["Authorization"] = "Basic %s" % authorization
+    url = url + "?" + data
+    url = str(url)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url, headers = headers)
+    request.get_method = lambda: name
+    file = opener.open(request, timeout = TIMEOUT)
+    try: result = file.read()
+    finally: file.close()
+    return _result(result, force = True)
+
+def _method_payload(
+    name,
+    url,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None,
+    **kwargs
+):
+    values = kwargs or {}
+
+    url, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
     if data:
@@ -269,35 +293,44 @@ def _put_json(
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
 
+    length = len(data) if data else 0
+
     headers = dict()
+    headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
+    if authorization: headers["Authorization"] = "Basic %s" % authorization
 
-    url = _encode(url)
+    url = str(url)
     opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url, data, headers = headers)
-    request.get_method = lambda: "PUT"
-    response = opener.open(request, timeout = TIMEOUT)
-    contents = response.read()
-    return _result(contents, force = True)
+    request = legacy.Request(url, data = data, headers = headers)
+    request.get_method = lambda: name
+    file = opener.open(request, timeout = TIMEOUT)
+    try: result = file.read()
+    finally: file.close()
+    return _result(result, force = True)
 
-def _delete_json(url, **kwargs):
-    values = kwargs or {}
-    data = _urlencode(values)
-    url = url + "?" + data
-    url = _encode(url)
-    opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url)
-    request.get_method = lambda: "DELETE"
-    response = opener.open(request, timeout = TIMEOUT)
-    contents = response.read()
-    return _result(contents, force = True)
+def _parse_url(url):
+    parse = legacy.urlparse(url)
+    secure = parse.scheme == "https"
+    default = 443 if secure else 80
+    port = parse.port or default
+    url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
+    username = parse.username
+    password = parse.password
+    if username and password:
+        payload = "%s:%s" % (username, password)
+        payload = legacy.bytes(payload)
+        authorization = base64.b64encode(payload)
+        authorization = legacy.str(authorization)
+    else: authorization = None
+    return (url, authorization)
 
 def _result(data, info = {}, force = False):
     # tries to retrieve the content type value from the headers
     # info and verifies if the current data is json encoded, so
     # that it gets automatically decoded for such cases
     content_type = info.get("Content-Type", None)
-    is_json = content_type == "application/json" or force
+    is_json = content_type.startswith("application/json") or force
 
     # verifies if the current result set is json encoded and in
     # case it's decodes it and loads it as json otherwise returns
