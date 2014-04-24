@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Flask Quorum
-# Copyright (C) 2008-2012 Hive Solutions Lda.
+# Copyright (C) 2008-2014 Hive Solutions Lda.
 #
 # This file is part of Hive Flask Quorum.
 #
@@ -31,7 +31,7 @@ __revision__ = "$LastChangedRevision$"
 __date__ = "$LastChangedDate$"
 """ The last change date of the module """
 
-__copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "GNU General Public License (GPL), Version 3"
@@ -45,4 +45,4 @@ DESCRIPTION = "Quorum Extensions for Flask"
 LICENSE = "GNU General Public License (GPL), Version 3"
 KEYWORDS = "quorum flask"
 URL = "http://quorum.com"
-COPYRIGHT = "2008-2012 Hive Solutions Lda."
+COPYRIGHT = "2008-2014 Hive Solutions Lda."
