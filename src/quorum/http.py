@@ -208,8 +208,7 @@ def _get(url, **kwargs):
 
 def _get_json(url, **kwargs):
     contents = _get(url, **kwargs)
-    contents_s = json.loads(contents) if contents else None
-    return contents_s
+    return _result(contents, force = True)
 
 def _post_json(
     url,
@@ -243,8 +242,7 @@ def _post_json(
     request = legacy.Request(url, data, headers = headers)
     response = legacy.urlopen(request, timeout = TIMEOUT)
     contents = response.read()
-    contents_s = json.loads(contents)
-    return contents_s
+    return _result(contents, force = True)
 
 def _put_json(
     url,
@@ -280,8 +278,7 @@ def _put_json(
     request.get_method = lambda: "PUT"
     response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
-    contents_s = json.loads(contents)
-    return contents_s
+    return _result(contents, force = True)
 
 def _delete_json(url, **kwargs):
     values = kwargs or {}
@@ -293,8 +290,20 @@ def _delete_json(url, **kwargs):
     request.get_method = lambda: "DELETE"
     response = opener.open(request, timeout = TIMEOUT)
     contents = response.read()
-    contents_s = json.loads(contents)
-    return contents_s
+    return _result(contents, force = True)
+
+def _result(data, info = {}, force = False):
+    # tries to retrieve the content type value from the headers
+    # info and verifies if the current data is json encoded, so
+    # that it gets automatically decoded for such cases
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json" or force
+
+    # verifies if the current result set is json encoded and in
+    # case it's decodes it and loads it as json otherwise returns
+    # the "raw" data to the caller method as expected
+    if is_json: data = data.decode("utf-8")
+    return json.loads(data) if is_json else data
 
 def _urlencode(values):
     # creates the dictionary that will hold the final
