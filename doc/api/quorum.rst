@@ -18,7 +18,6 @@ Base
         this value use the :func:`quorum.load` function instead.
 
 .. autofunction:: quorum.load
-
 .. autofunction:: quorum.unload
 
 .. autofunction:: quorum.run_back

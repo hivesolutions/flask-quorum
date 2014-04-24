@@ -417,6 +417,9 @@ def unload():
     """
     Unloads the current quorum instance, after this call
     no more access to the quorum facilities is allowed.
+    
+    A normal setup of the application would never require
+    this function to be called directly.
 
     .. warning::
 
