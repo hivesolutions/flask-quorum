@@ -260,8 +260,6 @@ class ExportManager(object):
         finally: zip_file.close()
 
     def _create_zip(self, zip_path, path):
-        print(repr(zip_path))
-        
         zip_file = zipfile.ZipFile(
             zip_path,
             mode = "w",
