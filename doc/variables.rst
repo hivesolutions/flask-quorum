@@ -129,15 +129,19 @@ Amazon Web Services
 
 .. rst:directive:: .. AMAZON_ID:: string
 
-    TODO
+    Identifier of the Amazon S3 account to be sued for the connection, this
+    should comply with the expected string values.
 
 .. rst:directive:: .. AMAZON_SECRET:: string
 
-    TODO
+    The secret value of the account to be used, this value should be kept
+    secret from any external person to avoid security problems.
 
 .. rst:directive:: .. AMAZON_BUCKET:: string
 
-    TODO
+    The name of the bucket where file of the current application are going
+    to be stored. Currently there's no support for multiple buckets per one
+    application scope.
 
 Pusher
 -------------------
