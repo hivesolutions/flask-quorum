@@ -182,8 +182,8 @@ def is_mobile():
     mobile agent, for that a series of regular expressions
     are matched against the user agent string.
 
-    @rtype: bool
-    @return: If the current user agent string represents a
+    :rtype: bool
+    :return: If the current user agent string represents a
     mobile browser or a regular (desktop) one.
     """
 
@@ -281,16 +281,16 @@ def set_object(object, name_l, value):
     an object without having to much work with the creation
     of the inner dictionaries.
 
-    @type object: Dictionary
-    @param object: The target object that is going to be
+    :type object: Dictionary
+    :param object: The target object that is going to be
     changed and set with the target value.
-    @type name_l: List
-    @param name_l: The list of names that defined the fully
+    :type name_l: List
+    :param name_l: The list of names that defined the fully
     qualified name to be used in the setting of the value
     for example path.to.end will be a three size list containing
     each of the partial names.
-    @type value: Object
-    @param value: The value that is going to be set in the
+    :type value: Object
+    :param value: The value that is going to be set in the
     defined target of the object.
     """
 
@@ -325,11 +325,11 @@ def leafs(object):
     the construction of the list, and so should be used with
     the proper care to avoid bottlenecks.
 
-    @type object: Dictionary
-    @param object: The object for which the leafs list
+    :type object: Dictionary
+    :param object: The object for which the leafs list
     structure is meant to be retrieved.
-    @rtype: List
-    @return: The list of leaf node tuples for the provided
+    :rtype: List
+    :return: The list of leaf node tuples for the provided
     object, as requested for each of the sequences.
     """
 
@@ -518,11 +518,11 @@ def camel_to_underscore(camel):
     This is useful as most of the python string standards
     are compliant with the underscore strategy.
 
-    @type camel: String
-    @param camel: The camel cased string that is going to be
+    :type camel: String
+    :param camel: The camel cased string that is going to be
     converted into an underscore based string.
-    @rtype: String
-    @return The underscore based string resulting from the
+    :rtype: String
+    :return The underscore based string resulting from the
     conversion of the provided camel cased one.
     """
 
@@ -546,14 +546,14 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
     This function may be used in the generation of random based
     keys for both passwords and api keys.
 
-    @type size: int
-    @param size: The size (in number of characters) to be used in
+    :type size: int
+    :param size: The size (in number of characters) to be used in
     the generation of the random identifier.
-    @type chars: List
-    @param chars: The list containing the characters to be used
+    :type chars: List
+    :param chars: The list containing the characters to be used
     in the generation of the random identifier.
-    @rtype: String
-    @return: The randomly generated identifier obeying to the
+    :rtype: String
+    :return: The randomly generated identifier obeying to the
     provided constrains.
     """
 
@@ -568,12 +568,12 @@ def to_locale(value):
     In case the value is not localizable (no valid bundle available)
     it is returned as it is without change.
 
-    @type value: String
-    @param value: The value that is going to be localized according
+    :type value: String
+    :param value: The value that is going to be localized according
     to the current application environment, this may be a normal
     english dictionary string or a variable reference.
-    @rtype: String
-    @return: The localized value for the current environment or the
+    :rtype: String
+    :return: The localized value for the current environment or the
     proper (original) value in case no localization was possible.
     """
 
@@ -590,11 +590,11 @@ def nl_to_br(value):
     This is useful for one trying to convert a plain text
     representation of a string into html representation.
 
-    @type value: String
-    @param value: The base value that is going to be used in
+    :type value: String
+    :param value: The base value that is going to be used in
     the conversion to the html value.
-    @rtype: String
-    @return: The string containing the newline characters replaced
+    :rtype: String
+    :return: The string containing the newline characters replaced
     with line breaking html tags.
     """
 
@@ -606,15 +606,15 @@ def nl_to_br_jinja(eval_ctx, value):
     characters with the html break lines that handles the
     autoescape properties of the jinja engine.
 
-    @type eval_ctx: Context
-    @param eval_ctx: Current evaluation context being used
+    :type eval_ctx: Context
+    :param eval_ctx: Current evaluation context being used
     in the rendering of the jinja template. May be used to
     determine if the autoescape mode is being used.
-    @type value: String
-    @param value: The base value that is going to be used in
+    :type value: String
+    :param value: The base value that is going to be used in
     the conversion to the html value.
-    @rtype: String
-    @return: The string containing the newline characters replaced
+    :rtype: String
+    :return: The string containing the newline characters replaced
     with line breaking html tags.
     """
 
@@ -631,14 +631,14 @@ def date_time(value, format = "%d/%m/%Y"):
     Assumes that the provided value represents a float string
     and that may be used as the based timestamp for conversion.
 
-    @type value: String
-    @param value: The base timestamp value string that is going
+    :type value: String
+    :param value: The base timestamp value string that is going
     to be used for the conversion of the date string.
-    @type format: String
-    @param format: The format string that is going to be used
+    :type format: String
+    :param format: The format string that is going to be used
     when formatting the date time value.
-    @rtype: String
-    @return: The resulting date time string that may be used
+    :rtype: String
+    :return: The resulting date time string that may be used
     to represent the provided value.
     """
 

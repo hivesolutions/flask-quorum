@@ -151,8 +151,8 @@ def prepare_app():
     This method should be called and the returned application
     object used instead of the global one.
 
-    @rtype: Application
-    @return: The decorated application object with the proper
+    :rtype: Application
+    :return: The decorated application object with the proper
     capabilities enabled, this object should be used for the
     serving operations instead of the global one.
     """

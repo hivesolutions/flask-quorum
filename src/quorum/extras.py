@@ -53,13 +53,13 @@ class SSLify(object):
         """
         Constructor of the class.
 
-        @type app: App
-        @param app: The application object to be used in the
+        :type app: App
+        :param app: The application object to be used in the
         in ssl operation for the forcing of the protocol.
-        @type age: int
-        @param age: The maximum age of the hsts operation.
-        @type subdomains: bool
-        @param subdomains: If subdomain should be allows as part
+        :type age: int
+        :param age: The maximum age of the hsts operation.
+        :type subdomains: bool
+        :param subdomains: If subdomain should be allows as part
         of the security policy.
         """
 
@@ -76,8 +76,8 @@ class SSLify(object):
         """
         Configures the configured flask app to enforce ssl.
 
-        @type app: App
-        @param app: The application to be configured to enforce
+        :type app: App
+        :param app: The application to be configured to enforce
         the ssl redirection support.
         """
 
@@ -89,8 +89,8 @@ class SSLify(object):
         """
         Returns the proper hsts policy.
 
-        @rtype: String
-        @return: The proper hsts policy string value.
+        :rtype: String
+        :return: The proper hsts policy string value.
         """
 
         hsts_policy = "max-age={0}".format(self.hsts_age)
@@ -102,8 +102,8 @@ class SSLify(object):
         """
         Redirect incoming requests to https.
 
-        @rtype: Request
-        @return: The changed request containing the redirect
+        :rtype: Request
+        :return: The changed request containing the redirect
         instruction in case it's required.
         """
 
@@ -126,11 +126,11 @@ class SSLify(object):
         This header should enable extra security options to be
         interpreted at the client side.
 
-        @type response: Response
-        @param response: The response to be used to set the hsts
+        :type response: Response
+        :param response: The response to be used to set the hsts
         policy header.
-        @rtype: Response
-        @return: The changed response object, containing the strict
+        :rtype: Response
+        :return: The changed response object, containing the strict
         transport security (hsts) header.
         """
 

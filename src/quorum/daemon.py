@@ -70,16 +70,16 @@ class Daemon(object):
         """
         Constructor of the class.
 
-        @type pidfile: String
-        @param pidfile: The path to the pid file.
-        @type stdin: String
-        @param stdin: The file path to the file to be used
+        :type pidfile: String
+        :param pidfile: The path to the pid file.
+        :type stdin: String
+        :param stdin: The file path to the file to be used
         as the standard input of the created process.
-        @type stdout: String
-        @param stdout: The file path to the file to be used
+        :type stdout: String
+        :param stdout: The file path to the file to be used
         as the standard output of the created process.
-        @type stderr: String
-        @param stderr: The file path to the file to be used
+        :type stderr: String
+        :param stderr: The file path to the file to be used
         as the standard error of the created process.
         """
 
@@ -97,8 +97,8 @@ class Daemon(object):
         This is considered the main method for the execution
         of the daemon strategy.
 
-        @type register: bool
-        @param register: If a cleanup function should be register for
+        :type register: bool
+        :param register: If a cleanup function should be register for
         the at exit operation.
         @see: http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
         """
@@ -223,11 +223,11 @@ class Daemon(object):
         takes extra arguments required by the signal handler
         caller.
 
-        @type signum: int
-        @param signum: The identifier of the signal that has
+        :type signum: int
+        :param signum: The identifier of the signal that has
         just been raised.
-        @type frame: Object
-        @param frame: The object containing the current program
+        :type frame: Object
+        :param frame: The object containing the current program
         frame at the time of the signal raise.
         """
 

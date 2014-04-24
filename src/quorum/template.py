@@ -58,11 +58,11 @@ def template_resolve(template):
     template file falling back to the default (provided) template
     path in case the best one could not be found.
 
-    @type template: String
-    @param template: Path to the template file that is going to
+    :type template: String
+    :param template: Path to the template file that is going to
     be "resolved" trying to find the best locale match.
-    @rtype: String
-    @return: The resolved version of the template file taking into
+    :rtype: String
+    :return: The resolved version of the template file taking into
     account the existence or not of the best locale template.
     """
 
