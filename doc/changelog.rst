@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.2.0
+^^^^^
+
+    * Initial support for ``Python 3.0+``
+    * More stability in the infra-structure
+
 0.1.8
 ^^^^^
 
