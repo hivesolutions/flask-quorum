@@ -100,7 +100,7 @@ class Daemon(object):
         :type register: bool
         :param register: If a cleanup function should be register for
         the at exit operation.
-        @see: http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+        :see: http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
         """
 
         try:

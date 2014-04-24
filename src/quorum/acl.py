@@ -193,7 +193,7 @@ def ensure_auth(username, password, json = False):
     :param json: Flag indicating id an eventual error should be
     serialized as json and returned or if a page redirection
     should be used instead (default behavior).
-    @see: http://en.wikipedia.org/wiki/Basic_access_authentication
+    :see: http://en.wikipedia.org/wiki/Basic_access_authentication
     """
 
     def decorator(function):
