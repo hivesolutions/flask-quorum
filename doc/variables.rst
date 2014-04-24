@@ -107,7 +107,7 @@ Redis
     .. note::
 
         An example url for rabbit would be something like
-        **redis://root:root@db.hive/**.
+        **redis://root:root@db.hive**.
 
 
 RabbitMQ / AMQP
