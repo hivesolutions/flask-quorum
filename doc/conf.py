@@ -40,6 +40,12 @@ src_dir = current_dir + "/../src"
 src_dir = os.path.abspath(src_dir)
 sys.path.append(src_dir)
 
+# creates the reference to the quorum directory
+# and then adds it to the current system path so
+# that file under that directory are found
+quorum_dir = os.path.join(src_dir, "quorum")
+sys.path.append(quorum_dir)
+
 # adds the themes path to the current python path
 # to able to use third-party themes
 themes_dir = current_dir + "/_themes"
