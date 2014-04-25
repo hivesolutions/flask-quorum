@@ -293,6 +293,7 @@ def _method_payload(
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
 
+    data = legacy.bytes(data)
     length = len(data) if data else 0
 
     headers = dict()
