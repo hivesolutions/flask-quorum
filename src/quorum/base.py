@@ -521,7 +521,7 @@ def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMA
 
     # creates the formatter object from the provided string
     # so that it may be used in the various handlers
-    formatter = logging.Formatter(format)
+    formatter = log.ThreadFormatter(format)
 
     # retrieves the reference to the logger object currently
     # associated with the app and disable the parent in it,
