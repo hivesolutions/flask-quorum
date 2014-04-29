@@ -41,9 +41,9 @@ import copy
 import datetime
 
 from quorum import util
+from quorum import meta
 from quorum import legacy
 from quorum import mongodb
-from quorum import ordered
 from quorum import observer
 from quorum import validation
 from quorum import exceptions
@@ -122,7 +122,7 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
+class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the

@@ -52,10 +52,10 @@ from . import jsonf
 from . import legacy
 from . import log
 from . import mail
+from . import meta
 from . import model
 from . import mongodb
 from . import observer
-from . import ordered
 from . import pusherc
 from . import rabbitmq
 from . import redisdb
@@ -84,9 +84,9 @@ from .jsonf import *
 from .legacy import *
 from .log import *
 from .mail import *
+from .meta import *
 from .model import *
 from .observer import *
-from .ordered import *
 from .structures import *
 from .typesf import *
 from .template import *
