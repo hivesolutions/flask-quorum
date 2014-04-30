@@ -231,3 +231,49 @@ def insert_work(callable, args = [], kwargs = {}, target_time = None, callback =
         target_time = target_time,
         callback = callback
     )
+
+def interval_work(callable, args = [], kwargs = {}, interval = 60, initial = None, callback = None):
+    initial = initial or time.time()
+    composed = build_composed(callable, initial, interval, callback)
+    insert_work(
+        composed,
+        args = args,
+        kwargs = kwargs,
+        target_time = initial,
+        callback = callback
+    )
+
+def build_composed(callable, target_time, interval, callback):
+
+    def composed(*args, **kwargs):
+        try:
+            # runs the initial callable, propagating the provided normal arguments
+            # and keyword based ones to the callable as it's expected by the current
+            # underlying running logic (and by the specification)
+            result = callable(*args, **kwargs)
+        finally:
+            # retrieves the current time value as the final value of execution, then
+            # calculates the delta value and uses it to verify if the current work is
+            # allowed for initial based time delta calculus (avoiding queue starvation)
+            final = time.time()
+            delta = final - target_time
+            is_valid = delta < interval
+            if is_valid: next_time = target_time + interval
+            else: next_time = final + interval
+
+            # builds a new callable (composed) method taking into account the state and
+            # inserts the work unit again into the queue of processing
+            composed = build_composed(callable, next_time, interval, callback)
+            insert_work(
+                composed,
+                args = args,
+                kwargs = kwargs,
+                target_time = next_time,
+                callback = callback
+            )
+
+        # returns the current result from the original callable to the calling method,
+        # this is the expected behavior from the scheduler point of view
+        return result
+
+    return composed
