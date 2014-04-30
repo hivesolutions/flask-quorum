@@ -175,8 +175,8 @@ def send_mail(
     # creates both the plain text and the rich text (html) objects
     # from the provided data and then attached them to the message
     # (multipart alternative) that is the base structure
-    plain = plain_data and email.mime.text.MIMEText(plain_data, "plain")
-    html = html_data and email.mime.text.MIMEText(html_data, "html")
+    plain = plain_data and email.mime.text.MIMEText(plain_data, "plain", encoding)
+    html = html_data and email.mime.text.MIMEText(html_data, "html", encoding)
     plain and message.attach(plain)
     html and message.attach(html)
 
