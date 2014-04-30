@@ -43,20 +43,9 @@ import smtplib
 import email.mime.multipart
 import email.mime.text
 
+from quorum import config
 from quorum import common
 from quorum import execution
-
-SMTP_HOST = "localhost"
-""" The host to be used in the smtp connection with
-the remote host """
-
-SMTP_USER = None
-""" The used to be used in authentication with the
-smtp remote host """
-
-SMTP_PASSWORD = None
-""" The password to be used in the authentication with
-the remote smtp server """
 
 def send_mail(
     app = None,
@@ -66,7 +55,13 @@ def send_mail(
     data = None,
     plain = None,
     rich = None,
-    context = {}
+    context = {},
+    encoding = "utf-8",
+    host = None,
+    port = None,
+    username = None,
+    password = None,
+    stls = False
 ):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`,
@@ -117,18 +112,58 @@ def send_mail(
     :param context: The map containing the complete set of variables that\
     are going to be `"exposed"` to the template rendering engine for both\
     the ``plain`` and the ``rich``.
+    :type encoding: String
+    :param encoding: The text encoding name that is going to be used in the\
+    mail that is going to be sent, should be used with care.
+    :type host: String
+    :param host: The hostname for the connection of the smtp server that\
+    is going to be used, this may be wither a domain of an address.
+    :type port: int
+    :param port: The tcp port number that is going to be used for the client\
+    connection with the server.
+    :type username: String
+    :param username: Username value that is used for the authentication part\
+    of the connection with the smtp server.
+    :type password: String
+    :param password: Secret password to be used as part of the authentication\
+    process of the created smtp connection.
+    :type stls: bool
+    :param stls: If the connection with the target smtp server should be made\
+    using a secure mechanism of a plain text one.
     """
 
+    # retrieves the reference to the currently loaded/defined application
+    # from the "global" common module (dynamic loading)
     app = app or common.base().APP
+
+    # retrieved the default value of the data value so that no part of
+    # the email is left empty (required by specification)
+    data = data or "This part of the email is empty"
+
+    # tries to retrieve the various configuration values that are going
+    # to be used for the establishment of the smtp connection, taking
+    # into account both the provided parameters and the configuration
+    # variables currently defined for the environment
+    host = host or config.conf("SMTP_HOST", "localhost")
+    port = port or config.conf("SMTP_PORT", 25, cast = int)
+    username = username or config.conf("SMTP_USER", None)
+    password = password or config.conf("SMTP_PASSWORD", None)
+    stls = password or stls or config.conf("SMTP_STARTTLS", True, cast = int)
 
     # sets the sender with the smtp user value in case no values
     # has been provided (expected behavior)
-    sender = sender or SMTP_USER
+    sender = sender or username
 
     # renders the (possible existing) templates in both the plain
     # and rich text object retrieving the final data to be sent
     plain_data = plain and _render(app, plain, **context) or data
     html_data = rich and _render(app, rich, **context) or data
+
+    # verifies the existence of data (both plain and html) and in
+    # there's data it should be encoded using the currently provided
+    # one so that the raw data is used instead of the unicode one
+    if plain_data: plain_data = plain_data.encode(encoding)
+    if html_data: html_data = html_data.encode(encoding)
 
     # creates the mime's multipart object with the appropriate header
     # values set and in the alternative model (for html compatibility)
@@ -147,10 +182,10 @@ def send_mail(
 
     # creates the connection with the smtp server and starts the tls
     # connection to send the created email message
-    server = smtplib.SMTP(SMTP_HOST)
+    server = smtplib.SMTP(host, port = port)
     try:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
+        if stls: server.starttls()
+        server.login(username, password)
         server.sendmail(sender, receivers, message.as_string())
     finally:
         server.quit()
