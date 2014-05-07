@@ -297,6 +297,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         for name, value in cls.__dict__.items():
             if name.startswith("_"): continue
+            if not name == name.lower(): continue
             if not isinstance(value, dict): continue
             if name in ordered: continue
             ordered.append(name)
