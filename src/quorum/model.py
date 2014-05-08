@@ -320,7 +320,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             end = skip + limit,
             total = total,
             sorter = flask.request.args_s.get("sorter", None),
-            direction = flask.request.args_s.get("direction", None)
+            direction = flask.request.args_s.get("direction", "descending")
         )
 
         def generate(**kwargs):
