@@ -316,6 +316,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         page = dict(
             count = count,
             index = index,
+            start = skip + 1,
+            end = skip + limit,
+            total = total,
             sorter = flask.request.args_s.get("sorter", None),
             direction = flask.request.args_s.get("direction", None)
         )
