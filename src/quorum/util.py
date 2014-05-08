@@ -70,6 +70,7 @@ def to_find(find_s):
 
 def to_sort(sort_s):
     values = sort_s.split(":", 1)
+    if len(values) == 1: values.append("descending")
     name, direction = values
     if name == "default": return None
     values[1] = SORT_MAP.get(direction, 1)
@@ -143,7 +144,7 @@ def get_field(name, default = None, cast = None):
     # caller method should be aware of the sources used in the field retrieval
     return value
 
-def get_object(object = None, alias = False, find = False, norm = True):
+def get_object(object = None, alias = False, page = False, find = False, norm = True):
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
     # otherwise used an empty map (form validation)
@@ -166,6 +167,7 @@ def get_object(object = None, alias = False, find = False, norm = True):
     # alias and in case the find types are set converts the find
     # based attributes using the currently defined mapping map
     alias and resolve_alias(object)
+    page and page_types(object)
     find and find_types(object)
 
     # in case the normalization flag is set runs the normalization
@@ -201,6 +203,18 @@ def resolve_alias(object):
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
+
+def page_types(object, size = 10):
+    page = object.get("page", 1)
+    size = object.get("size", size)
+    sorter = object.get("sorter", None)
+    direction = object.get("direction", "descending")
+    page = int(page)
+    size = int(size)
+    offset = page - 1
+    object["skip"] = offset * size
+    object["limit"] = size
+    if sorter: object["sort"] = "%s:%s" % (sorter, direction)
 
 def find_types(object):
     # iterates over all the name and values of the object
