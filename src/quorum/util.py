@@ -204,7 +204,7 @@ def resolve_alias(object):
         object[_alias] = value
         del object[name]
 
-def page_types(object, size = 10):
+def page_types(object, size = 20):
     page = object.get("page", 1)
     size = object.get("size", size)
     sorter = object.get("sorter", None)
@@ -668,3 +668,47 @@ def date_time(value, format = "%d/%m/%Y"):
     # provided format and returns the resulting string
     date_time_s = datetime.datetime.utcfromtimestamp(value_f)
     return date_time_s.strftime(format).decode("utf-8")
+
+def quote(value):
+    """
+    Quotes the passed value according to the defined
+    standard for url escaping, the value is first encoded
+    into the expected utf-8 encoding as defined by standard.
+
+    This method should be used instead of a direct call to
+    the equivalent call in the url library.
+
+    :type value: String
+    :param value: The string value that is going to be quoted
+    according to the url escaping scheme.
+    :rtype: String
+    :return: The quoted value according to the url scheme this
+    value may be safely used in urls.
+    """
+
+    is_unicode = type(value) == legacy.UNICODE
+    if is_unicode: value = value.encode("utf-8")
+    return legacy.quote(value)
+
+def unquote(value):
+    """
+    Unquotes the provided value according to the url scheme
+    the resulting value should be an unicode string representing
+    the same value, the intermediary string value from the decoding
+    should be an utf-8 based value.
+
+    This method should be used instead of a direct call to
+    the equivalent call in the url library.
+
+    :type value: String
+    :param value: The string value that is going to be unquoted
+    according to the url escaping scheme.
+    :rtype: String
+    :return: The unquoted value extracted as an unicode
+    string that the represents the same value.
+    """
+
+    value = legacy.unquote(value)
+    is_bytes = type(value) == legacy.BYTES
+    if is_bytes: value = value.decode("utf-8")
+    return value
