@@ -1,4 +1,4 @@
-# Quorum Extensions for Flask
+# [Quorum Extensions for Flask](http://flask_quorum.hive.pt)
 
 A small extension framework for Flask to easy a series of simple tasks.
 
