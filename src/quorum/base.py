@@ -435,6 +435,7 @@ def unload():
     APP = None
 
 def load_all():
+    load_file(os.path.expanduser("~"))
     load_config(3)
     load_environ()
 
@@ -442,7 +443,10 @@ def load_config(offset = 1, encoding = "utf-8"):
     element = inspect.stack()[offset]
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
-    config_path = os.path.join(base_folder, "quorum.json")
+    load_file(base_folder, encoding = encoding)
+
+def load_file(path, encoding = "utf-8"):
+    config_path = os.path.join(path, "quorum.json")
 
     if not os.path.exists(config_path): return
 
@@ -451,7 +455,9 @@ def load_config(offset = 1, encoding = "utf-8"):
     finally: file.close()
 
     data = data.decode(encoding)
-    config.config_g = json.loads(data)
+    data_j = json.loads(data)
+    for name, value in data_j.items():
+        config.config_g[name] = value
 
 def load_environ():
     for name, value in os.environ.items():
