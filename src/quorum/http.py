@@ -81,14 +81,14 @@ def get(url, auth_callback = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def get_json(url, auth_callback = None, **kwargs):
+def get_json(url, headers = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _get_json(url, **kwargs)
+            return _get_json(url, headers = headers, **kwargs)
         except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -108,6 +108,7 @@ def post_json(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     auth_callback = None,
     **kwargs
@@ -123,6 +124,7 @@ def post_json(
                 data = data,
                 data_j = data_j,
                 data_m = data_m,
+                headers = headers,
                 mime = mime,
                 **kwargs
             )
@@ -145,6 +147,7 @@ def put_json(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     auth_callback = None,
     **kwargs
@@ -160,6 +163,7 @@ def put_json(
                 data = data,
                 data_j = data_j,
                 data_m = data_m,
+                headers = headers,
                 mime = mime,
                 **kwargs
             )
@@ -177,14 +181,14 @@ def put_json(
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def delete_json(url, auth_callback = None, **kwargs):
+def delete_json(url, headers = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _delete_json(url, **kwargs)
+            return _delete_json(url, headers = headers, **kwargs)
         except legacy.HTTPError as error:
             if error.code == 403 and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -200,21 +204,22 @@ def delete_json(url, auth_callback = None, **kwargs):
             raise exceptions.HttpError("Data retrieval not possible")
 
 def _get(url, **kwargs):
-    values = kwargs or {}
+    values = kwargs or dict()
     data = _urlencode(values)
     url = url + "?" + data
     response = legacy.urlopen(url, timeout = TIMEOUT)
     contents = response.read()
     return contents
 
-def _get_json(url, **kwargs):
-    return _method_empty("GET", url, **kwargs)
+def _get_json(url, headers = None, **kwargs):
+    return _method_empty("GET", url, headers = headers, **kwargs)
 
 def _post_json(
     url,
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     **kwargs
 ):
@@ -224,6 +229,7 @@ def _post_json(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime,
         **kwargs
     )
@@ -233,6 +239,7 @@ def _put_json(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     **kwargs
 ):
@@ -242,18 +249,19 @@ def _put_json(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime,
         **kwargs
     )
 
-def _delete_json(url, **kwargs):
-    return _method_empty("DELETE", url, **kwargs)
+def _delete_json(url, headers = None, **kwargs):
+    return _method_empty("DELETE", url, headers = headers, **kwargs)
 
-def _method_empty(name, url, **kwargs):
-    values = kwargs or {}
+def _method_empty(name, url, headers = None, **kwargs):
+    values = kwargs or dict()
     data = _urlencode(values)
     url, authorization = _parse_url(url)
-    headers = dict()
+    headers = headers or dict()
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data
     url = str(url)
@@ -271,10 +279,11 @@ def _method_payload(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     **kwargs
 ):
-    values = kwargs or {}
+    values = kwargs or dict()
 
     url, authorization = _parse_url(url)
     data_e = _urlencode(values)
@@ -296,7 +305,7 @@ def _method_payload(
     data = legacy.bytes(data)
     length = len(data) if data else 0
 
-    headers = dict()
+    headers = headers or dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
     if authorization: headers["Authorization"] = "Basic %s" % authorization
