@@ -102,7 +102,7 @@ class Quorum(flask.Flask):
     def select_jinja_autoescape(self, filename):
         if filename == None: return False
         if filename.endswith(ESCAPE_EXTENSIONS): return True
-        return self.select_jinja_autoescape(self, filename)
+        return flask.Flask.select_jinja_autoescape(self, filename)
 
 def monkey():
     """
