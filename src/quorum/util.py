@@ -669,7 +669,7 @@ def date_time(value, format = "%d/%m/%Y"):
     date_time_s = datetime.datetime.utcfromtimestamp(value_f)
     return date_time_s.strftime(format).decode("utf-8")
 
-def quote(value):
+def quote(value, *args, **kwargs):
     """
     Quotes the passed value according to the defined
     standard for url escaping, the value is first encoded
@@ -688,9 +688,9 @@ def quote(value):
 
     is_unicode = type(value) == legacy.UNICODE
     if is_unicode: value = value.encode("utf-8")
-    return legacy.quote(value)
+    return legacy.quote(value, *args, **kwargs)
 
-def unquote(value):
+def unquote(value, *args, **kwargs):
     """
     Unquotes the provided value according to the url scheme
     the resulting value should be an unicode string representing
@@ -708,7 +708,7 @@ def unquote(value):
     string that the represents the same value.
     """
 
-    value = legacy.unquote(value)
+    value = legacy.unquote(value, *args, **kwargs)
     is_bytes = type(value) == legacy.BYTES
     if is_bytes: value = value.decode("utf-8")
     return value
