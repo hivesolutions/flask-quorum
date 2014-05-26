@@ -50,6 +50,11 @@ from quorum import observer
 from quorum import validation
 from quorum import exceptions
 
+ITERABLES = list(legacy.STRINGS) + [dict]
+""" The sequence defining the complete set of valid types
+for direct evaluation, instead of indirect (recursive)
+evaluation, this is required to avoid miss behavior """
+
 RE = lambda v: [i for i in v if not i == ""]
 """ Simple lambda function that removes any
 empty element from the provided list value """
@@ -268,8 +273,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def singleton(cls, model = None, safe = True, build = False):
         instance = cls.get(raise_e = False)
-        if instance: instance.apply(model, safe_a = safe)
-        else: instance = cls.old(model = model, safe = safe, build = build)
+        if instance:
+            instance.apply(model, safe_a = safe)
+        else:
+            model = cls.fill(model)
+            instance = cls.old(
+                model = model,
+                safe = safe,
+                build = build
+            )
         return instance
 
     @classmethod
@@ -565,7 +577,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def fill(cls, model):
+    def fill(cls, model = None):
         """
         Fills the current models with the proper values so that
         no values are unset as this would violate the model definition
@@ -574,12 +586,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         :type model: Model
         :param model: The model that is going to have its unset
-        attributes filled with "default" data.
+        attributes filled with "default" data, in case none is provided
+        all of the attributes will be filled with "default" data.
         """
 
+        model = model or dict()
         definition = cls.definition()
         for name, _definition in definition.items():
             if name in model: continue
+            if name in ("_id",): continue
+            increment = _definition.get("increment", False)
+            if increment: continue
             _type = _definition.get("type")
             default = TYPE_DEFAULTS.get(_type, None)
             default = _type._default() if hasattr(_type, "_default") else default
@@ -1350,7 +1367,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
         is_iterable = hasattr(value, "__iter__")
-        is_iterable = is_iterable and not type(value) in legacy.STRINGS
+        is_iterable = is_iterable and not type(value) in ITERABLES
         if is_iterable: return [self._evaluate(name, value) for value in value]
 
         # verifies the current value's class is sub class of the model
