@@ -45,6 +45,7 @@ import datetime
 from quorum import util
 from quorum import meta
 from quorum import legacy
+from quorum import typesf
 from quorum import mongodb
 from quorum import observer
 from quorum import validation
@@ -95,6 +96,10 @@ the resulting value may be returned when a validation
 fails an so it must be used carefully """
 
 TYPE_META = {
+    typesf.File : "file",
+    typesf.Files : "files",
+    typesf.Reference : "reference",
+    typesf.References : "references",
     legacy.BYTES : "string",
     legacy.UNICODE : "string",
     int : "number",
