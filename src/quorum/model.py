@@ -848,7 +848,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _solve(cls, name):
         definition = cls.definition_n(name)
         type = definition.get("type", legacy.UNICODE)
-        base = TYPE_META.get(type, None)
+        for cls in type.mro():
+            base = TYPE_META.get(cls, None)
+            if base: break
         return definition.get("meta", base)
 
     @classmethod
