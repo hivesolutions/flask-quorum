@@ -348,7 +348,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )]
         build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
-        return model
+        return models
 
     @classmethod
     def count(cls, *args, **kwargs):
