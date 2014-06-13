@@ -184,10 +184,12 @@ def has_exception():
 
 def debug(message, log_trace = False, *args, **kwargs):
     logger = common.base().get_log()
+    if not logger: return
     logger.debug(message, *args, **kwargs)
 
 def info(message, log_trace = False, *args, **kwargs):
     logger = common.base().get_log()
+    if not logger: return
     logger.info(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
@@ -195,6 +197,7 @@ def info(message, log_trace = False, *args, **kwargs):
 
 def warning(message, log_trace = False, *args, **kwargs):
     logger = common.base().get_log()
+    if not logger: return
     logger.warning(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
@@ -202,6 +205,7 @@ def warning(message, log_trace = False, *args, **kwargs):
 
 def error(message, log_trace = False, *args, **kwargs):
     logger = common.base().get_log()
+    if not logger: return
     logger.error(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()
@@ -209,6 +213,7 @@ def error(message, log_trace = False, *args, **kwargs):
 
 def critical(message, log_trace = False, *args, **kwargs):
     logger = common.base().get_log()
+    if not logger: return
     logger.critical(message, *args, **kwargs)
     if not log_trace or not has_exception(): return
     lines = traceback.format_exc().splitlines()

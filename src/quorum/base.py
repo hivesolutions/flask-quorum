@@ -579,19 +579,26 @@ def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMA
 
 def get_log(app = None):
     app = app or APP
+    if not app: return None
     is_custom = hasattr(app, "logger_q")
     return app.logger_q if is_custom else app.logger
 
 def get_level(app = None):
     logger = get_log(app = app)
+    if not logger: return None
     return logger.level
 
 def get_handlers(app = None):
     logger = get_log(app = app)
+    if not logger: return None
     return logger.handlers
 
 def get_bundle(name):
     return APP.bundles.get(name, None)
+
+def is_devel(app = None):
+    level = get_level(app = app)
+    if not level: return False
 
 def finalize(value):
     # returns an empty string as value representation

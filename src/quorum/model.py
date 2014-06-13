@@ -44,6 +44,7 @@ import datetime
 
 from quorum import util
 from quorum import meta
+from quorum import common
 from quorum import legacy
 from quorum import typesf
 from quorum import mongodb
@@ -312,9 +313,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             limit = limit,
             sort = sort
         )
-        if not model and raise_e: raise exceptions.NotFoundError(
-            "%s not found" % cls.__name__
-        )
+        if not model and raise_e:
+            is_devel = common.is_devel()
+            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else: message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message)
         if not model and not raise_e: return model
         cls.types(model)
         cls.fill(model)

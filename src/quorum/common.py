@@ -44,3 +44,6 @@ def base():
 def model():
     from quorum import model
     return model
+
+def is_devel():
+    return base().is_devel()
