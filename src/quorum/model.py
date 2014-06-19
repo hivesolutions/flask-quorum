@@ -64,7 +64,9 @@ empty element from the provided list value """
 BUILDERS = {
     legacy.UNICODE : lambda v: v.decode("utf-8") if\
         type(v) == legacy.BYTES else legacy.UNICODE(v),
-    list : lambda v: RE(v) if type(v) == list else RE([v])
+    list : lambda v: RE(v) if type(v) == list else RE([v]),
+    bool : lambda v: v if type(v) == bool else\
+        not v in ("", "0", "false", "False")
 }
 """ The map associating the various types with the
 custom builder functions to be used when applying
@@ -73,7 +75,7 @@ types that are meant to avoid using the default constructor """
 
 METAS = dict(
     text = lambda v, d: v,
-    enum = lambda v, d: d["enum"][v],
+    enum = lambda v, d: d["enum"].get(v, None),
     date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
     datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
@@ -1109,8 +1111,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # to the current map of safe attributes
         if safe_a:
             safes = cls.safes()
-            for _safe in safes:
-                safe[_safe] = True
+            for _safe in safes: safe[_safe] = True
 
         # retrieves the object loading it from all the available
         # sources and then iterates over all the of the model
