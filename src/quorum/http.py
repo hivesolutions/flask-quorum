@@ -261,8 +261,9 @@ def _delete_json(url, headers = None, **kwargs):
 def _method_empty(name, url, headers = None, **kwargs):
     values = kwargs or dict()
     data = _urlencode(values)
-    url, authorization = _parse_url(url)
+    url, host, authorization = _parse_url(url)
     headers = headers or dict()
+    if host: headers["host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data if data else url
     url = str(url)
@@ -283,7 +284,7 @@ def _method_payload(
 ):
     values = kwargs or dict()
 
-    url, authorization = _parse_url(url)
+    url, host, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
     if data:
@@ -306,6 +307,7 @@ def _method_payload(
     headers = headers or dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
+    if host: headers["Host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
@@ -353,6 +355,8 @@ def _parse_url(url):
     default = 443 if secure else 80
     port = parse.port or default
     url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
+    if port in (80, 443): host = parse.hostname
+    else: host = parse.hostname + ":" + str(port)
     username = parse.username
     password = parse.password
     if username and password:
@@ -361,7 +365,7 @@ def _parse_url(url):
         authorization = base64.b64encode(payload)
         authorization = legacy.str(authorization)
     else: authorization = None
-    return (url, authorization)
+    return (url, host, authorization)
 
 def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
