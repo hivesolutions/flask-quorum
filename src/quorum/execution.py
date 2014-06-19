@@ -56,16 +56,6 @@ SLEEP_TIME = 0.5
 this amount should be small enough to provide some
 resolution level to the schedule execution """
 
-DAY_SECONDS = 86400
-""" The number of seconds that a day contains, this value
-is defined as an integer and caution must be used while
-handling it for arithmetic operations """
-
-WEEK_SECONDS = 604800
-""" The number of seconds that a week contains, this value
-is defined as an integer and caution must be used while
-handling it for arithmetic operations """
-
 background_t = None
 """ The background execution task to be started by
 the quorum execution system (global value) """
@@ -244,27 +234,17 @@ def insert_work(callable, args = [], kwargs = {}, target_time = None, callback =
         callback = callback
     )
 
-def daily_work(callable, offset = 0, args = [], kwargs = {}, callback = None):
-    now = datetime.datetime.utcnow()
-    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
-    tomorrow = today + datetime.timedelta(days = 1)
-    tomorrow_tuple = tomorrow.utctimetuple()
-    initial = calendar.timegm(tomorrow_tuple)
-    initial += offset
-    return interval_work(callable, interval = DAY_SECONDS, initial = initial)
-
-def weekly_work(callable, weekday = 4, offset = 0, args = [], kwargs = {}, callback = None):
-    now = datetime.datetime.utcnow()
-    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
-    weekday = today + datetime.timedelta((weekday - today.weekday()) % 7)
-    weekday_tuple = weekday.utctimetuple()
-    initial = calendar.timegm(weekday_tuple)
-    initial += offset
-    return interval_work(callable, interval = WEEK_SECONDS, initial = initial)
-
-def interval_work(callable, args = [], kwargs = {}, interval = 60, initial = None, callback = None):
-    initial = initial or time.time()
-    composed = build_composed(callable, initial, interval, callback)
+def interval_work(
+    callable,
+    args = [],
+    kwargs = {},
+    callback = None,
+    initial = None,
+    interval = 60,
+    eval = None
+):
+    initial = initial or (eval and eval()) or time.time()
+    composed = build_composed(callable, initial, interval, eval, callback)
     insert_work(
         composed,
         args = args,
@@ -274,7 +254,57 @@ def interval_work(callable, args = [], kwargs = {}, interval = 60, initial = Non
     )
     return initial
 
-def build_composed(callable, target_time, interval, callback):
+def seconds_work(callable, offset = 0, *args, **kwargs):
+    eval = lambda: seconds_eval(offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
+def daily_work(callable, offset = 0, *args, **kwargs):
+    eval = lambda: daily_eval(offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
+def weekly_work(callable, weekday = 4, offset = 0, *args, **kwargs):
+    eval = lambda: weekly_eval(weekday, offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
+def monthly_work(callable, monthday = 1, offset = 0, *args, **kwargs):
+    eval = lambda: monthly_eval(monthday, offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
+def seconds_eval(offset):
+    now = datetime.datetime.utcnow()
+    next = now + datetime.timedelta(seconds = offset + 1)
+    next_tuple = next.utctimetuple()
+    return calendar.timegm(next_tuple)
+
+def daily_eval(offset):
+    now = datetime.datetime.utcnow()
+    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
+    tomorrow = today + datetime.timedelta(days = 1, seconds = offset)
+    tomorrow_tuple = tomorrow.utctimetuple()
+    return calendar.timegm(tomorrow_tuple)
+
+def weekly_eval(weekday, offset):
+    now = datetime.datetime.utcnow()
+    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
+    distance = (weekday - today.weekday()) % 7
+    weekday = today + datetime.timedelta(days = distance, seconds = offset)
+    if weekday < now: weekday += datetime.timedelta(days = 7)
+    weekday_tuple = weekday.utctimetuple()
+    return calendar.timegm(weekday_tuple)
+
+def monthly_eval(monthday, offset):
+    now = datetime.datetime.utcnow()
+    next_month, next_year = (1, now.year + 1) if now.month == 12 else (now.month + 1, now.year)
+    if now.day > monthday: month, year = (next_month, next_year)
+    else: month, year = (now.month, now.year)
+    monthday = datetime.datetime(year = year, month = month, day = monthday)
+    monthday = monthday + datetime.timedelta(seconds = offset)
+    if monthday < now:
+        monthday = datetime.datetime(year = next_year, month = next_month, day = monthday.day)
+    monthday_tuple = monthday.utctimetuple()
+    return calendar.timegm(monthday_tuple)
+
+def build_composed(callable, target_time, interval, eval, callback):
 
     def composed(*args, **kwargs):
         try:
@@ -283,18 +313,24 @@ def build_composed(callable, target_time, interval, callback):
             # underlying running logic (and by the specification)
             result = callable(*args, **kwargs)
         finally:
-            # retrieves the current time value as the final value of execution, then
-            # calculates the delta value and uses it to verify if the current work is
-            # allowed for initial based time delta calculus (avoiding queue starvation)
-            final = time.time()
-            delta = final - target_time
-            is_valid = delta < interval
-            if is_valid: next_time = target_time + interval
-            else: next_time = final + interval
+            if eval:
+                # in case the evaluation function for the next timing exists it must be
+                # called to be able to retrieve the target timing for the next execution
+                # this is required from a specification point of view (dual mode)
+                next_time = eval()
+            else:
+                # retrieves the current time value as the final value of execution, then
+                # calculates the delta value and uses it to verify if the current work is
+                # allowed for initial based time delta calculus (avoiding queue starvation)
+                final = time.time()
+                delta = final - target_time
+                is_valid = delta < interval
+                if is_valid: next_time = target_time + interval
+                else: next_time = final + interval
 
             # builds a new callable (composed) method taking into account the state and
             # inserts the work unit again into the queue of processing
-            composed = build_composed(callable, next_time, interval, callback)
+            composed = build_composed(callable, next_time, interval, eval, callback)
             insert_work(
                 composed,
                 args = args,
