@@ -294,7 +294,7 @@ def weekly_eval(weekday, offset):
 
 def monthly_eval(monthday, offset):
     now = datetime.datetime.utcnow()
-    next_month, next_year = (1, now.year + 1) if now.month == 12 else (now.month + 1, now.year)
+    next_year, next_month = (now.year + 1, 1) if now.month == 12 else (now.year, now.month + 1)
     if now.day > monthday: month, year = (next_month, next_year)
     else: month, year = (now.month, now.year)
     monthday = datetime.datetime(year = year, month = month, day = monthday)
