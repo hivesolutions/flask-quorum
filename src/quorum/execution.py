@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import time
 import heapq
+import calendar
+import datetime
 import threading
 
 from quorum import log
@@ -53,6 +55,16 @@ SLEEP_TIME = 0.5
 """ The amount of time to sleep between iteration
 this amount should be small enough to provide some
 resolution level to the schedule execution """
+
+DAY_SECONDS = 86400
+""" The number of seconds that a day contains, this value
+is defined as an integer and caution must be used while
+handling it for arithmetic operations """
+
+WEEK_SECONDS = 604800
+""" The number of seconds that a week contains, this value
+is defined as an integer and caution must be used while
+handling it for arithmetic operations """
 
 background_t = None
 """ The background execution task to be started by
@@ -232,6 +244,24 @@ def insert_work(callable, args = [], kwargs = {}, target_time = None, callback =
         callback = callback
     )
 
+def daily_work(callable, offset = 0, args = [], kwargs = {}, callback = None):
+    now = datetime.datetime.utcnow()
+    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
+    tomorrow = today + datetime.timedelta(days = 1)
+    tomorrow_tuple = tomorrow.utctimetuple()
+    initial = calendar.timegm(tomorrow_tuple)
+    initial += offset
+    return interval_work(callable, interval = DAY_SECONDS, initial = initial)
+
+def weekly_work(callable, weekday = 4, offset = 0, args = [], kwargs = {}, callback = None):
+    now = datetime.datetime.utcnow()
+    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
+    weekday = today + datetime.timedelta((weekday - today.weekday()) % 7)
+    weekday_tuple = weekday.utctimetuple()
+    initial = calendar.timegm(weekday_tuple)
+    initial += offset
+    return interval_work(callable, interval = WEEK_SECONDS, initial = initial)
+
 def interval_work(callable, args = [], kwargs = {}, interval = 60, initial = None, callback = None):
     initial = initial or time.time()
     composed = build_composed(callable, initial, interval, callback)
@@ -242,6 +272,7 @@ def interval_work(callable, args = [], kwargs = {}, interval = 60, initial = Non
         target_time = initial,
         callback = callback
     )
+    return initial
 
 def build_composed(callable, target_time, interval, callback):
 
