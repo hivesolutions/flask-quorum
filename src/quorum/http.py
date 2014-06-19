@@ -43,6 +43,7 @@ import random
 import string
 
 from quorum import legacy
+from quorum import config
 from quorum import exceptions
 
 TIMEOUT = 60
@@ -315,7 +316,8 @@ def _method_payload(
 
 def _resolve(*args, **kwargs):
     _global = globals()
-    client = kwargs.get("client", "netius")
+    client = config.conf("HTTP_CLIENT", "netius")
+    client = kwargs.get("client", client)
     if "client" in kwargs: del kwargs["client"]
     resolver = _global.get("_resolve_" + client, _resolve_base)
     try: result = resolver(*args, **kwargs)
