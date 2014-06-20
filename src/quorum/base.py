@@ -453,6 +453,7 @@ def load_file(path, encoding = "utf-8"):
     file = open(config_path, "rb")
     try: data = file.read()
     finally: file.close()
+    if not data: return
 
     data = data.decode(encoding)
     data_j = json.loads(data)
