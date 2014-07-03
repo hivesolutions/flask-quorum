@@ -436,6 +436,7 @@ def unload():
 
 def load_all():
     load_file(os.path.expanduser("~"))
+    load_file(sys.prefix)
     load_config(3)
     load_environ()
 
