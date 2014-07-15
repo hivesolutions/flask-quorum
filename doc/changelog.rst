@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.2.6
+^^^^^
+
+    * New set of bug fixes
+    * Fixed issue in memory based log
+
 0.2.5
 ^^^^^
 
