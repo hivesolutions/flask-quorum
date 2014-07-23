@@ -731,6 +731,7 @@ def _level(level):
 
     level_t = type(level)
     if level_t == int: return level
+    if level == "SILENT": return log.SILENT
     if hasattr(logging, "_checkLevel"):
         return logging._checkLevel(level)
     return logging.getLevelName(level)
