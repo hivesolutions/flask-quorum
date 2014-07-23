@@ -135,7 +135,7 @@ def run(server = None, fallback = "base"):
 
     try: runner()
     except exceptions.ServerInitError as error:
-        APP.logger.warn(
+        APP.logger.warning(
             "Server '%s' failed to start (%s) falling back to '%s'" % (
                 server, legacy.UNICODE(error), fallback
             )
