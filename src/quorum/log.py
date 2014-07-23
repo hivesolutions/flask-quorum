@@ -38,9 +38,11 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import sys
-import logging
+import inspect
 import threading
 import traceback
+
+import logging.handlers
 
 from quorum import common
 
@@ -65,7 +67,7 @@ may be used for logging purposes """
 SILENT = logging.CRITICAL + 1
 """ The "artificial" silent level used to silent a logger
 or an handler, this is used as an utility for debugging
-purposes more that a real feature for production systems """  
+purposes more that a real feature for production systems """
 
 LEVELS = (
     "DEBUG",
@@ -183,6 +185,51 @@ class ThreadFormatter(logging.Formatter):
         if is_main: self._fmt = LOGGING_FORMAT
         else: self._fmt = LOGGING_FORMAT_TID
         return logging.Formatter.format(self, record)
+
+def rotating_handler(
+    path = "quorum.log",
+    max_bytes = 1048576,
+    max_log = 5,
+    encoding = None,
+    delay = False
+):
+    return logging.handlers.RotatingFileHandler(
+        path,
+        maxBytes = max_bytes,
+        backupCount = max_log,
+        encoding = encoding,
+        delay = delay
+    )
+
+def smtp_handler(
+    host = "localhost",
+    port = 25,
+    sender = "no-reply@quorum.com",
+    receivers = [],
+    subject = "Quorum logging",
+    username = None,
+    password = None,
+    stls = False
+):
+    address = (host, port)
+    if username and password: credentials = (username, password)
+    else: credentials = None
+    has_secure = in_signature(logging.handlers.SMTPHandler.__init__, "secure")
+    if has_secure: kwargs = dict(secure = () if stls else None)
+    else: kwargs = dict()
+    return logging.handlers.SMTPHandler(
+        address,
+        sender,
+        receivers,
+        subject,
+        credentials = credentials,
+        **kwargs
+    )
+
+def in_signature(callable, name):
+    spec = inspect.getargspec(callable)
+    args = spec[0]; kwargs = spec[2]
+    return (args and name in args) or (kwargs and "secure" in kwargs)
 
 def has_exception():
     info = sys.exc_info()

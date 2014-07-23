@@ -575,9 +575,66 @@ def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMA
         handler.setFormatter(formatter)
         handler.setLevel(level)
 
+    # runs the extra logging step for the current state, meaning that
+    # some more handlers may be created according to the logging config
+    extra_logging(logger, level, formatter)
+
     # sets the current logger in the top level app value so that
     # this logger is going to be used as the quorum logger
     app.logger_q = logger
+
+def extra_logging(logger, level, formatter):
+    """
+    Loads the complete set of logging handlers defined in the
+    current logging value, should be a map of definitions.
+
+    This handlers will latter be used for piping the various
+    logging messages to certain output channels.
+
+    The creation of the handler is done using a special keyword
+    arguments strategy so that python and configuration files
+    are properly set as compatible.
+
+    :type logger Logger
+    :param logger: The logger currently in use for where the new\
+    handlers that are going to be created will be added.
+    :type level: String/int
+    :param level: The base severity level for which the new handler\
+    will be configured in case no extra level definition is set.
+    :type formatter: Formatter
+    :param formatter: The logging formatter instance to be set in\
+    the handler for formatting messages to the output.
+    """
+
+    # verifies if the logging attribute of the current instance is
+    # defined and in case it's not returns immediately
+    logging = config.conf("LOGGING", None)
+    if not logging: return
+
+    # iterates over the complete set of handler configuration in the
+    # logging to create the associated handler instances
+    for _config in logging:
+        # gathers the base information on the current handler configuration
+        # running also the appropriate transformation on the level
+        name = _config.get("name", None)
+        __level = _config.get("level", level)
+        __level = _level(__level)
+
+        # "clones" the configuration dictionary and then removes the base
+        # values so that they do not interfere with the building
+        _config = dict(_config)
+        if "level" in _config: del _config["level"]
+        if "name" in _config: del _config["name"]
+
+        # retrieves the proper building, skipping the current loop in case
+        # it does not exits and then builds the new handler instance, setting
+        # the proper level and formatter and then adding it to the logger
+        if not hasattr(log, name + "_handler"): continue
+        builder = getattr(log, name + "_handler")
+        handler = builder(**_config)
+        handler.setLevel(__level)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
 def get_log(app = None):
     app = app or APP
