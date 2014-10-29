@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.0
+^^^^^
+
+    * Major code re-structure
+    * New Apache based license
+
 0.2.6
 ^^^^^
 
