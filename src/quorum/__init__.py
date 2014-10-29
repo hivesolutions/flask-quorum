@@ -47,7 +47,6 @@ from . import export
 from . import extras
 from . import formats
 from . import http
-from . import info
 from . import jsonf
 from . import legacy
 from . import log
@@ -69,30 +68,51 @@ from . import unit_test
 from . import util
 from . import validation
 
-from .acl import *
-from .base import *
-from .config import *
-from .daemon import *
-from .defines import *
-from .errors import *
-from .exceptions import *
-from .execution import *
-from .formats import *
-from .http import *
-from .info import *
-from .jsonf import *
-from .legacy import *
-from .log import *
-from .mail import *
-from .meta import *
-from .model import *
-from .observer import *
-from .structures import *
-from .typesf import *
-from .template import *
-from .unit_test import *
-from .util import *
-from .validation import *
+from . import info as _info
+
+from .acl import check_basic_auth, check_login, ensure_basic_auth, ensure_login,\
+    ensure_user, ensure_session, ensure, ensure_auth
+from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare_app,\
+    run_base, run_waitress, run_netius, load, unload, load_all, load_config, load_file,\
+    load_environ, load_app_config, load_paths, load_bundles, start_log, extra_logging,\
+    get_log, get_level, get_handlers, get_bundle, is_devel, finalize, before_request,\
+    after_request, context_processor, start_execution, stop_execution, setup_models,\
+    models_c, resolve, templates_path, bundles_path, base_path, onrun
+from .config import conf, conf_prefix, confs
+from .daemon import Daemon
+from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCALE
+from .errors import errors_json
+from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError,\
+    NotFoundError, ValidationError, BaseInternalError, ValidationInternalError,\
+    HttpError, JsonError
+from .execution import ExecutionThread, background, insert_work, interval_work,\
+    seconds_work, daily_work, weekly_work, monthly_work, seconds_eval, daily_eval,\
+    weekly_eval, monthly_eval
+from .formats import xlsx_to_map
+from .http import get, get_json, post_json, put_json, delete_json
+from .info import NAME, VERSION, AUTHOR, EMAIL, DESCRIPTION, LICENSE, KEYWORDS, URL,\
+    COPYRIGHT
+from .jsonf import load_json
+from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler,\
+    in_signature, has_exception, debug, info, warning, error, critical
+from .mail import send_mail, send_mail_a
+from .meta import Ordered
+from .model import Model, Field, field
+from .observer import Observable
+from .structures import OrderedDict
+from .template import render_template, template_resolve
+from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
+    reference, References, references
+from .unit_test import secured, TestCase
+from .util import is_iterable, request_json, get_field, get_object, is_mobile, resolve_alias,\
+    page_types, find_types, norm_object, set_object, leafs, load_form, load_locale,\
+    get_locale, get_langs, set_locale, reset_locale, anotate_async, run_thread,\
+    camel_to_underscore, generate_identifier, to_locale, nl_to_br, nl_to_br_jinja, date_time,\
+    quote, unquote
+from .validation import validate, validate_b, safe, eq, gt, gte, lt, lte, not_null, not_empty,\
+    not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt, field_gte,\
+    field_lt, field_lte, string_gt, string_lt, equals, not_past, not_duplicate, all_different,\
+    no_self
 
 from .amazon import get_connection as get_amazon
 from .amazon import get_bucket as get_amazon_bucket
