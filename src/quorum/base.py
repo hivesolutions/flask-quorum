@@ -174,30 +174,6 @@ def run_base():
         port = port
     )
 
-def run_waitress():
-    try: import waitress
-    except BaseException as exception:
-        raise exceptions.ServerInitError(
-            legacy.UNICODE(exception),
-            server = "waitress"
-        )
-
-    host = config.conf("HOST", "127.0.0.1")
-    port = int(config.conf("PORT", 5000))
-
-    # prepares the application object so that it becomes ready
-    # to be executed by the server in the proper way
-    app = prepare_app()
-
-    # starts the serving process for the waitress server with
-    # the proper network configuration values, note that no ssl
-    # support is currently available for waitress
-    waitress.serve(
-        app,
-        host = host,
-        port = port
-    )
-
 def run_netius():
     try: import netius.servers
     except BaseException as exception:
@@ -234,6 +210,30 @@ def run_netius():
         ssl = ssl,
         key_file = key_file,
         cer_file = cer_file
+    )
+
+def run_waitress():
+    try: import waitress
+    except BaseException as exception:
+        raise exceptions.ServerInitError(
+            legacy.UNICODE(exception),
+            server = "waitress"
+        )
+
+    host = config.conf("HOST", "127.0.0.1")
+    port = int(config.conf("PORT", 5000))
+
+    # prepares the application object so that it becomes ready
+    # to be executed by the server in the proper way
+    app = prepare_app()
+
+    # starts the serving process for the waitress server with
+    # the proper network configuration values, note that no ssl
+    # support is currently available for waitress
+    waitress.serve(
+        app,
+        host = host,
+        port = port
     )
 
 def load(
