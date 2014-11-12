@@ -44,6 +44,8 @@ from quorum import base
 def load_json(*args, **kwargs):
     path = base.base_path(*args, **kwargs)
     file = open(path, "rb")
-    try: data = json.load(file)
+    try: data = file.read()
     finally: file.close()
+    data = data.decode("utf-8")
+    data = json.loads(data)
     return data
