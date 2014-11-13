@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.3
+^^^^^
+
+    * New handler retrieval function
+
+
 0.3.2
 ^^^^^
 
