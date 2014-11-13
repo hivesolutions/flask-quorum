@@ -42,9 +42,9 @@ import base64
 import random
 import string
 
-from quorum import legacy
-from quorum import config
-from quorum import exceptions
+from . import legacy
+from . import config
+from . import exceptions
 
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking

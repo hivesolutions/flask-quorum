@@ -42,10 +42,10 @@ import copy
 import flask
 import datetime
 
-from quorum import util
-from quorum import legacy
-from quorum import mongodb
-from quorum import exceptions
+from . import util
+from . import legacy
+from . import mongodb
+from . import exceptions
 
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
 """ The simple regex value used to validate

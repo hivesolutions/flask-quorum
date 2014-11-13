@@ -44,7 +44,7 @@ import traceback
 
 import logging.handlers
 
-from quorum import common
+from . import common
 
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The logging format definition to be used by all

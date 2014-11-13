@@ -41,12 +41,12 @@ import json
 import flask
 import traceback
 
-from quorum import log
-from quorum import model
-from quorum import common
-from quorum import legacy
-from quorum import mongodb
-from quorum import exceptions
+from . import log
+from . import model
+from . import common
+from . import legacy
+from . import mongodb
+from . import exceptions
 
 def route(*args, **kwargs):
     # verifies if the request decorator should be of type

@@ -43,9 +43,9 @@ import smtplib
 import email.mime.multipart
 import email.mime.text
 
-from quorum import config
-from quorum import common
-from quorum import execution
+from . import config
+from . import common
+from . import execution
 
 def send_mail(
     app = None,

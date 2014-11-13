@@ -39,7 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
-from quorum import base
+from . import base
 
 def load_json(*args, **kwargs):
     path = base.base_path(*args, **kwargs)

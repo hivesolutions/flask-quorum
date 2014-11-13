@@ -42,15 +42,15 @@ import copy
 import flask
 import datetime
 
-from quorum import util
-from quorum import meta
-from quorum import common
-from quorum import legacy
-from quorum import typesf
-from quorum import mongodb
-from quorum import observer
-from quorum import validation
-from quorum import exceptions
+from . import util
+from . import meta
+from . import common
+from . import legacy
+from . import typesf
+from . import mongodb
+from . import observer
+from . import validation
+from . import exceptions
 
 ITERABLES = list(legacy.STRINGS) + [dict]
 """ The sequence defining the complete set of valid types

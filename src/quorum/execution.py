@@ -43,7 +43,7 @@ import calendar
 import datetime
 import threading
 
-from quorum import log
+from . import log
 
 BACKGROUND = []
 """ The list containing the various global registered

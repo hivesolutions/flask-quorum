@@ -42,7 +42,7 @@ import json
 import zipfile
 import tempfile
 
-from quorum import legacy
+from . import legacy
 
 try: import bson
 except: bson = None

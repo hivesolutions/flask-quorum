@@ -47,25 +47,25 @@ import inspect
 
 import werkzeug.debug
 
-from quorum import acl
-from quorum import log
-from quorum import util
-from quorum import mail
-from quorum import route
-from quorum import model
-from quorum import legacy
-from quorum import amazon
-from quorum import extras
-from quorum import config
-from quorum import session
-from quorum import redisdb
-from quorum import mongodb
-from quorum import pusherc
-from quorum import request
-from quorum import template
-from quorum import rabbitmq
-from quorum import execution
-from quorum import exceptions
+from . import acl
+from . import log
+from . import util
+from . import mail
+from . import route
+from . import model
+from . import legacy
+from . import amazon
+from . import extras
+from . import config
+from . import session
+from . import redisdb
+from . import mongodb
+from . import pusherc
+from . import request
+from . import template
+from . import rabbitmq
+from . import execution
+from . import exceptions
 
 APP = None
 """ The reference to the top level application

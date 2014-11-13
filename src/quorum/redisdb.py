@@ -40,7 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import json
 import shelve
 
-from quorum import exceptions
+from . import exceptions
 
 try: import redis
 except: redis = None

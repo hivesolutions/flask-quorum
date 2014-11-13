@@ -38,11 +38,11 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 def base():
-    from quorum import base
+    from . import base
     return base
 
 def model():
-    from quorum import model
+    from . import model
     return model
 
 def is_devel():

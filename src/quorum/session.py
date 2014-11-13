@@ -44,7 +44,7 @@ import datetime
 
 import werkzeug.datastructures
 
-from quorum import redisdb
+from . import redisdb
 
 class RedisSession(werkzeug.datastructures.CallbackDict, flask.sessions.SessionMixin):
 

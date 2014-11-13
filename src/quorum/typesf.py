@@ -42,9 +42,9 @@ import base64
 import hashlib
 import tempfile
 
-from quorum import util
-from quorum import legacy
-from quorum import common
+from . import util
+from . import legacy
+from . import common
 
 class Type(object):
 

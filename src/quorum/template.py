@@ -40,7 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 import flask
 
-from quorum import common
+from . import common
 
 def render_template(template_name_or_list, **context):
     # runs the resolution process in the provided template name

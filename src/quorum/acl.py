@@ -41,7 +41,7 @@ import json
 import flask
 import functools
 
-from quorum import log
+from . import log
 
 SEQUENCE_TYPES = (list, tuple)
 """ The tuple defining the various data types in

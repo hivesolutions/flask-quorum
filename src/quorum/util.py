@@ -49,9 +49,9 @@ import threading
 
 import jinja2
 
-from quorum import legacy
-from quorum import common
-from quorum import defines
+from . import legacy
+from . import common
+from . import defines
 
 SORT_MAP = dict(
     ascending = 1,

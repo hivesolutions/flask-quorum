@@ -39,9 +39,9 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
-from quorum import common
-from quorum import typesf
-from quorum import exceptions
+from . import common
+from . import typesf
+from . import exceptions
 
 try: import pymongo
 except: pymongo = None

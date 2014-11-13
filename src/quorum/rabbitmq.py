@@ -37,8 +37,8 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-from quorum import legacy
-from quorum import exceptions
+from . import legacy
+from . import exceptions
 
 try: import pika
 except: pika = None
