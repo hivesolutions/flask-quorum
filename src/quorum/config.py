@@ -37,6 +37,14 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+import sys
+import json
+
+FILE_NAME = "quorum.json"
+""" The default name of the file that is going to be
+used for the loading of configuration values from json """
+
 CASTS = {
     bool : lambda v: v if type(v) == bool else v == "1",
     list : lambda v: v if type(v) == list else v.split(";"),
@@ -65,3 +73,32 @@ def conf_prefix(prefix):
 
 def confs(name, value):
     config_g[name] = value
+
+def load(path = None):
+    load_file(path = os.path.expanduser("~"))
+    load_file(path = sys.prefix)
+    load_file(path = path)
+    load_env()
+
+def load_file(path = None, encoding = "utf-8"):
+    if path: file_path = os.path.join(path, FILE_NAME)
+    else: file_path = FILE_NAME
+
+    exists = os.path.exists(file_path)
+    if not exists: return
+
+    file = open(file_path, "rb")
+    try: data = file.read()
+    finally: file.close()
+    if not data: return
+
+    data = data.decode(encoding)
+    data_j = json.loads(data)
+    for key, value in data_j.items():
+        config_g[key] = value
+
+def load_env():
+    for key, value in os.environ.items():
+        config_g[key] = value
+
+load()

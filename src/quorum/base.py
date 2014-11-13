@@ -435,37 +435,13 @@ def unload():
     APP = None
 
 def load_all():
-    load_file(os.path.expanduser("~"))
-    load_file(sys.prefix)
-    load_file()
     load_config(3)
-    load_environ()
 
 def load_config(offset = 1, encoding = "utf-8"):
     element = inspect.stack()[offset]
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
-    load_file(base_folder, encoding = encoding)
-
-def load_file(path = None, encoding = "utf-8"):
-    if path: config_path = os.path.join(path, "quorum.json")
-    else: config_path = "quorum.json"
-
-    if not os.path.exists(config_path): return
-
-    file = open(config_path, "rb")
-    try: data = file.read()
-    finally: file.close()
-    if not data: return
-
-    data = data.decode(encoding)
-    data_j = json.loads(data)
-    for name, value in data_j.items():
-        config.config_g[name] = value
-
-def load_environ():
-    for name, value in os.environ.items():
-        config.config_g[name] = value
+    config.load_file(base_folder, encoding = encoding)
 
 def load_app_config(app, configs):
     for name, value in configs.items():
