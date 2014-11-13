@@ -630,7 +630,12 @@ def get_handlers(app = None):
     if not logger: return None
     return logger.handlers
 
-def get_bundle(name):
+def get_handler(name, app = None):
+    app = app or APP
+    return app.handlers.get(name, None)
+
+def get_bundle(name, app = None):
+    app = app or APP
     return APP.bundles.get(name, None)
 
 def is_devel(app = None):
