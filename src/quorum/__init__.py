@@ -46,7 +46,7 @@ from . import execution
 from . import export
 from . import extras
 from . import formats
-from . import http
+from . import httpc
 from . import jsonf
 from . import legacy
 from . import log
@@ -89,7 +89,7 @@ from .execution import ExecutionThread, background, insert_work, interval_work,\
     seconds_work, daily_work, weekly_work, monthly_work, seconds_eval, daily_eval,\
     weekly_eval, monthly_eval
 from .formats import xlsx_to_map
-from .http import get, get_json, post_json, put_json, delete_json
+from .httpc import get, get_json, post_json, put_json, delete_json
 from .info import NAME, VERSION, AUTHOR, EMAIL, DESCRIPTION, LICENSE, KEYWORDS, URL,\
     COPYRIGHT
 from .jsonf import load_json
