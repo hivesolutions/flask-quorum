@@ -72,6 +72,7 @@ def conf_prefix(prefix):
     return config
 
 def confs(name, value):
+    global config_g
     config_g[name] = value
 
 def load(path = None):
