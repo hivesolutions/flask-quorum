@@ -434,8 +434,10 @@ def unload():
 
     APP = None
 
-def load_all():
+def load_all(path = None):
     load_config(3)
+    config.load_file(path = path)
+    config.load_env()
 
 def load_config(offset = 1, encoding = "utf-8"):
     element = inspect.stack()[offset]
