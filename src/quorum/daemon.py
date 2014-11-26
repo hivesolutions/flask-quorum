@@ -122,7 +122,7 @@ class Daemon(object):
             # runs the second for and then exits from
             # the "second" parent process
             pid = os.fork() #@UndefinedVariable
-            if pid > 0:  sys.exit(0)
+            if pid > 0: sys.exit(0)
         except OSError as error:
             sys.stderr.write(
                 "second fork failed: %d (%s)\n" % (error.errno, error.strerror)
