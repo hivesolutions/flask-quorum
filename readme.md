@@ -31,7 +31,7 @@ def hello_recursive():
 ## Building
 
     sphinx-build -b html doc doc/_build
-    
+
 ## Documentation
 
 Extra documentation is available under our readthedocs.com [page](https://quorum.readthedocs.org). Keep
