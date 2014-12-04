@@ -270,21 +270,21 @@ def monthly_work(callable, monthday = 1, offset = 0, *args, **kwargs):
     eval = lambda: monthly_eval(monthday, offset)
     return interval_work(callable, eval = eval, *args, **kwargs)
 
-def seconds_eval(offset):
-    now = datetime.datetime.utcnow()
-    next = now + datetime.timedelta(seconds = offset + 1)
+def seconds_eval(offset, now = None):
+    now = now or datetime.datetime.utcnow()
+    next = now + datetime.timedelta(seconds = offset)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
-def daily_eval(offset):
-    now = datetime.datetime.utcnow()
+def daily_eval(offset, now = None):
+    now = now or datetime.datetime.utcnow()
     today = datetime.datetime(year = now.year, month = now.month, day = now.day)
     tomorrow = today + datetime.timedelta(days = 1, seconds = offset)
     tomorrow_tuple = tomorrow.utctimetuple()
     return calendar.timegm(tomorrow_tuple)
 
-def weekly_eval(weekday, offset):
-    now = datetime.datetime.utcnow()
+def weekly_eval(weekday, offset, now = None):
+    now = now or datetime.datetime.utcnow()
     today = datetime.datetime(year = now.year, month = now.month, day = now.day)
     distance = (weekday - today.weekday()) % 7
     weekday = today + datetime.timedelta(days = distance, seconds = offset)
@@ -292,8 +292,8 @@ def weekly_eval(weekday, offset):
     weekday_tuple = weekday.utctimetuple()
     return calendar.timegm(weekday_tuple)
 
-def monthly_eval(monthday, offset):
-    now = datetime.datetime.utcnow()
+def monthly_eval(monthday, offset, now = None):
+    now = now or datetime.datetime.utcnow()
     next_year, next_month = (now.year + 1, 1) if now.month == 12 else (now.year, now.month + 1)
     if now.day > monthday: month, year = (next_month, next_year)
     else: month, year = (now.month, now.year)
@@ -301,6 +301,7 @@ def monthly_eval(monthday, offset):
     monthday = monthday + datetime.timedelta(seconds = offset)
     if monthday < now:
         monthday = datetime.datetime(year = next_year, month = next_month, day = monthday.day)
+        monthday += datetime.timedelta(seconds = offset)
     monthday_tuple = monthday.utctimetuple()
     return calendar.timegm(monthday_tuple)
 
