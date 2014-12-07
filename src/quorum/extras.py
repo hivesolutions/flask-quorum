@@ -100,7 +100,11 @@ class SSLify(object):
 
     def redirect_to_ssl(self):
         """
-        Redirect incoming requests to https.
+        Redirect incoming requests to https in case the current
+        protocol is not considered secure.
+
+        This is a conditional execution that verifies the current
+        request against any of the defined rules of security.
 
         :rtype: Request
         :return: The changed request containing the redirect
@@ -109,20 +113,21 @@ class SSLify(object):
 
         criteria = [
             flask.request.is_secure,
-            self.app.debug,
             flask.request.headers.get("X-Forwarded-Proto", "http") == "https"
         ]
 
-        if not any(criteria):
-            if flask.request.url.startswith("http://"):
-                url = flask.request.url.replace("http://", "https://", 1)
-                request = flask.redirect(url)
+        if any(criteria): return
+        if not flask.request.url.startswith("http://"): return
 
-                return request
+        url = flask.request.url.replace("http://", "https://", 1)
+        request = flask.redirect(url)
+        return request
 
     def set_hsts_header(self, response):
         """
-        Adds hsts header to each response.
+        Adds hsts header to each response, that should be performed
+        at the end of the request handling workflow.
+
         This header should enable extra security options to be
         interpreted at the client side.
 
