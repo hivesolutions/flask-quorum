@@ -102,7 +102,7 @@ their respective types """
 def is_iterable(object):
     return type(object) in defines.ITERABLES
 
-def request_json(request = None):
+def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default flask request object and then in
     # case the the json data is already in the request properties
@@ -114,7 +114,10 @@ def request_json(request = None):
     # "load" it as json data, in case it fails gracefully
     # handles the failure setting the value as an empty map
     data = request.data
-    try: data_j = json.loads(data)
+    try:
+        is_bytes = legacy.is_bytes(data)
+        if is_bytes: data = data.decode(encoding)
+        data_j = json.loads(data)
     except: data_j = {}
     request.properties["_data_j"] = data_j
 
