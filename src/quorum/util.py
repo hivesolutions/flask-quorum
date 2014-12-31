@@ -641,6 +641,47 @@ def nl_to_br_jinja(eval_ctx, value):
     if eval_ctx.autoescape: value = jinja2.Markup(value)
     return value
 
+def sp_to_nbsp(value):
+    """
+    Replaces the occurrences of the space character in the
+    string with the html non breaking space character.
+
+    This is useful for one trying to convert a plain text
+    representation of a string into html representation.
+
+    :type value: String
+    :param value: The base value that is going to be used in
+    the conversion to the html value.
+    :rtype: String
+    :return: The string containing the space characters replaced
+    with non breaking space characters for html.
+    """
+
+    return value.replace(" ", "&nbsp;")
+
+def sp_to_nbsp_jinja(eval_ctx, value):
+    """
+    Optimized version of the function that replaces space
+    characters with the html non breaking space characters
+    that handles the autoescape properties of the jinja engine.
+
+    :type eval_ctx: Context
+    :param eval_ctx: Current evaluation context being used
+    in the rendering of the jinja template. May be used to
+    determine if the autoescape mode is being used.
+    :type value: String
+    :param value: The base value that is going to be used in
+    the conversion to the html value.
+    :rtype: String
+    :return: The string containing the space characters replaced
+    with non breaking space characters for html.
+    """
+
+    if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
+    value = sp_to_nbsp(value)
+    if eval_ctx.autoescape: value = jinja2.Markup(value)
+    return value
+
 def date_time(value, format = "%d/%m/%Y"):
     """
     Formats the provided as a date string according to the

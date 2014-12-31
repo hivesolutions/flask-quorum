@@ -366,6 +366,7 @@ def load(
     # context filter flag to true the jinja infra-structure will handle
     # the rest of the operations so that it's properly used
     util.nl_to_br_jinja.evalcontextfilter = True
+    util.sp_to_nbsp_jinja.evalcontextfilter = True
 
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
@@ -389,6 +390,7 @@ def load(
     app.context_processor(context_processor)
     app.template_filter("locale")(util.to_locale)
     app.template_filter("nl_to_br")(util.nl_to_br_jinja)
+    app.template_filter("sp_to_nbsp")(util.sp_to_nbsp_jinja)
     app.request_class = request.Request
     app.locales = locales
     app.safe = safe
@@ -668,6 +670,7 @@ def context_processor():
         conf = config.conf,
         locale = util.to_locale,
         nl_to_br = util.nl_to_br,
+        sp_to_nbsp = util.sp_to_nbsp,
         date_time = util.date_time
     )
 
