@@ -89,9 +89,35 @@ def template_resolve(template):
     templates_path = common.base().templates_path()
 
     # "joins" the target path and the templates (base) path to create
-    # the fill path to the target template, then verifies if it exists
-    # and in case it does sets it as the template name otherwise uses
-    # the fallback value as the target template path
+    # the full path to the target template, then verifies if it exists
+    # and in case it does sets it as the template name
     target_f = os.path.join(templates_path, target)
-    template = target if os.path.exists(target_f) else fallback
-    return template
+    if os.path.exists(target_f): return target
+
+    # runs the same operation for the fallback template name and verifies
+    # for its existence in case it exists uses it as the resolved value
+    fallback_f = os.path.join(templates_path, fallback)
+    if os.path.exists(fallback_f): return fallback
+
+    # retrieves the reference to the currently loaded app so that its
+    # properties are going to be used in the locales resolution
+    app = common.base().APP
+
+    # retrieves the current list of locales for he application and removes
+    # any previously "visited" locale value (redundant) so that the list
+    # represents the non visited locales by order of preference
+    locales = list(app.locales)
+    if flask.request.locale in locales: locales.remove(flask.request.locale)
+
+    # iterates over the complete list of locales trying to find the any
+    # possible existing template that is compatible with the specification
+    # note that the order of iteration should be associated with priority
+    for locale in locales:
+        target = fname + "." + locale + "." + extension
+        target = fbase + "/" + target if fbase else target
+        target_f = os.path.join(templates_path, target)
+        if os.path.exists(target_f): return target
+
+    # returns the fallback value as the last option available, note that
+    # for this situation the resolution process is considered failed
+    return fallback
