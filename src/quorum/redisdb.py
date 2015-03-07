@@ -37,9 +37,11 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import json
 import shelve
 
+from . import config
 from . import exceptions
 
 try: import redis
@@ -96,8 +98,10 @@ class RedisShelve(RedisMemory):
 
     def __init__(self, path = "redis.shelve"):
         RedisMemory.__init__(self)
+        base_path = config.conf("SESSION_FILE_PATH", "")
+        file_path = os.path.join(base_path, path)
         self.values = shelve.open(
-            path,
+            file_path,
             protocol = 2,
             writeback = True
         )
