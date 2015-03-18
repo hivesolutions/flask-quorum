@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.7
+^^^^^
+
+    * Support for model duplicate attribute validation
+
+
 0.3.6
 ^^^^^
 
