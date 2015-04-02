@@ -41,7 +41,7 @@ import flask
 import smtplib
 
 import email.utils
-import email.Header
+import email.header
 
 import email.mime.multipart
 import email.mime.text
@@ -209,9 +209,11 @@ def send_mail_a(*args, **kwargs):
 
     execution.insert_work(send_mail, args, kwargs)
 
-def _format(address):
+def _format(address, encoding = "utf-8"):
     address_name, address_email = email.utils.parseaddr(address)
-    address_name = legacy.UNICODE(email.Header.Header(address_name))
+    if legacy.is_bytes(address_name): address_name = address_name.decode(encoding)
+    address_name = email.header.Header(address_name, charset = encoding)
+    address_name = address_name.encode()
     return "%s <%s>" % (address_name, address_email)
 
 def _render(app, template_name, **context):

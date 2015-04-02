@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import quorum
+import quorum.mail
 
 class MailTest(quorum.TestCase):
 
@@ -51,3 +51,16 @@ class MailTest(quorum.TestCase):
     @quorum.secured
     def tearDown(self):
         quorum.unload()
+
+    def test_format(self):
+        result = quorum.mail._format("João Magalhães <joamag@hive.pt>")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>")
+
+        result = quorum.mail._format(u"João Magalhães <joamag@hive.pt>")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>")
+
+        result = quorum.mail._format(u"若昂·马加良斯 <joamag@hive.pt>")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "=?utf-8?b?6Iul5piCwrfpqazliqDoia/mlq8=?= <joamag@hive.pt>")
