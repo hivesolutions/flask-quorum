@@ -214,6 +214,7 @@ def _format(address, encoding = "utf-8"):
     if legacy.is_bytes(address_name): address_name = address_name.decode(encoding)
     address_name = email.header.Header(address_name, charset = encoding)
     address_name = address_name.encode()
+    address_email = str(address_email)
     return "%s <%s>" % (address_name, address_email)
 
 def _render(app, template_name, **context):
