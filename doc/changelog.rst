@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.8
+^^^^^
+
+    * Better email address support with format
+
+
 0.3.7
 ^^^^^
 
