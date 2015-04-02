@@ -40,11 +40,15 @@ __license__ = "Apache License, Version 2.0"
 import flask
 import smtplib
 
+import email.utils
+import email.Header
+
 import email.mime.multipart
 import email.mime.text
 
 from . import config
 from . import common
+from . import legacy
 from . import execution
 
 def send_mail(
@@ -169,8 +173,8 @@ def send_mail(
     # values set and in the alternative model (for html compatibility)
     message = email.mime.multipart.MIMEMultipart("alternative")
     message["Subject"] = subject
-    message["From"] = sender
-    message["To"] = ", ".join(receivers)
+    message["From"] = _format(sender)
+    message["To"] = ", ".join(_format(receiver) for receiver in receivers)
 
     # creates both the plain text and the rich text (html) objects
     # from the provided data and then attached them to the message
@@ -204,6 +208,11 @@ def send_mail_a(*args, **kwargs):
     """
 
     execution.insert_work(send_mail, args, kwargs)
+
+def _format(address):
+    address_name, address_email = email.utils.parseaddr(address)
+    address_name = legacy.UNICODE(email.Header.Header(address_name))
+    return "%s <%s>" % (address_name, address_email)
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)
