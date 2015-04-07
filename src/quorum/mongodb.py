@@ -123,7 +123,6 @@ def _get_connection(url):
     global connection
     if pymongo == None: raise exceptions.ModuleNotFound("pymongo")
     if connection: return connection
-    has_connection = hasattr(pymongo, "Connection")
-    if has_connection: connection = pymongo.Connection(url)
-    else: connection = pymongo.MongoClient(url)
+    if is_new(): connection = pymongo.MongoClient(url)
+    else: connection = pymongo.Connection(url)
     return connection
