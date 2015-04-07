@@ -116,6 +116,9 @@ def is_mongo(obj):
     if bson and isinstance(obj, bson.DBRef): return True
     return False
 
+def is_new():
+    return int(pymongo.version) >= 3
+
 def _get_connection(url):
     global connection
     if connection: return connection
