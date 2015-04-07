@@ -37,8 +37,9 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import mock
 import quorum
+
+from . import mock
 
 class ModelTest(quorum.TestCase):
 
