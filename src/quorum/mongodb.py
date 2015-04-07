@@ -118,6 +118,9 @@ def is_mongo(obj):
 
 def _get_connection(url):
     global connection
+    if connection: return connection
     if pymongo == None: raise exceptions.ModuleNotFound("pymongo")
-    if not connection: connection = pymongo.Connection(url)
+    has_connection = hasattr(pymongo, "Connection")
+    if has_connection: connection = pymongo.Connection(url)
+    else: connection = pymongo.MongoClient(url)
     return connection
