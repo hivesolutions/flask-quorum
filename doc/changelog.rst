@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.9
+^^^^^
+
+    * Compatibility fixes
+    * Support for new pymongo interface
+
 0.3.8
 ^^^^^
 
