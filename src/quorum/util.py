@@ -53,10 +53,12 @@ from . import legacy
 from . import common
 from . import defines
 
-SORT_MAP = dict(
-    ascending = 1,
-    descending = -1,
-)
+SORT_MAP = {
+    "1" : 1,
+    "-1" : -1,
+    "ascending" : 1,
+    "descending" : -1,
+}
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
 number way of representing the same information """
