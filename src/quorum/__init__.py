@@ -97,7 +97,7 @@ from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler,
     in_signature, has_exception, debug, info, warning, error, critical
 from .mail import send_mail, send_mail_a
 from .meta import Ordered
-from .model import Model, Field, field
+from .model import Model, Field, operation, field
 from .observer import Observable
 from .structures import OrderedDict
 from .template import render_template, template_resolve
