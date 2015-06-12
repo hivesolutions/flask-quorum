@@ -117,7 +117,7 @@ def is_mongo(obj):
     return False
 
 def is_new():
-    return int(pymongo.version[0]) >= 3
+    return int(pymongo.version[0]) >= 3 if pymongo else False
 
 def _get_connection(url):
     global connection
