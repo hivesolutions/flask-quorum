@@ -171,7 +171,7 @@ def send_mail(
 
     # creates the mime's multipart object with the appropriate header
     # values set and in the alternative model (for html compatibility)
-    message = email.mime.multipart.MIMEMultipart("alternative")
+    message = _multipart()
     message["Subject"] = subject
     message["From"] = _format(sender)
     message["To"] = ", ".join(_format(receiver) for receiver in receivers)
@@ -179,8 +179,8 @@ def send_mail(
     # creates both the plain text and the rich text (html) objects
     # from the provided data and then attached them to the message
     # (multipart alternative) that is the base structure
-    plain = plain_data and email.mime.text.MIMEText(plain_data, "plain", encoding)
-    html = html_data and email.mime.text.MIMEText(html_data, "html", encoding)
+    plain = plain_data and _plain(plain_data, encoding = encoding)
+    html = html_data and _html(plain_data, encoding = encoding)
     plain and message.attach(plain)
     html and message.attach(html)
 
@@ -208,6 +208,17 @@ def send_mail_a(*args, **kwargs):
     """
 
     execution.insert_work(send_mail, args, kwargs)
+
+def _multipart():
+    return email.mime.multipart.MIMEMultipart("alternative")
+
+def _plain(contents, encoding = "utf-8", secure = True):
+    if secure and legacy.is_bytes(contents): contents = contents.decode(encoding)
+    return email.mime.text.MIMEText(contents, "plain", encoding)
+
+def _html(contents, encoding = "utf-8", secure = True):
+    if secure and legacy.is_bytes(contents): contents = contents.decode(encoding)
+    return email.mime.text.MIMEText(contents, "html", encoding)
 
 def _format(address, encoding = "utf-8"):
     address_name, address_email = email.utils.parseaddr(address)
