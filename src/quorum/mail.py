@@ -212,12 +212,10 @@ def send_mail_a(*args, **kwargs):
 def _multipart():
     return email.mime.multipart.MIMEMultipart("alternative")
 
-def _plain(contents, encoding = "utf-8", secure = True):
-    if secure and legacy.is_bytes(contents): contents = contents.decode(encoding)
+def _plain(contents, encoding = "utf-8"):
     return email.mime.text.MIMEText(contents, "plain", encoding)
 
-def _html(contents, encoding = "utf-8", secure = True):
-    if secure and legacy.is_bytes(contents): contents = contents.decode(encoding)
+def _html(contents, encoding = "utf-8"):
     return email.mime.text.MIMEText(contents, "html", encoding)
 
 def _format(address, encoding = "utf-8"):
