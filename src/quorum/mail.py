@@ -65,7 +65,8 @@ def send_mail(
     port = None,
     username = None,
     password = None,
-    stls = False
+    stls = False,
+    safe = True
 ):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`,
@@ -134,6 +135,9 @@ def send_mail(
     :type stls: bool
     :param stls: If the connection with the target smtp server should be made\
     using a secure mechanism of a plain text one.
+    :type safe: bool
+    :param safe: If the current email message should be used using a safe\
+    strategy, meaning that newline sequences will be made standard.
     """
 
     # retrieves the reference to the currently loaded/defined application
@@ -184,13 +188,21 @@ def send_mail(
     plain and message.attach(plain)
     html and message.attach(html)
 
+    # converts the created message into a plain string value and then
+    # in case the safe flag is active replaces the proper newline
+    # sequences so that the mail string is made standard
+    contents = message.as_string()
+    if safe:
+        contents = contents.replace("\r\n", "\n")
+        contents = contents.replace("\n", "\r\n")
+
     # creates the connection with the smtp server and starts the tls
     # connection to send the created email message
     server = smtplib.SMTP(host, port = port)
     try:
         if stls: server.starttls()
         server.login(username, password)
-        server.sendmail(sender, receivers, message.as_string())
+        server.sendmail(sender, receivers, contents)
     finally:
         server.quit()
 
