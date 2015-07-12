@@ -112,7 +112,10 @@ def request_json(request = None, encoding = "utf-8"):
     # case the the json data is already in the request properties
     # it is used (cached value) otherwise continues with the parse
     request = request or flask.request
-    if "_data_j" in request.properties: return request.properties["_data_j"]
+    try:
+        if "_data_j" in request.properties:
+            return request.properties["_data_j"]
+    except RuntimeError: pass
 
     # retrieves the current request data and tries to
     # "load" it as json data, in case it fails gracefully
@@ -160,15 +163,34 @@ def get_object(object = None, alias = False, page = False, find = False, norm = 
     # retrieves the current request data and tries to
     # "load" it as json data, in case it fails gracefully
     # handles the failure setting the value as an empty map
-    data_j = request_json()
+    try: data_j = request_json()
+    except RuntimeError: data_j = dict()
+
+    # retrieves the reference to the file objects currently
+    # present in the request, note that in case a runtime
+    # error occurs (eg: out of context) fails gracefully
+    try: files = flask.request.files
+    except RuntimeError: files = dict()
+
+    # retrieves the reference to the form objects currently
+    # present in the request, note that in case a runtime
+    # error occurs (eg: out of context) fails gracefully
+    try: form_s = flask.request.form_s
+    except RuntimeError: form_s = dict()
+
+    # retrieves the reference to the arguments objects currently
+    # present in the request, note that in case a runtime
+    # error occurs (eg: out of context) fails gracefully
+    try: args_s = flask.request.args_s
+    except RuntimeError: args_s = dict()
 
     # uses all the values referencing data in the request to try
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
     for name, value in data_j.items(): object[name] = value
-    for name, value in flask.request.files.items(): object[name] = value
-    for name, value in flask.request.form_s.items(): object[name] = value
-    for name, value in flask.request.args_s.items(): object[name] = value
+    for name, value in files.items(): object[name] = value
+    for name, value in form_s.items(): object[name] = value
+    for name, value in args_s.items(): object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
