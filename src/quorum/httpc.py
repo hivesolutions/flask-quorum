@@ -295,8 +295,10 @@ def _method_payload(
         mime = mime or "application/json"
     elif data_m:
         url = url + "?" + data_e if data_e else url
-        content_type, data = _encode_multipart(data_m, doseq = True)
-        mime = mime or content_type
+        content_type, data = _encode_multipart(
+            data_m, mime = mime, doseq = True
+        )
+        mime = content_type
     elif data_e:
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
@@ -454,7 +456,8 @@ def _quote(values, plus = False, safe = "/"):
 
     return final
 
-def _encode_multipart(fields, doseq = False):
+def _encode_multipart(fields, mime = None, doseq = False):
+    mime = mime or "multipart/form-data"
     boundary = _create_boundary(fields, doseq = doseq)
     boundary_b = legacy.bytes(boundary)
 
@@ -467,10 +470,15 @@ def _encode_multipart(fields, doseq = False):
         for value in values:
             value_t = type(value)
 
-            if value_t == tuple: is_file = True
-            else: is_file = False
-
-            if is_file:
+            if value_t == dict:
+                header_l = []
+                data = None
+                for key, item in value.items():
+                    if key == "data": data = item
+                    else: header_l.append("%s: %s" % (key, item))
+                value = data
+                header = "\r\n".join(header_l)
+            elif value_t == tuple:
                 header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
                     (key, value[0])
                 value = value[1]
@@ -489,7 +497,7 @@ def _encode_multipart(fields, doseq = False):
     buffer.append(b"--" + boundary_b + b"--")
     buffer.append(b"")
     body = b"\r\n".join(buffer)
-    content_type = "multipart/form-data; boundary=%s" % boundary
+    content_type = "%s; boundary=%s" % (mime, boundary)
 
     return content_type, body
 
@@ -512,10 +520,8 @@ def _try_boundary(fields, boundary, doseq = False):
         for value in values:
             value_t = type(value)
 
-            if value_t == tuple: is_file = True
-            else: is_file = False
-
-            if is_file: name = value[0]; value = value[1]
+            if value_t == dict: name = ""; value = value.get("data", b"")
+            elif value_t == tuple: name = value[0]; value = value[1]
             else: name = ""; value = _encode(value)
 
             if not key.find(boundary) == -1: return False
