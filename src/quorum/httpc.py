@@ -63,9 +63,10 @@ AUTH_ERRORS = (401, 403, 440, 499)
 considered to be authentication related and for which a
 new authentication try will be performed """
 
-def try_auth(auth_callback, params):
+def try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
-    auth_callback(params)
+    if headers == None: headers = dict()
+    auth_callback(params, headers)
 
 def get(url, auth_callback = None, **kwargs):
     # starts the variable holding the number of
