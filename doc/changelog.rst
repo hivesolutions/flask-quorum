@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.11
+^^^^^
+
+    * Bug fix related with async based redirection
+
 0.3.10
 ^^^^^
 
