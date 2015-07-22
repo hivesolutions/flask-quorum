@@ -58,6 +58,11 @@ SEQUENCE_TYPES = (list, tuple)
 """ The sequence defining the various types that are
 considered to be sequence based for python """
 
+AUTH_ERRORS = (401, 403, 440, 499)
+""" The sequence that defines the various http errors
+considered to be authentication related and for which a
+new authentication try will be performed """
+
 def try_auth(auth_callback, params):
     if not auth_callback: raise
     auth_callback(params)
@@ -71,7 +76,7 @@ def get(url, auth_callback = None, **kwargs):
         try:
             return _get(url, **kwargs)
         except legacy.HTTPError as error:
-            if error.code == 403 and auth_callback:
+            if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
                 raise
@@ -91,7 +96,7 @@ def get_json(url, headers = None, auth_callback = None, **kwargs):
         try:
             return _get_json(url, headers = headers, **kwargs)
         except legacy.HTTPError as error:
-            if error.code == 403 and auth_callback:
+            if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
@@ -130,7 +135,7 @@ def post_json(
                 **kwargs
             )
         except legacy.HTTPError as error:
-            if error.code == 403 and auth_callback:
+            if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
@@ -169,7 +174,7 @@ def put_json(
                 **kwargs
             )
         except legacy.HTTPError as error:
-            if error.code == 403 and auth_callback:
+            if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
@@ -191,7 +196,7 @@ def delete_json(url, headers = None, auth_callback = None, **kwargs):
         try:
             return _delete_json(url, headers = headers, **kwargs)
         except legacy.HTTPError as error:
-            if error.code == 403 and auth_callback:
+            if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
