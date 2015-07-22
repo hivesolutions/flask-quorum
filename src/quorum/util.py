@@ -544,7 +544,8 @@ def anotate_async(response):
     # checks if the current request is "marked" as asynchronous, for
     # such cases a special redirection process is applies to avoid the
     # typical problems with automated redirection using "ajax"
-    is_async = True if get_field("async") else False
+    is_async = True if flask.request.headers.get("X-Async") else False
+    is_async = True if get_field("async") else is_async
     if is_async: response.status_code = 280
 
 def run_thread(function, *args, **kwargs):
