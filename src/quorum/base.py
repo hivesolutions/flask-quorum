@@ -324,6 +324,7 @@ def load(
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
+    mongo_url = config.conf("MONGO_URL", mongo_url)
 
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected
