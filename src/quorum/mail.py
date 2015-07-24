@@ -184,7 +184,7 @@ def send_mail(
     # from the provided data and then attached them to the message
     # (multipart alternative) that is the base structure
     plain = plain_data and _plain(plain_data, encoding = encoding)
-    html = html_data and _html(plain_data, encoding = encoding)
+    html = html_data and _html(html_data, encoding = encoding)
     plain and message.attach(plain)
     html and message.attach(html)
 
