@@ -88,14 +88,14 @@ def get(url, auth_callback = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def get_json(url, headers = None, auth_callback = None, **kwargs):
+def get_json(url, headers = None, handle = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _get_json(url, headers = headers, **kwargs)
+            return _get_json(url, handle = handle, headers = headers, **kwargs)
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -117,6 +117,7 @@ def post_json(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     auth_callback = None,
     **kwargs
 ):
@@ -133,6 +134,7 @@ def post_json(
                 data_m = data_m,
                 headers = headers,
                 mime = mime,
+                handle = handle,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -156,6 +158,7 @@ def put_json(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     auth_callback = None,
     **kwargs
 ):
@@ -172,6 +175,7 @@ def put_json(
                 data_m = data_m,
                 headers = headers,
                 mime = mime,
+                handle = handle,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -188,14 +192,14 @@ def put_json(
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def delete_json(url, headers = None, auth_callback = None, **kwargs):
+def delete_json(url, headers = None, handle = None, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _delete_json(url, headers = headers, **kwargs)
+            return _delete_json(url, headers = headers, handle = handle, **kwargs)
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -218,8 +222,8 @@ def _get(url, **kwargs):
     contents = file.read()
     return contents
 
-def _get_json(url, headers = None, **kwargs):
-    return _method_empty("GET", url, headers = headers, **kwargs)
+def _get_json(url, headers = None, handle = None, **kwargs):
+    return _method_empty("GET", url, headers = headers, handle = handle, **kwargs)
 
 def _post_json(
     url,
@@ -228,6 +232,7 @@ def _post_json(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     **kwargs
 ):
     return _method_payload(
@@ -238,6 +243,7 @@ def _post_json(
         data_m = data_m,
         headers = headers,
         mime = mime,
+        handle = handle,
         **kwargs
     )
 
@@ -248,6 +254,7 @@ def _put_json(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     **kwargs
 ):
     return _method_payload(
@@ -258,13 +265,15 @@ def _put_json(
         data_m = data_m,
         headers = headers,
         mime = mime,
+        handle = handle,
         **kwargs
     )
 
-def _delete_json(url, headers = None, **kwargs):
-    return _method_empty("DELETE", url, headers = headers, **kwargs)
+def _delete_json(url, headers = None, handle = None, **kwargs):
+    return _method_empty("DELETE", url, headers = headers, handle = handle, **kwargs)
 
-def _method_empty(name, url, headers = None, **kwargs):
+def _method_empty(name, url, headers = None, handle = None, **kwargs):
+    if handle == None: handle = True
     values = kwargs or dict()
     data = _urlencode(values)
     url, host, authorization = _parse_url(url)
@@ -274,9 +283,12 @@ def _method_empty(name, url, headers = None, **kwargs):
     url = url + "?" + data if data else url
     url = str(url)
     file = _resolve(url, name, headers, None, TIMEOUT)
-    try: result = file.read()
-    finally: file.close()
-    return _result(result, force = True)
+    if handle:
+        try: result = file.read()
+        finally: file.close()
+    else:
+        result = file
+    return _result(result, force = True) if handle else result
 
 def _method_payload(
     name,
@@ -286,8 +298,10 @@ def _method_payload(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     **kwargs
 ):
+    if handle == None: handle = True
     values = kwargs or dict()
 
     url, host, authorization = _parse_url(url)
@@ -320,9 +334,12 @@ def _method_payload(
     url = str(url)
 
     file = _resolve(url, name, headers, data, TIMEOUT)
-    try: result = file.read()
-    finally: file.close()
-    return _result(result, force = True)
+    if handle:
+        try: result = file.read()
+        finally: file.close()
+    else:
+        result = file
+    return _result(result, force = True) if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
