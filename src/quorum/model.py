@@ -830,6 +830,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return []
 
     @classmethod
+    def order_name(self):
+        return None
+
+    @classmethod
     def build(cls, model, map = False, rules = True, meta = False):
         if rules: cls.rules(model, map)
         cls._build(model, map)
@@ -1526,11 +1530,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
         # are going to be removed, note that if the operation is an
-        # update operation the "immutable rules" also apply, the
-        # returned value is normalizes meaning that for instance if
+        # update operation and the "immutable rules" also apply, the
+        # returned value is normalized meaning that for instance if
         # any relation is loaded the reference value is returned instead
         # of the loaded relation values (required for persistence)
-        model = self._filter(immutables_a = not is_new, normalize = True)
+        model = self._filter(
+            increment_a = is_new,
+            immutables_a = not is_new,
+            normalize = True
+        )
 
         # in case the current model is not new must create a new
         # model instance and remove the main identifier from it
@@ -1681,7 +1689,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # should finish the operations from a correct validation
         self.post_validate()
 
-    def _filter(self, immutables_a = False, normalize = False):
+    def _filter(self, increment_a = True, immutables_a = False, normalize = False):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
         model = {}
@@ -1705,8 +1713,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         immutables = cls.immutables()
 
         # iterates over all the increment fields and increments their
-        # fields so that a new value is set on the model
-        for name in increments: model[name] = cls._increment(name)
+        # fields so that a new value is set on the model, note that if
+        # the increment apply is unset the increment operation is ignored
+        for name in increments:
+            if not increment_a: continue
+            model[name] = cls._increment(name)
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
