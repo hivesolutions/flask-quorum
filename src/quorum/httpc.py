@@ -285,7 +285,7 @@ def _method_empty(name, url, headers = None, handle = None, **kwargs):
     file = _resolve(url, name, headers, None, TIMEOUT)
     try: result = file.read()
     finally: file.close()
-    return result, file if handle else result
+    return (result, file) if handle else result
 
 def _method_payload(
     name,
@@ -333,7 +333,7 @@ def _method_payload(
     file = _resolve(url, name, headers, data, TIMEOUT)
     try: result = file.read()
     finally: file.close()
-    return result, file if handle else result
+    return (result, file) if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
