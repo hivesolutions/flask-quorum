@@ -645,6 +645,71 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return definition
 
     @classmethod
+    def links(cls):
+        # in case the links are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_links" in cls.__dict__: return cls._links
+
+        # creates the list that will hold the complete set of method
+        # names for links type methods
+        links = []
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be link oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are links
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_link"): continue
+            is_instance = isinstance(method, types.FunctionType)
+            method._link.instance = is_instance
+            links.append(method._link)
+
+        # sorts the various links taking into account the name of
+        # the link, this is considered the pre-defined order
+        links.sort(key = lambda item: item["name"])
+
+        # saves the list of link method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._links = links
+        return links
+
+    @classmethod
+    def links_m(cls):
+        # in case the links are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_links_m" in cls.__dict__: return cls._links_m
+
+        # creates the map that will hold the complete set of method
+        # names for links type methods
+        links_m = dict()
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be link oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are links
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_link"): continue
+            links_m[method.__name__] = method._link
+
+        # saves the map of link method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._links_m = links_m
+        return links_m
+
+    @classmethod
+    def link(cls, name):
+        links_m = cls.links_m()
+        return links_m.get(name, None)
+
+    @classmethod
     def operations(cls):
         # in case the operations are already "cached" in the current
         # class (fast retrieval) returns immediately
@@ -659,17 +724,53 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # are considered to be operation oriented
         methods = cls.methods()
 
-        # iterates over the complete set of method name for the current
+        # iterates over the complete set of method names for the current
         # class hierarchy to determine the ones that are operations
         for name in methods:
             method = getattr(cls, name)
             if not hasattr(method, "_operation"): continue
             operations.append(method._operation)
 
+        # sorts the various operations taking into account the name of
+        # the operation, this is considered the pre-defined order
+        operations.sort(key = lambda item: item["name"])
+
         # saves the list of operation method names defined under the current
         # class and then returns the contents of it to the caller method
         cls._operations = operations
         return operations
+
+    @classmethod
+    def operations_m(cls):
+        # in case the operations are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_operations_m" in cls.__dict__: return cls._operations_m
+
+        # creates the map that will hold the complete set of method
+        # names for operations type methods
+        operations_m = dict()
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be operation oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are operations
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_operation"): continue
+            operations_m[method.__name__] = method._operation
+
+        # saves the map of operation method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._operations_m = operations_m
+        return operations_m
+
+    @classmethod
+    def operation(cls, name):
+        operations_m = cls.operations_m()
+        return operations_m.get(name, None)
 
     @classmethod
     def definition_n(cls, name):
