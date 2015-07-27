@@ -273,7 +273,7 @@ def _delete_json(url, headers = None, handle = None, **kwargs):
     return _method_empty("DELETE", url, headers = headers, handle = handle, **kwargs)
 
 def _method_empty(name, url, headers = None, handle = None, **kwargs):
-    if handle == None: handle = True
+    if handle == None: handle = False
     values = kwargs or dict()
     data = _urlencode(values)
     url, host, authorization = _parse_url(url)
@@ -283,12 +283,9 @@ def _method_empty(name, url, headers = None, handle = None, **kwargs):
     url = url + "?" + data if data else url
     url = str(url)
     file = _resolve(url, name, headers, None, TIMEOUT)
-    if handle:
-        try: result = file.read()
-        finally: file.close()
-    else:
-        result = file
-    return _result(result, force = True) if handle else result
+    try: result = file.read()
+    finally: file.close()
+    return result, file if handle else result
 
 def _method_payload(
     name,
@@ -301,7 +298,7 @@ def _method_payload(
     handle = None,
     **kwargs
 ):
-    if handle == None: handle = True
+    if handle == None: handle = False
     values = kwargs or dict()
 
     url, host, authorization = _parse_url(url)
@@ -334,12 +331,9 @@ def _method_payload(
     url = str(url)
 
     file = _resolve(url, name, headers, data, TIMEOUT)
-    if handle:
-        try: result = file.read()
-        finally: file.close()
-    else:
-        result = file
-    return _result(result, force = True) if handle else result
+    try: result = file.read()
+    finally: file.close()
+    return result, file if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
