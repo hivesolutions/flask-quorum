@@ -1672,15 +1672,101 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
-def operation(name = None, level = 1):
+class Link(dict):
+    """
+    Internal link class used to encapsulate some of the
+    internal concepts associated with a link, providing
+    an easy to use structure at runtime.
+
+    The base interface should conform with the dictionary
+    interface in order to provide backwards compatibility.
+    """
+
+    pass
+
+class Operation(dict):
+    """
+    Logical structure representing an operation, should
+    provide a simple interface for interaction with the
+    operation and inputs/outputs of it.
+
+    The base interface should conform with the dictionary
+    interface in order to provide backwards compatibility.
+    """
+
+    def cast(self, values):
+        """
+        Runs the "casting" operation for a series of provided
+        values, the order sequence of the provided values is
+        relevant and should conform with the specified order
+        for the operation parameters.
+
+        :type values: List
+        :param values: The sequence containing the various values
+        that are going to be casted according to the operation spec.
+        :rtype: List
+        :return: The sequence of values now casted with the proper
+        data types as specified in operation structure.
+        """
+
+        # creates the list that will hold the "final" casted values
+        # should have the same size of the input values list
+        casted = []
+
+        # retrieves the reference to the parameters specification
+        # and then uses it in the iteration for the casting of the
+        # various "passed" raw values
+        parameters = self.get("parameters", [])
+        for value, parameters in zip(values, parameters):
+            cast = parameters[2]
+            if cast and not value in (None, ""): value = cast(value)
+            casted.append(value)
+
+        # returns the final list of casted values to the caller method
+        # so that it may be used safely in the context
+        return casted
+
+def link(name = None):
+    """
+    Decorator function to be used to "annotate" the provided
+    function as an link (string) that is able to change the user
+    agent to a location of a certain interest.
+
+    Proper usage of the link definition/decoration is context
+    based and should vary based on application.
+
+    :type name: String
+    :param name: The name of the link (in plain english) so that
+    a better user experience is possible.
+    :rtype: Function
+    :return: The decorator function that is going to be used to
+    generated the final function to be called.
+    """
+
+    def decorator(function, *args, **kwargs):
+        function._link = Link(
+            method = function.__name__,
+            name = name or function.__name__
+        )
+        return function
+
+    return decorator
+
+def operation(name = None, parameters = (), level = 1):
     """
     Decorator function to be used to "annotate" the provided
     function as an operation that is able to change the current
     entity sate and behavior.
 
+    Proper usage of the operation definition/decoration is context
+    based and should vary based on application.
+
     :type name: String
     :param name: The name of the operation (in plain english)
     so that a better user experience is possible.
+    :type parameters: Tuple
+    :param parameters: The sequence containing tuples that describe
+    the various parameters to be send to the operation.
     :type level: int
     :param level: The severity level of the operation, the higher
     values will be considered more severe than the lower ones,
@@ -1691,11 +1777,13 @@ def operation(name = None, level = 1):
     """
 
     def decorator(function, *args, **kwargs):
-        function._operation = dict(
+        function._operation = Operation(
             method = function.__name__,
             name = name or function.__name__,
+            parameters = parameters,
             level = level
         )
+
         return function
 
     return decorator
