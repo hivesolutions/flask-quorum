@@ -5,6 +5,7 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
+  - "3.5-dev"
   - "pypy"
   - "pypy3"
 services: mongodb
@@ -13,3 +14,12 @@ install:
   - pip install coveralls
 script: coverage run --source=quorum setup.py test
 after_success: coveralls
+deploy:
+  provider: pypi
+  user: joamag
+  password:
+    secure: CQhwl6lT1Yn4PDvLwCLBZqy+zAPzOi+Xg+wNseTuy4kAiUsTsUVk6nfbOvdTwa7TELMKLyLWN6UJjEXrrCzDxItpDZ9oY8wz+K8KmWzWx8TaW6PerFrR1taczdWCezSuu+ctvBmTmQJkObnzB3y6qwx19bWfpqWWkzoNVuPvdpo=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: "2.7"
