@@ -38,10 +38,10 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import re
-import math
 import copy
+import math
+import json
 import types
-import flask
 import datetime
 
 from . import util
@@ -67,6 +67,7 @@ BUILDERS = {
     legacy.UNICODE : lambda v: v.decode("utf-8") if\
         type(v) == legacy.BYTES else legacy.UNICODE(v),
     list : lambda v: RE(v) if type(v) == list else RE([v]),
+    dict : lambda v: json.loads(v) if type(v) == legacy.UNICODE else dict(v),
     bool : lambda v: v if type(v) == bool else\
         not v in ("", "0", "false", "False")
 }
