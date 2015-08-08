@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.16
+^^^^^
+
+    * New map like access support for models
+
+
 0.3.15
 ^^^^^
 
