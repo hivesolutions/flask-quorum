@@ -12,6 +12,7 @@ services: mongodb
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+  - pip install twine
 script: coverage run --source=quorum setup.py test
 after_success: coveralls
 deploy:
