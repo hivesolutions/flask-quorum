@@ -41,6 +41,8 @@ import quorum
 
 class Person(quorum.Model):
 
-    age = dict(
+    name = quorum.field()
+
+    age = quorum.field(
         type = int
     )

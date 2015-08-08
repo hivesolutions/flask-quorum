@@ -61,6 +61,37 @@ class ModelTest(quorum.TestCase):
         quorum.unload()
 
     @quorum.secured
+    def test_basic(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertEqual(person.name, "Name")
+        self.assertEqual(person["name"], "Name")
+        self.assertEqual(len(person), 1)
+
+        person["age"] = 20
+
+        self.assertEqual(person.age, 20)
+        self.assertEqual(person["age"], 20)
+        self.assertEqual(len(person), 2)
+
+        self.assertEqual("age" in person, True)
+        self.assertEqual("boss" in person, False)
+        self.assertEqual(bool(person), True)
+
+        del person["name"]
+
+        self.assertRaises(AttributeError, lambda: person.name)
+        self.assertRaises(KeyError, lambda: person["name"])
+
+        del person.age
+
+        self.assertRaises(AttributeError, lambda: person.age)
+        self.assertRaises(KeyError, lambda: person["age"])
+
+        self.assertEqual(bool(person), False)
+
+    @quorum.secured
     def test_find(self):
         result = mock.Person.find(age = 1)
         self.assertEqual(len(result), 0)
