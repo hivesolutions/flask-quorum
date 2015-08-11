@@ -41,6 +41,6 @@ We need people to help documentation the code base if you know anyone please con
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/hivesolutions/flask_quorum.png?branch=master)](https://travis-ci.org/hivesolutions/flask_quorum)
-[![Coverage Status](https://coveralls.io/repos/hivesolutions/flask_quorum/badge.png?branch=master)](https://coveralls.io/r/hivesolutions/flask_quorum?branch=master)
-[![PyPi Status](https://img.shields.io/pypi/v/quorum.png)](https://pypi.python.org/pypi/quorum)
+[![Build Status](https://travis-ci.org/hivesolutions/flask_quorum.svg?branch=master)](https://travis-ci.org/hivesolutions/flask_quorum)
+[![Coverage Status](https://coveralls.io/repos/hivesolutions/flask_quorum/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/flask_quorum?branch=master)
+[![PyPi Status](https://img.shields.io/pypi/v/quorum.svg)](https://pypi.python.org/pypi/quorum)
