@@ -107,9 +107,7 @@ class RedisShelve(RedisMemory):
     def set(self, name, value, secure = None):
         RedisMemory.set(self, name, value)
         if secure == None:
-            shelve_cls = self.values.dict.__class__
-            shelve_dbm = shelve_cls.__name__
-            secure = shelve_dbm == "dbm"
+            secure = self.db_secure()
         if secure:
             self.values.close()
             self.open_db()
@@ -129,6 +127,14 @@ class RedisShelve(RedisMemory):
             protocol = 2,
             writeback = True
         )
+
+    def db_type(self):
+        shelve_cls = type(self.values.dict)
+        shelve_dbm = shelve_cls.__name__
+        return shelve_dbm
+
+    def db_secure(self):
+        return self.db_type() == "dbm"
 
 def get_connection():
     return _get_connection(url)
