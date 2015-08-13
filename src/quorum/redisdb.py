@@ -104,8 +104,12 @@ class RedisShelve(RedisMemory):
     def close(self):
         self.values.close()
 
-    def set(self, name, value, secure = False):
+    def set(self, name, value, secure = None):
         RedisMemory.set(self, name, value)
+        if secure == None:
+            shelve_cls = self.values.dict.__class__
+            shelve_dbm = shelve_cls.__name__
+            secure = shelve_dbm == "dbm"
         if secure:
             self.values.close()
             self.open_db()
@@ -116,7 +120,7 @@ class RedisShelve(RedisMemory):
         name_s = str(name)
         if not name_s in self.values: return
         del self.values[name_s]
-        
+
     def open_db(self):
         base_path = config.conf("SESSION_FILE_PATH", "")
         file_path = os.path.join(base_path, self.db_path)
