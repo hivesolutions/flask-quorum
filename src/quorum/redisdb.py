@@ -98,25 +98,33 @@ class RedisShelve(RedisMemory):
 
     def __init__(self, path = "redis.shelve"):
         RedisMemory.__init__(self)
-        base_path = config.conf("SESSION_FILE_PATH", "")
-        file_path = os.path.join(base_path, path)
-        self.values = shelve.open(
-            file_path,
-            protocol = 2,
-            writeback = True
-        )
+        self.db_path = path
+        self.open_db()
 
     def close(self):
         self.values.close()
 
-    def set(self, name, value):
+    def set(self, name, value, secure = False):
         RedisMemory.set(self, name, value)
-        self.values.sync()
+        if secure:
+            self.values.close()
+            self.open_db()
+        else:
+            self.values.sync()
 
     def delete(self, name):
         name_s = str(name)
         if not name_s in self.values: return
         del self.values[name_s]
+        
+    def open_db(self):
+        base_path = config.conf("SESSION_FILE_PATH", "")
+        file_path = os.path.join(base_path, self.db_path)
+        self.values = shelve.open(
+            file_path,
+            protocol = 2,
+            writeback = True
+        )
 
 def get_connection():
     return _get_connection(url)
