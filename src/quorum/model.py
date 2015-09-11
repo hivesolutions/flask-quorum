@@ -421,13 +421,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        fields, eager, map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields, eager, map, rules, meta, fill, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
             ("build", True),
+            ("fill", True),
             ("skip", 0),
             ("limit", 0),
             ("sort", None),
@@ -456,8 +457,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             raise exceptions.NotFoundError(message)
         if not model and not raise_e: return model
         cls.types(model)
-        cls.fill(model)
-        build and cls.build(model, map = map, rules = rules, meta = meta)
+        if fill: cls.fill(model)
+        if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager)
         return model if map else cls.old(model = model, safe = False)
 
@@ -496,7 +497,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         models = [cls.types(model) for model in models]
         if fill: models = [cls.fill(model) for model in models]
-        build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
+        if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager)
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
