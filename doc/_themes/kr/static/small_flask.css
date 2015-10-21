@@ -7,8 +7,8 @@
  */
 
 body {
-    margin: 0;
-    padding: 20px 30px;
+    margin: 0px 0px 0px 0px;
+    padding: 20px 30px 20px 30px;
 }
 
 div.documentwrapper {
@@ -22,7 +22,7 @@ div.sphinxsidebar {
     display: block;
     float: none;
     margin: 50px -30px -20px -30px;
-    padding: 10px 20px;
+    padding: 10px 20px 10px 20px;
     width: 102.5%;
 }
 
@@ -40,20 +40,20 @@ div.sphinxsidebar p.logo {
 }
 
 div.document {
-    margin: 0;
+    margin: 0px 0px 0px 0px;
     width: 100%;
 }
 
 div.related {
     display: block;
-    margin: 0;
+    margin: 0px 0px 0px 0px;
     padding: 10px 0 20px 0;
 }
 
 div.related ul,
 div.related ul li {
-    margin: 0;
-    padding: 0;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
 }
 
 div.footer {
@@ -61,10 +61,10 @@ div.footer {
 }
 
 div.bodywrapper {
-    margin: 0;
+    margin: 0px 0px 0px 0px;
 }
 
 div.body {
     min-height: 0;
-    padding: 0;
+    padding: 0px 0px 0px 0px;
 }
