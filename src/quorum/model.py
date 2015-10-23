@@ -1460,6 +1460,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         })
         return value["seq"]
 
+    @property
+    def request(self):
+        return flask.request
+
+    @property
+    def session(self):
+        return flask.session
+
+    @property
+    def logger(self):
+        return None
+
     def val(self, name, default = None):
         return self.model.get(name, default)
 
