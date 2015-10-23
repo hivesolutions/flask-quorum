@@ -421,7 +421,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        fields, eager, map, rules, meta, fill, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields, eager, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
             ("map", False),
@@ -1888,7 +1888,11 @@ class Operation(dict):
         parameters = self.get("parameters", [])
         for value, parameters in zip(values, parameters):
             cast = parameters[2]
-            if cast and not value in (None, ""): value = cast(value)
+            is_default = value in (None, "")
+            if cast in ("file",): cast = None
+            if cast in ("longtext",): cast = legacy.UNICODE
+            if cast and not is_default: value = cast(value)
+            if is_default: value = TYPE_DEFAULTS.get(cast, value)
             casted.append(value)
 
         # returns the final list of casted values to the caller method
