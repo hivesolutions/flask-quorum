@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
+import sys
 import copy
 import json
 import flask
@@ -46,6 +47,7 @@ import locale
 import random
 import datetime
 import threading
+import subprocess
 
 import jinja2
 
@@ -783,3 +785,26 @@ def unquote(value, *args, **kwargs):
     is_bytes = type(value) == legacy.BYTES
     if is_bytes: value = value.decode("utf-8")
     return value
+
+def execute(args, command = None, path = None, shell = True):
+    if command: args = command.split(" ")
+    process = subprocess.Popen(
+        args,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+        shell = shell,
+        cwd = path
+    )
+    code = process.wait()
+    process.stdout.seek(0)
+    process.stderr.seek(0)
+    stdout = process.stdout.read()
+    stderr = process.stderr.read()
+    encoding = sys.getfilesystemencoding()
+    stdout = stdout.decode(encoding)
+    stderr = stderr.decode(encoding)
+    return dict(
+        stdout = stdout,
+        stderr = stderr,
+        code = code
+    )
