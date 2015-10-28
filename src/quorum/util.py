@@ -68,6 +68,7 @@ number way of representing the same information """
 defines = defines
 
 def to_find(find_s):
+    if not find_s: return []
     find_t = type(find_s)
     if find_t == list: return find_s
     return [find_s]
