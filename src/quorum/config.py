@@ -41,6 +41,8 @@ import os
 import sys
 import json
 
+from . import legacy
+
 FILE_NAME = "quorum.json"
 """ The default name of the file that is going to be
 used for the loading of configuration values from json """
@@ -59,6 +61,8 @@ config_g = {}
 configuration for the current application """
 
 def conf(name, default = None, cast = None):
+    is_string = type(cast) in legacy.STRINGS
+    if is_string: cast = __builtins__.get(cast, None)
     cast = CASTS.get(cast, cast)
     value = config_g.get(name, default)
     value = cast(value) if cast else value
