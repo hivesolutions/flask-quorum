@@ -435,7 +435,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("build", True),
             ("fill", True),
             ("skip", 0),
-            ("limit", 0),
+            ("limit", 10),
             ("sort", None),
             ("raise_e", True)
         ))
@@ -478,7 +478,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("build", True),
             ("fill", True),
             ("skip", 0),
-            ("limit", 0),
+            ("limit", 10),
             ("sort", None)
         ))
 

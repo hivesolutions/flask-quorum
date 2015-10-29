@@ -67,6 +67,11 @@ number way of representing the same information """
 
 defines = defines
 
+def to_limit(limit_s):
+    limit = int(limit_s)
+    if limit < 0: return 0
+    return limit
+
 def to_find(find_s):
     if not find_s: return []
     find_t = type(find_s)
@@ -96,7 +101,7 @@ between the normalized manned and the quorum manner """
 
 FIND_TYPES = dict(
     skip = int,
-    limit = int,
+    limit = to_limit,
     find_s = legacy.UNICODE,
     find_d = to_find,
     find_i = bool,
