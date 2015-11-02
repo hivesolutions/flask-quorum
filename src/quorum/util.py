@@ -168,7 +168,14 @@ def get_field(name, default = None, cast = None):
     # caller method should be aware of the sources used in the field retrieval
     return value
 
-def get_object(object = None, alias = False, page = False, find = False, norm = True):
+def get_object(
+    object = None,
+    alias = False,
+    page = False,
+    find = False,
+    norm = True,
+    **kwargs
+):
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
     # otherwise used an empty map (form validation)
@@ -212,7 +219,7 @@ def get_object(object = None, alias = False, page = False, find = False, norm = 
     alias and resolve_alias(object)
     page and page_types(object)
     find and find_types(object)
-    find and find_defaults(object)
+    find and find_defaults(object, kwargs)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
@@ -284,7 +291,12 @@ def find_types(object):
         if value == None: del object[name]
         else: object[name] = value
 
-def find_defaults(object):
+def find_defaults(object, kwargs):
+    for name, value in legacy.iteritems(kwargs):
+        if name in object: continue
+        if not name in FIND_TYPES: continue
+        object[name] = value
+
     for name, value in legacy.iteritems(FIND_DEFAULTS):
         if name in object: continue
         object[name] = value
