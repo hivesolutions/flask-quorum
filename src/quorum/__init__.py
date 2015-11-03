@@ -111,8 +111,8 @@ from .util import is_iterable, request_json, get_field, get_object, is_mobile, r
     sp_to_nbsp, sp_to_nbsp_jinja, date_time, quote, unquote
 from .validation import validate, validate_b, safe, eq, gt, gte, lt, lte, not_null, not_empty,\
     not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt, field_gte,\
-    field_lt, field_lte, string_gt, string_lt, equals, not_past, not_duplicate, all_different,\
-    no_self
+    field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
+    all_different, no_self
 
 from .amazon import get_connection as get_amazon
 from .amazon import get_bucket as get_amazon_bucket
