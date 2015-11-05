@@ -1667,6 +1667,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # delete operation, this should trigger changes in the model
         self.post_delete()
 
+    def approve(self, model = None, type = None):
+        # retrieves the class associated with the instance
+        # that is going to be sent for approval
+        cls = self.__class__
+
+        # determines the proper method naming suffix to be
+        # used for the requested type of approval/validation
+        suffix = "_" + type if type else ""
+
+        # retrieves the proper (target) method for validation
+        # and then runs the inner validate method for it
+        method = getattr(cls, "validate" + suffix)
+        self._validate(model = model, method = method)
+
     def reload(self, *args, **kwargs):
         is_new = self.is_new()
         if is_new: exceptions.OperationalError("Can't reload a new model entity")
