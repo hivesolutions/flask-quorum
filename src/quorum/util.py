@@ -93,6 +93,7 @@ ALIAS = {
     "filter_string" : "find_s",
     "insensitive" : "find_i",
     "order" : "sort",
+    "offset" : "skip",
     "start_record" : "skip",
     "number_records" : "limit"
 }
