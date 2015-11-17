@@ -6,11 +6,16 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.17
+^^^^^
+
+    * Better persistence model
+    * Minor bug fixes
+
 0.3.16
 ^^^^^
 
     * New map like access support for models
-
 
 0.3.15
 ^^^^^
@@ -21,7 +26,6 @@ Current Versions
 ^^^^^
 
     * New support for travis
-
 
 0.3.13
 ^^^^^
