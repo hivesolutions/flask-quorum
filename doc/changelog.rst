@@ -32,7 +32,6 @@ Current Versions
 
     * Fixed bug related with http client
 
-
 0.3.12
 ^^^^^
 
