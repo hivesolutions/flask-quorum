@@ -221,6 +221,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
+        self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
         observer.Observable.__init__(self)
 
