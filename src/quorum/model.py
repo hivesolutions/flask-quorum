@@ -1197,6 +1197,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         kwargs[name] = filter
 
     @classmethod
+    def is_attached(self):
+        return True
+
+    @classmethod
     def _build(cls, model, map):
         pass
 
@@ -1889,7 +1893,9 @@ class LocalModel(Model):
     transient model usage.
     """
 
-    pass
+    @classmethod
+    def is_attached(self):
+        return False
 
 class Field(dict):
     """
