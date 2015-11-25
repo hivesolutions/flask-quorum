@@ -117,3 +117,77 @@ class ModelTest(quorum.TestCase):
 
         result = mock.Person.count()
         self.assertEqual(result, 1)
+
+    def test_validation(self):
+        person = mock.Person()
+
+        self.assertRaises(quorum.ValidationError, person.save)
+
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertRaises(quorum.ValidationError, person.save)
+
+    def test_map(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertEqual(person.name, "Name")
+
+        person.save()
+
+        self.assertEqual(person.identifier, 1)
+        self.assertEqual(person.name, "Name")
+
+        person_m = person.map()
+
+        self.assertEqual(person_m["identifier"], 1)
+        self.assertEqual(person_m["name"], "Name")
+
+        person.age = 20
+        person.hidden = "Hidden"
+
+        self.assertEqual(person.age, 20)
+        self.assertEqual(person.hidden, "Hidden")
+
+        person_m = person.map(all = True)
+
+        self.assertEqual(person_m["identifier"], 1)
+        self.assertEqual(person_m["name"], "Name")
+        self.assertEqual(person_m["age"], 20)
+        self.assertEqual(person_m["hidden"], "Hidden")
+
+        cat = mock.Cat()
+        cat.name = "NameCat"
+
+        self.assertEqual(cat.name, "NameCat")
+
+        cat.save()
+
+        self.assertEqual(cat.identifier, 1)
+
+        person.cats = [cat]
+        person.save()
+
+        person_m = person.map(resolve = True, all = True)
+
+        self.assertEqual(person_m["cats"][0]["identifier"], 1)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.identifier, 1)
+        self.assertEqual(person.cats[0].name, "NameCat")
+
+        person_m = person.map(all = True)
+
+        self.assertEqual(person_m["cats"][0], 1)
+
+        person_m = person.map(resolve = True, all = True)
+
+        self.assertEqual(person_m["cats"][0]["identifier"], 1)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")

@@ -43,6 +43,7 @@ class Person(quorum.Model):
 
     identifier = quorum.field(
         type = int,
+        index = True,
         increment = True
     )
 
@@ -71,6 +72,7 @@ class Cat(quorum.Model):
 
     identifier = quorum.field(
         type = int,
+        index = True,
         increment = True
     )
 
