@@ -1486,11 +1486,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _increment(cls, name):
         _name = cls._name() + ":" + name
         db = mongodb.get_db()
-        value = db.counters.find_and_modify(
-            query = {
+        value = mongodb._store_find_and_modify(
+            db.counters,
+            {
                 "_id" : _name
             },
-            update = {
+            {
                 "$inc" : {
                     "seq" : 1
                 }
@@ -1659,8 +1660,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        if is_new: self._id = store.insert(model); self.apply(model)
-        else: store.update({"_id" : model["_id"]}, {"$set" : _model})
+        if is_new: self._id = mongodb._store_insert(store, model); self.apply(model)
+        else: mongodb._store_update(store, {"_id" : model["_id"]}, {"$set" : _model})
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
