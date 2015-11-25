@@ -98,6 +98,7 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person()
         person.age = 1
+        person.name = "Name"
         person.save()
 
         result = mock.Person.find(age = 1)
@@ -111,6 +112,7 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person()
         person.age = 1
+        person.name = "Name"
         person.save()
 
         result = mock.Person.count()
