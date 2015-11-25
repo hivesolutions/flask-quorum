@@ -59,6 +59,14 @@ class Person(quorum.Model):
         )
     )
 
+    @classmethod
+    def validate(cls):
+        return super(Person, cls).validate() + [
+            quorum.not_null("name"),
+            quorum.not_empty("name"),
+            quorum.not_duplicate("name", cls._name())
+        ]
+
 class Cat(quorum.Model):
 
     identifier = quorum.field(
