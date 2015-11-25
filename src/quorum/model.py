@@ -614,7 +614,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def methods(cls):
         # in case the methods are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_methods" in cls.__dict__: return cls._fields
+        if "_methods" in cls.__dict__: return cls._methods
 
         # starts the list that will hold the various method names
         # for the class, note that this value will be ordered
