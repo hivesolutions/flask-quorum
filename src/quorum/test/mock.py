@@ -51,3 +51,19 @@ class Person(quorum.Model):
     age = quorum.field(
         type = int
     )
+
+    cats = quorum.field(
+        type = quorum.references(
+            "Cat",
+            name = "identifier"
+        )
+    )
+
+class Cat(quorum.Model):
+
+    identifier = quorum.field(
+        type = int,
+        increment = True
+    )
+
+    name = quorum.field()
