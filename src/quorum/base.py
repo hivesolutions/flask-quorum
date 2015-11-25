@@ -50,6 +50,7 @@ import werkzeug.debug
 from . import acl
 from . import log
 from . import util
+from . import data
 from . import mail
 from . import route
 from . import model
@@ -402,6 +403,7 @@ def load(
     app.models = models
     app.module = module
     app.path = path
+    app.adapter = data.MongoAdapter()
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route
@@ -620,6 +622,9 @@ def extra_logging(logger, level, formatter):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
+def get_adapter(app = None):
+    return APP and APP.adapter
+
 def get_log(app = None):
     app = app or APP
     if not app: return None
@@ -642,7 +647,7 @@ def get_handler(name, app = None):
 
 def get_bundle(name, app = None):
     app = app or APP
-    return APP.bundles.get(name, None)
+    return app.bundles.get(name, None)
 
 def is_devel(app = None):
     level = get_level(app = app)

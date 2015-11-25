@@ -39,6 +39,7 @@ from . import amazon
 from . import base
 from . import config
 from . import daemon
+from . import data
 from . import defines
 from . import errors
 from . import exceptions
@@ -80,6 +81,7 @@ from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare
     models_c, resolve, templates_path, bundles_path, base_path, onrun
 from .config import conf, conf_prefix, confs
 from .daemon import Daemon
+from .data import DataAdapter, MongoAdapter, Collection, MongoCollection
 from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCALE
 from .errors import errors_json
 from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError,\
