@@ -1746,7 +1746,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _delete(self):
         pass
 
-    def _validate(self, model = None):
+    def _validate(self, model = None, method = None):
         # calls the event handler for the validation process this
         # should setup the operations for a correct validation
         self.pre_validate()
@@ -1762,8 +1762,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # checks if the current model is new (create operation)
         # and sets the proper validation methods retrieval method
         is_new = self.is_new()
-        if is_new: method = cls.validate_new
-        else: method = cls.validate
+        if is_new: method = method or cls.validate_new
+        else: method = method or cls.validate
 
         # runs the validation process on the various arguments
         # provided to the account and in case an error is returned
