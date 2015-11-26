@@ -373,6 +373,8 @@ def load(
     util.nl_to_br_jinja.evalcontextfilter = True
     util.sp_to_nbsp_jinja.evalcontextfilter = True
 
+    # updates the base app reference object with a series of operations
+    # that should transform it's base execution and behavior
     app.before_request(before_request)
     app.after_request(after_request)
     app.context_processor(context_processor)
@@ -396,6 +398,8 @@ def load(
         finalize = finalize
     )
 
+    # sets a series of conditional based attributes in both
+    # the associated modules and the base app object (as expected)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
     if rabbit_url: rabbitmq.url = rabbit_url
