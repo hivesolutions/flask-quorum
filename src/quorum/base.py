@@ -44,6 +44,7 @@ import flask
 import atexit
 import logging
 import inspect
+import datetime
 
 import werkzeug.debug
 
@@ -685,7 +686,8 @@ def context_processor():
         locale = util.to_locale,
         nl_to_br = util.nl_to_br,
         sp_to_nbsp = util.sp_to_nbsp,
-        date_time = util.date_time
+        date_time = util.date_time,
+        datetime = datetime
     )
 
 def start_execution():
