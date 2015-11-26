@@ -49,6 +49,9 @@ class MongoAdapter(DataAdapter):
         collection = db[name]
         return MongoCollection(collection)
 
+    def drop_db(self, *args, **kwargs):
+        mongodb.drop_db()
+
 class Collection(object):
     pass
 

@@ -51,13 +51,13 @@ class ModelTest(quorum.TestCase):
                 mongo_database = "test",
                 models = mock
             )
-            quorum.get_mongo()
         except:
             self.skip()
 
     @quorum.secured
     def tearDown(self):
-        quorum.drop_mongo_db()
+        adapter = quorum.get_adapter()
+        adapter.drop_db()
         quorum.unload()
 
     @quorum.secured
