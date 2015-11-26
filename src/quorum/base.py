@@ -346,8 +346,10 @@ def load(
     path = os.path.dirname(module.__file__)
 
     # creates the initial app reference using the provided one or
-    # creates a new one from the provided/computed name
+    # creates a new one from the provided/computed name, then sets
+    # the current app reference as the current global one
     app = app or Quorum(name)
+    APP = app
 
     # loads the app configuration from the provided keyword arguments
     # map and then starts the logging process with the requested logger
@@ -371,23 +373,6 @@ def load(
     util.nl_to_br_jinja.evalcontextfilter = True
     util.sp_to_nbsp_jinja.evalcontextfilter = True
 
-    if redis_url: redisdb.url = redis_url
-    if mongo_url: mongodb.url = mongo_url
-    if rabbit_url: rabbitmq.url = rabbit_url
-    if amazon_id: amazon.id = amazon_id
-    if amazon_secret: amazon.secret = amazon_secret
-    if amazon_bucket: amazon.bucket_name = amazon_bucket
-    if pusher_app_id: pusherc.app_id = pusher_app_id
-    if pusher_key: pusherc.key = pusher_key
-    if pusher_secret: pusherc.secret = pusher_secret
-    if smtp_host: mail.SMTP_HOST = smtp_host
-    if smtp_user: mail.SMTP_USER = smtp_user
-    if smtp_password: mail.SMTP_PASSWORD = smtp_password
-    if execution: start_execution()
-    if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
-    if mongo_database: mongodb.database = mongo_database + suffix
-    if models: setup_models(models)
-    if force_ssl: extras.SSLify(app)
     app.before_request(before_request)
     app.after_request(after_request)
     app.context_processor(context_processor)
@@ -410,7 +395,24 @@ def load(
     app.jinja_options = dict(
         finalize = finalize
     )
-    APP = app
+
+    if redis_url: redisdb.url = redis_url
+    if mongo_url: mongodb.url = mongo_url
+    if rabbit_url: rabbitmq.url = rabbit_url
+    if amazon_id: amazon.id = amazon_id
+    if amazon_secret: amazon.secret = amazon_secret
+    if amazon_bucket: amazon.bucket_name = amazon_bucket
+    if pusher_app_id: pusherc.app_id = pusher_app_id
+    if pusher_key: pusherc.key = pusher_key
+    if pusher_secret: pusherc.secret = pusher_secret
+    if smtp_host: mail.SMTP_HOST = smtp_host
+    if smtp_user: mail.SMTP_USER = smtp_user
+    if smtp_password: mail.SMTP_PASSWORD = smtp_password
+    if execution: start_execution()
+    if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
+    if mongo_database: mongodb.database = mongo_database + suffix
+    if models: setup_models(models)
+    if force_ssl: extras.SSLify(app)
 
     # verifies if the module that has called the method is not
     # of type main and in case it's not calls the runner methods
@@ -438,6 +440,7 @@ def unload():
         will become unavailable until further call to :func:`quorum.load`.
     """
 
+    global APP
     APP = None
 
 def load_all(path = None):
