@@ -1702,7 +1702,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return mongodb.dumps(self.model)
 
     def unwrap(self, **kwargs):
-        return dict()
+        default = kwargs.get("default", False)
+        if default: return dict(self.model)
+        else: return dict()
 
     def pre_validate(self):
         self.trigger("pre_validate")
