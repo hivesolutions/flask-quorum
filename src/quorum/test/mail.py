@@ -41,17 +41,16 @@ import quorum.mail
 
 class MailTest(quorum.TestCase):
 
-    @quorum.secured
     def setUp(self):
         try: quorum.load(
                 name = __name__
             )
         except: self.skip()
 
-    @quorum.secured
     def tearDown(self):
         quorum.unload()
 
+    @quorum.secured
     def test_format(self):
         result = quorum.mail._format("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(result), str)

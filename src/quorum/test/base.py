@@ -39,45 +39,51 @@ __license__ = "Apache License, Version 2.0"
 
 import quorum
 
-class AmazonTest(quorum.TestCase):
+class BaseTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(
-                name = __name__
-            )
-            quorum.get_amazon()
+            quorum.load(name = __name__)
         except:
             self.skip()
 
     def tearDown(self):
-        try: quorum.clear_amazon_bucket()
-        except: pass
-        finally: quorum.unload()
+        quorum.unload()
 
     @quorum.secured
-    def test_connect(self):
-        connection = quorum.get_amazon()
-        self.assertNotEqual(connection, None)
+    def test_locale(self):
+        app = quorum.get_app()
+        app.locales = ("en_us", "pt_pt", "es_es")
+        app.bundles["en_us"] = dict(hello = "Hello")
+        app.bundles["pt_pt"] = dict(hello = "Olá")
 
-    @quorum.secured
-    def test_bucket(self):
-        bucket = quorum.get_amazon_bucket()
-        self.assertNotEqual(bucket, None)
+        result = quorum.to_locale("hello", locale = "en_us")
+        self.assertEqual(result, "Hello")
 
-    @quorum.secured
-    def test_key(self):
-        key = quorum.get_amazon_key("test")
-        key.set_contents_from_string("test message")
+        result = quorum.to_locale("hello", locale = "en-us")
+        self.assertEqual(result, "Hello")
 
-        key = quorum.get_amazon_key("test")
-        value = key.get_contents_as_string()
-        self.assertEqual(value, "test message")
+        result = quorum.to_locale("hello", locale = "pt_pt")
+        self.assertEqual(result, "Olá")
 
-        value = quorum.exists_amazon_key("test")
-        self.assertEqual(value, True)
+        result = quorum.to_locale("hello", locale = "pt-pt")
+        self.assertNotEqual(result, "Olá")
+        self.assertEqual(result, "Hello")
 
-        quorum.delete_amazon_key("test")
+        result = quorum.to_locale("hello", locale = "es_es")
+        self.assertNotEqual(result, "Hola")
+        self.assertEqual(result, "Hello")
 
-        value = quorum.exists_amazon_key("test")
-        self.assertEqual(value, False)
+        app.bundles["es_es"] = dict(hello = "Hola")
+
+        result = quorum.to_locale("hello", locale = "es_es")
+        self.assertEqual(result, "Hola")
+
+        result = quorum.to_locale("hello", locale = "en")
+        self.assertEqual(result, "Hello")
+
+        result = quorum.to_locale("hello", locale = "pt")
+        self.assertEqual(result, "Olá")
+
+        result = quorum.to_locale("hello", locale = "es")
+        self.assertEqual(result, "Hola")

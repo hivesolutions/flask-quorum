@@ -75,8 +75,8 @@ from .acl import check_basic_auth, check_login, ensure_basic_auth, ensure_login,
     ensure_user, ensure_session, ensure, ensure_auth
 from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare_app,\
     run_base, run_waitress, run_netius, load, unload, load_all, load_app_config,\
-    load_paths, load_bundles, start_log, extra_logging, get_adapter, get_log, get_level,\
-    get_handlers, get_handler, get_bundle, is_devel, finalize, before_request,\
+    load_paths, load_bundles, start_log, extra_logging, get_app, get_adapter, get_log,\
+    get_level, get_handlers, get_handler, get_bundle, is_devel, finalize, before_request,\
     after_request, context_processor, start_execution, stop_execution, setup_models,\
     models_c, resolve, templates_path, bundles_path, base_path, onrun
 from .config import conf, conf_prefix, confs

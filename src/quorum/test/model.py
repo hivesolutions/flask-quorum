@@ -43,7 +43,6 @@ from . import mock
 
 class ModelTest(quorum.TestCase):
 
-    @quorum.secured
     def setUp(self):
         try:
             quorum.load(
@@ -54,11 +53,12 @@ class ModelTest(quorum.TestCase):
         except:
             self.skip()
 
-    @quorum.secured
     def tearDown(self):
-        adapter = quorum.get_adapter()
-        adapter.drop_db()
-        quorum.unload()
+        try:
+            adapter = quorum.get_adapter()
+            adapter.drop_db()
+        except: pass
+        finally: quorum.unload()
 
     @quorum.secured
     def test_basic(self):
@@ -118,6 +118,7 @@ class ModelTest(quorum.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
+    @quorum.secured
     def test_validation(self):
         person = mock.Person()
 
@@ -132,6 +133,7 @@ class ModelTest(quorum.TestCase):
 
         self.assertRaises(quorum.ValidationError, person.save)
 
+    @quorum.secured
     def test_map(self):
         person = mock.Person()
         person.name = "Name"

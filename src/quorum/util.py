@@ -637,11 +637,15 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
 
     return "".join(random.choice(chars) for _index in range(size))
 
-def to_locale(value):
+def to_locale(value, locale = None, fallback = True):
     """
     Utility function used to localize the provided value according
     to the currently loaded set of bundles, the bundles are loaded
     at the application start time from the proper sources.
+
+    The (target) locale value for the translation may be provided or
+    in case it's not the locale associated with the current request
+    is used as an alternative.
 
     In case the value is not localizable (no valid bundle available)
     it is returned as it is without change.
@@ -650,15 +654,28 @@ def to_locale(value):
     :param value: The value that is going to be localized according
     to the current application environment, this may be a normal
     english dictionary string or a variable reference.
+    :type locale: String
+    :param locale: The (target) locale value to be used in the
+    translation process for the provided string value.
+    :type fallback: bool
+    :param fallback: If a fallback operation should be performed in
+    case no value was retrieved from the base/request locale.
     :rtype: String
     :return: The localized value for the current environment or the
     proper (original) value in case no localization was possible.
     """
 
-    locale = flask.request.locale
-    bundle = common.base().get_bundle(locale)
-    if not bundle: return value
-    return bundle.get(value, value)
+    locale = locale or flask.request.locale
+    bundle = common.base().get_bundle(locale) or {}
+    result = bundle.get(value, None)
+    if not result == None: return result
+    app = common.base().APP
+    if fallback: return to_locale(
+        value,
+        locale = app._locale_d,
+        fallback = False
+    )
+    return value
 
 def nl_to_br(value):
     """

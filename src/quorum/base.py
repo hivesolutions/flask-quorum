@@ -398,6 +398,8 @@ def load(
     app.jinja_options = dict(
         finalize = finalize
     )
+    app.bundles = dict()
+    app._locale_d = locales[0]
 
     # sets a series of conditional based attributes in both
     # the associated modules and the base app object (as expected)
@@ -630,6 +632,9 @@ def extra_logging(logger, level, formatter):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
+def get_app(app = None):
+    return app or APP
+
 def get_adapter(app = None):
     return APP and APP.adapter
 
@@ -655,6 +660,9 @@ def get_handler(name, app = None):
 
 def get_bundle(name, app = None):
     app = app or APP
+    bundle = app.bundles.get(name, None)
+    if bundle: return bundle
+    name = _best_locale(name)
     return app.bundles.get(name, None)
 
 def is_devel(app = None):
@@ -796,6 +804,15 @@ def _level(level):
     if hasattr(logging, "_checkLevel"):
         return logging._checkLevel(level)
     return logging.getLevelName(level)
+
+def _best_locale(locale, app = None):
+    if not locale: return locale
+    app = app or APP
+    for _locale in app.locales:
+        is_valid = _locale.startswith(locale)
+        if not is_valid: continue
+        return _locale
+    return locale
 
 # runs the monkey patching of the flask module so that it
 # may be used according to the quorum specification, this
