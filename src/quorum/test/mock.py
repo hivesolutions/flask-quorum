@@ -44,7 +44,15 @@ class Person(quorum.Model):
     identifier = quorum.field(
         type = int,
         index = True,
-        increment = True
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
     )
 
     name = quorum.field()
@@ -73,7 +81,15 @@ class Cat(quorum.Model):
     identifier = quorum.field(
         type = int,
         index = True,
-        increment = True
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
     )
 
     name = quorum.field()
