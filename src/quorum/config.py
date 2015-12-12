@@ -105,7 +105,9 @@ def load_file(path = None, encoding = "utf-8"):
 def load_env():
     encoding = sys.getfilesystemencoding()
     for key, value in os.environ.items():
-        try: config_g[key] = value.decode(encoding)
-        except UnicodeDecodeError: config_g[key] = value
+        is_bytes = legacy.is_bytes(value)
+        try: value = value.decode(encoding) if is_bytes else value
+        except UnicodeDecodeError: pass
+        config_g[key] = value
 
 load()
