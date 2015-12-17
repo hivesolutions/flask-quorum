@@ -42,10 +42,14 @@ from . import exceptions
 try: import xlrd
 except: xlrd = None
 
-def xlsx_to_map(file_path, keys = (), ignore_header = True):
+def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
     # verifies if the xlrd module has been correctly loaded
     # and in case it's not raises an exception indicating so
     if xlrd == None: raise exceptions.ModuleNotFound("xlrd")
+
+    # in case the (data types) sequence is not defined creates
+    # a tuple of unset types to fill the values
+    if not types: types = tuple([None] * len(keys))
 
     # creates the list structure that is going to store the
     # complete set of parsed items according to the provided
@@ -75,9 +79,10 @@ def xlsx_to_map(file_path, keys = (), ignore_header = True):
         # key values to populate it
         item = {}
         cell = 0
-        for key in keys:
+        for key, type in zip(keys, types):
             cell_s = sheet.cell(row, cell)
             value = cell_s.value
+            if type: value = type(value)
             item[key] = value
             cell += 1
 
