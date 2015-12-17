@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import legacy
 from . import exceptions
 
 try: import xlrd
@@ -81,8 +82,9 @@ def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
         cell = 0
         for key, type in zip(keys, types):
             cell_s = sheet.cell(row, cell)
+            raw = xlsx_raw(cell_s)
             value = cell_s.value
-            if type: value = type(value)
+            if type: value = type(raw)
             item[key] = value
             cell += 1
 
@@ -93,3 +95,10 @@ def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
     # returns the final list of map items resulting from the parsing
     # of the spreadsheet file containing key to value assignments
     return items
+
+def xlsx_raw(cell_s):
+    is_str = cell_s.ctype == xlrd.XL_CELL_TEXT
+    if is_str: return cell_s.value
+    is_int = cell_s.value == int(cell_s.value)
+    if is_int: return legacy.UNICODE(int(cell_s.value))
+    return legacy.UNICODE(cell_s.value)
