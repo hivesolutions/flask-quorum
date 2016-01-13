@@ -20,12 +20,12 @@ if __name__ == "__main__":
     quorum.run()
 ```
 
-Creation of background callbables, that will execute every one second in a separate thread
+Creation of background callabbles, that will execute every one second in a separate thread
 
 ```python
 @quorum.background(timeout = 1.0)
 def hello_recursive():
-    print "hello word"
+    print("hello word")
 ```
 
 ## Building
