@@ -46,6 +46,7 @@ import string
 import locale
 import random
 import datetime
+import itertools
 import threading
 import subprocess
 
@@ -64,6 +65,15 @@ SORT_MAP = {
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
 number way of representing the same information """
+
+CASTERS = {
+    list : lambda v: [y for y in itertools.chain(*[x.split(",") for x in v])],
+    bool : lambda v: v if type(v) == bool else\
+        not v in ("", "0", "false", "False")
+}
+""" The map associating the various data types with a proper custom
+caster to be used for special data types (more complex) under some
+of the simple casting operations """
 
 defines = defines
 
@@ -160,6 +170,10 @@ def get_field(name, default = None, cast = None):
     value = flask.request.files.get(name, value)
     value = flask.request.form.get(name, value)
     value = flask.request.args.get(name, value)
+
+    # in case a cast operation is defined, tries to retrieve a possible
+    # indirect/custom caster for the current cast operation
+    if cast: cast = CASTERS.get(cast, cast)
 
     # in case the cast type value is set and the value is not invalid tries
     # to cast the value into the requested cast type
