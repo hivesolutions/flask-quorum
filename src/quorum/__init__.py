@@ -86,7 +86,7 @@ from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCAL
 from .errors import errors_json
 from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError,\
     NotFoundError, ValidationError, BaseInternalError, ValidationInternalError,\
-    HttpError, JsonError
+    ValidationMultipleError, HttpError, JsonError
 from .execution import ExecutionThread, background, insert_work, interval_work,\
     seconds_work, daily_work, weekly_work, monthly_work, seconds_eval, daily_eval,\
     weekly_eval, monthly_eval
