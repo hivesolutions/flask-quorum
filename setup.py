@@ -43,20 +43,20 @@ import setuptools
 
 BASE_PATH = os.path.realpath(__file__)
 BASE_DIR = os.path.dirname(BASE_PATH)
-SRC_DIR = os.path.join(BASE_DIR, "src")
-sys.path.insert(0, SRC_DIR)
+QUORUM_DIR = os.path.join(BASE_DIR, "src", "quorum")
+sys.path.insert(0, QUORUM_DIR)
 
-import quorum
+import info
 
 setuptools.setup(
-    name = quorum.NAME,
-    version = quorum.VERSION,
-    author = quorum.AUTHOR,
-    author_email = quorum.EMAIL,
-    description = quorum.DESCRIPTION,
-    license = quorum.LICENSE,
-    keywords = quorum.KEYWORDS,
-    url = quorum.URL,
+    name = info.NAME,
+    version = info.VERSION,
+    author = info.AUTHOR,
+    author_email = info.EMAIL,
+    description = info.DESCRIPTION,
+    license = info.LICENSE,
+    keywords = info.KEYWORDS,
+    url = info.URL,
     zip_safe = True,
     packages = [
         "quorum",
