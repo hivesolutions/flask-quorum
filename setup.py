@@ -43,7 +43,9 @@ import setuptools
 
 BASE_PATH = os.path.realpath(__file__)
 BASE_DIR = os.path.dirname(BASE_PATH)
-QUORUM_DIR = os.path.join(BASE_DIR, "src", "quorum")
+SRC_DIR = os.path.join(BASE_DIR, "src")
+QUORUM_DIR = os.path.join(SRC_DIR, "quorum")
+sys.path.insert(0, SRC_DIR)
 sys.path.insert(0, QUORUM_DIR)
 
 import info
