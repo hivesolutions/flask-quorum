@@ -187,10 +187,10 @@ def run_netius():
     kwargs = dict()
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
+    ipv6 = config.conf("IPV6", False, cast = bool)
     ssl = int(config.conf("SSL", 0)) and True or False
     key_file = config.conf("KEY_FILE", None)
     cer_file = config.conf("CER_FILE", None)
-    ipv6 = config.conf("IPV6", False, cast = bool)
     servers = config.conf_prefix("SERVER_")
     for name, value in servers.items():
         name_s = name.lower()[7:]
@@ -210,10 +210,10 @@ def run_netius():
     server.serve(
         host = host,
         port = port,
+        ipv6 = ipv6,
         ssl = ssl,
         key_file = key_file,
-        cer_file = cer_file,
-        ipv6 = ipv6
+        cer_file = cer_file
     )
 
 def run_waitress():
