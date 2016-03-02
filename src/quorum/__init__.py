@@ -81,11 +81,11 @@ from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare
     models_c, resolve, templates_path, bundles_path, base_path, onrun
 from .config import conf, conf_prefix, confs
 from .daemon import Daemon
-from .data import DataAdapter, MongoAdapter, Collection, MongoCollection
+from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
 from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCALE
 from .errors import errors_json
 from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError,\
-    NotFoundError, ValidationError, BaseInternalError, ValidationInternalError,\
+    NotFoundError, ValidationError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HttpError, JsonError
 from .execution import ExecutionThread, background, insert_work, interval_work,\
     seconds_work, daily_work, weekly_work, monthly_work, seconds_eval, daily_eval,\

@@ -126,6 +126,16 @@ class ValidationError(OperationalError):
         self.errors = errors
         self.model = model
 
+class NotImplementedError(OperationalError):
+    """
+    Error to be raised when a certain feature or route is not
+    yet implemented or is not meant to be implemented at the
+    defined abstraction level.
+    """
+
+    def __init__(self, message, code = 501):
+        OperationalError.__init__(self, message, code = code)
+
 class BaseInternalError(RuntimeError):
     """
     The base error class from which all the error

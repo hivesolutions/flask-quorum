@@ -37,10 +37,23 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+import uuid
+
+from . import legacy
 from . import mongodb
+from . import exceptions
 
 class DataAdapter(object):
-    pass
+
+    def collection(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def get_db(self):
+        raise exceptions.NotImplementedError()
+
+    def drop_db(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
 
 class MongoAdapter(DataAdapter):
 
@@ -55,8 +68,53 @@ class MongoAdapter(DataAdapter):
     def drop_db(self, *args, **kwargs):
         return mongodb.drop_db()
 
+class TinyAdapter(DataAdapter):
+
+    def __init__(self, *args, **kwargs):
+        self.file_path = kwargs.get("file_path", "db.json")
+        self._db = None
+
+    def collection(self, name, *args, **kwargs):
+        db = self.get_db()
+        table = db.table(name)
+        return TinyCollection(table)
+
+    def get_db(self):
+        import tinydb
+        if self._db: return self._db
+        self._db = tinydb.TinyDB(self.file_path)
+        return self._db
+
+    def drop_db(self, *args, **kwargs):
+        db = self.get_db()
+        db.purge_tables()
+        os.remove
+
 class Collection(object):
-    pass
+
+    def find(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def find_one(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def find_and_modify(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def insert(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def update(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def remove(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def count(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def ensure_index(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
 
 class MongoCollection(Collection):
 
@@ -86,3 +144,82 @@ class MongoCollection(Collection):
 
     def ensure_index(self, *args, **kwargs):
         return mongodb._store_ensure_index(self._base, *args, **kwargs)
+
+class TinyCollection(Collection):
+
+    def __init__(self, base):
+        self._base = base
+
+    def find(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        condition = self._to_condition(filter)
+        return self._base.search(condition)
+
+    def find_one(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        condition = self._to_condition(filter)
+        return self._base.get(condition)
+
+    def find_and_modify(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        modification = args[1] if len(args) > 1 else dict()
+        create = kwargs.get("new", False)
+        condition = self._to_condition(filter)
+        object = self._base.get(condition)
+        found = True if object else False
+        if not found and not create:
+            raise exceptions.OperationalError(
+                message = "No object found"
+            )
+        if not found: object = dict(filter)
+        object = self._to_update(modification, object = object)
+        if found: self.update(object)
+        else: self.insert(object)
+        return object
+
+    def insert(self, *args, **kwargs):
+        object = args[0] if len(args) > 0 else dict()
+        has_id = "_id" in object
+        if not has_id: object["_id"] = str(uuid.uuid4())
+        self._base.insert(object)
+        return object
+
+    def update(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        updater = args[1] if len(args) > 1 else dict()
+        condition = self._to_condition(filter)
+        object = updater.get("$set", dict())
+        return self._base.update(object, condition)
+
+    def remove(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        condition = self._to_condition(filter)
+        return self._base.remove(condition)
+
+    def count(self, *args, **kwargs):
+        filter = args[0] if len(args) > 0 else dict()
+        condition = self._to_condition(filter)
+        return self._base.count(condition)
+
+    def ensure_index(self, *args, **kwargs):
+        pass
+
+    def _to_condition(self, filter):
+        import tinydb
+        query = tinydb.Query()
+        condition = query._id.exists()
+        for name, value in legacy.iteritems(filter):
+            if name.startswith("$"): continue
+            query = tinydb.Query()
+            _condition = getattr(query, name).__eq__(value)
+            condition &= _condition
+        return condition
+
+    def _to_update(self, modification, object = None):
+        object = object or dict()
+        increments = modification.get("$inc", {})
+        for name, increment in legacy.iteritems(increments):
+            value = object.get(name, 0)
+            value += increment
+            object[name] = value
+        return object

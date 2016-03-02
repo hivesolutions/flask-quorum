@@ -119,6 +119,24 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(result, 1)
 
     @quorum.secured
+    def test_delete(self):
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 1)
+
+        person.delete()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+    @quorum.secured
     def test_validation(self):
         person = mock.Person()
 
