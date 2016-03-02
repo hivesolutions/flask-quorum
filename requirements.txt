@@ -1,4 +1,5 @@
 flask
 pymongo
+tinydb
 redis
 pika
