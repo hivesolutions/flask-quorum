@@ -164,7 +164,7 @@ class ExportManager(object):
             # the value from the "underlying" string value to object
             # identifier, defaulting to a string value if it fails
             if "_id" in entity:
-                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                try: entity["_id"] = self.adapter.object_id(entity["_id"])
                 except: entity["_id"] = entity["_id"]
 
             # retrieves the key value for the current entity to
@@ -208,7 +208,7 @@ class ExportManager(object):
             # the value from the "underlying" string value to object
             # identifier, defaulting to a string value if it fails
             if "_id" in entity:
-                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                try: entity["_id"] = self.adapter.object_id(entity["_id"])
                 except: entity["_id"] = entity["_id"]
 
             # retrieves the key value for the current entity to
