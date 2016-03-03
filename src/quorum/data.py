@@ -70,7 +70,7 @@ class DataAdapter(object):
         if not value: return self._id()
         if not len(value) == 24:
             raise exceptions.OperationalError(
-                message = "Expected object id of length 24 chars"
+                "Expected object id of length 24 chars"
             )
         return value
 
@@ -228,9 +228,7 @@ class TinyCollection(Collection):
         object = self._base.get(condition)
         found = True if object else False
         if not found and not create:
-            raise exceptions.OperationalError(
-                message = "No object found"
-            )
+            raise exceptions.OperationalError("No object found")
         if not found: object = dict(filter)
         object = self._to_update(modification, object = object)
         if found: self.update(object)
