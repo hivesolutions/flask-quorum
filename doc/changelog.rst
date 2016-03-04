@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.3.21
+^^^^^
+
+    * Major changes in data layer
+
 0.3.20
 ^^^^^
 
