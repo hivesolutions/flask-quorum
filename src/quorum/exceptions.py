@@ -131,14 +131,12 @@ class ValidationError(OperationalError):
     def errors_s(self):
         if not self.errors: return ""
         buffer = []
-        buffer.append("(")
         is_first = True
         for name, errors in legacy.iteritems(self.errors):
             for error in errors:
                 if is_first: is_first = False
                 else: buffer.append(legacy.u(", "))
                 buffer.append("%s => %s" % (name, error))
-        buffer.append(")")
         return "".join(buffer)
 
 class NotImplementedError(OperationalError):
