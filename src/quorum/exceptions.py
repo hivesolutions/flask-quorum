@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import legacy
+
 class BaseError(RuntimeError):
     """
     The base error class from which all the error
@@ -125,6 +127,19 @@ class ValidationError(OperationalError):
         OperationalError.__init__(self, "Validation of submitted data failed", 400)
         self.errors = errors
         self.model = model
+
+    def errors_s(self):
+        if not self.errors: return ""
+        buffer = []
+        buffer.append("(")
+        is_first = True
+        for name, errors in legacy.iteritems(self.errors):
+            for error in errors:
+                if is_first: is_first = False
+                else: buffer.append(legacy.u(", "))
+                buffer.append("%s => %s" % (name, error))
+        buffer.append(")")
+        return "".join(buffer)
 
 class NotImplementedError(OperationalError):
     """
