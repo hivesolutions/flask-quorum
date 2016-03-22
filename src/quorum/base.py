@@ -721,8 +721,11 @@ def setup_models(models):
 
 def models_c(models = None):
     # retrieves the proper models defaulting to the current
-    # application models in case they are not defined
+    # application models in case they are not defined, note
+    # that in case the model is not defined an empty list is
+    # going to be returned (fallback process)
     models = models or APP.models
+    if not models: return []
 
     # creates the list that will hold the various model
     # class discovered through module analysis
