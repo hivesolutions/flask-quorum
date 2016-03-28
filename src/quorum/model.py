@@ -50,7 +50,6 @@ from . import meta
 from . import common
 from . import legacy
 from . import typesf
-from . import mongodb
 from . import observer
 from . import validation
 from . import exceptions
@@ -1283,12 +1282,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return name
 
     @classmethod
-    def _eager(cls, model, names, map = False):
+    def _eager(cls, model, names):
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
         is_list = isinstance(model, (list, tuple))
-        if is_list: return [cls._eager(_model, names, map = map) for _model in model]
+        if is_list: return [cls._eager(_model, names) for _model in model]
 
         # iterates over the complete set of names that are meant to be
         # eager loaded from the model and runs the "resolution" process
@@ -1297,8 +1296,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _model = model
             for part in name.split("."):
                 is_sequence = type(_model) in (list, tuple)
-                if is_sequence: _model = [cls._res(value, part, map = map) for value in _model]
-                else: _model = cls._res(_model, part, map = map)
+                if is_sequence: _model = [cls._res(value, part) for value in _model]
+                else: _model = cls._res(_model, part)
                 if not _model: break
 
         # returns the resulting model to the caller method, most of the
@@ -1306,11 +1305,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def _res(cls, model, part, map = False):
+    def _res(cls, model, part):
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve(map = map)
+        if is_reference: model[part] = value.resolve()
         model = model[part]
         return model
 
@@ -1597,6 +1596,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def val(self, name, default = None):
         return self.model.get(name, default)
+
+    def json_v(self, *args, **kwargs):
+        return self.model
+
+    def map_v(self, *args, **kwargs):
+        resolve = kwargs.get("resolve", True)
+        return self._resolve_all(self.model, resolve = resolve)
 
     def build_m(self, model = None, rules = True):
         """

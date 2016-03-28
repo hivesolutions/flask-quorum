@@ -459,8 +459,10 @@ def reference(target, name = None, eager = False):
             else: return self.value()
 
         def map_v(self, *args, **kwargs):
-            value = self.resolve()
-            if not value: return value
+            resolve = kwargs.get("resolve", True)
+            value = self.resolve() if resolve else self._object
+            if resolve and not value: return value
+            if not value: return self.id
             return value.map(*args, **kwargs)
 
         def value(self):
@@ -468,12 +470,12 @@ def reference(target, name = None, eager = False):
             if is_empty: return None
             return self._type(self.id)
 
-        def resolve(self, map = False, strict = False):
+        def resolve(self, strict = False):
             # verifies if the underlying object reference exists
             # in the current names dictionary and if it exists
             # verifies if it's valid (value is valid) if that's
             # the case returns the current value immediately
-            exists = "_object" in self.__dict__ and not map
+            exists = "_object" in self.__dict__
             if exists and self._object: return self._object
 
             # verifies if there's an id value currently set in
@@ -492,13 +494,7 @@ def reference(target, name = None, eager = False):
             kwargs = {
                 name : self._target.cast(name, self.id)
             }
-            if map: kwargs["map"] = map
             _object = self._target.get(raise_e = strict, **kwargs)
-
-            # in case the map flag is active the retrieved value is returned
-            # immediately, not valid to store a map base retrieval as the
-            # resolved object as the serialization process is not compatible
-            if map: return _object
 
             # sets the resolved object (using the current id attribute)
             # in the current instance's dictionary and then returns this
@@ -592,8 +588,8 @@ def references(target, name = None, eager = False):
         def list(self):
             return [object.value() for object in self.objects]
 
-        def resolve(self, map = False):
-            return [object.resolve(map = map) for object in self.objects]
+        def resolve(self):
+            return [object.resolve() for object in self.objects]
 
         def is_empty(self):
             ids_l = len(self.ids)
