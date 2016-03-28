@@ -750,7 +750,7 @@ def models_c(models = None):
     # to the caller method as expected by definition
     return models_c
 
-def resolve(identifier = "_id"):
+def resolve(identifier = "_id", counters = True):
     # creates the list that will hold the definition of the current
     # model classes with a sequence of name and identifier values
     entities = []
@@ -765,6 +765,10 @@ def resolve(identifier = "_id"):
         name = model_c._name()
         tuple = (name, identifier)
         entities.append(tuple)
+
+    # in case the counters flag is defined the counters tuple containing
+    # the counters table name and identifier is added to the entities list
+    if counters: entities.append(("counters", identifier))
 
     # returns the resolution list to the caller method as requested
     # by the call to this method
