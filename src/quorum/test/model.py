@@ -166,7 +166,7 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map()
 
-        self.assertEqual(type(person_m), dict)
+        self.assertEqual(isinstance(person_m, dict), True)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -179,7 +179,7 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(all = True)
 
-        self.assertEqual(type(person_m), dict)
+        self.assertEqual(isinstance(person_m, dict), True)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -200,9 +200,9 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
-        self.assertEqual(type(person_m), dict)
-        self.assertEqual(type(person_m["cats"]), list)
-        self.assertEqual(type(person_m["cats"][0]), dict)
+        self.assertEqual(isinstance(person_m, dict), True)
+        self.assertEqual(isinstance(person_m["cats"], list), True)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
@@ -217,9 +217,9 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
-        self.assertEqual(type(person_m), dict)
-        self.assertEqual(type(person_m["cats"]), list)
-        self.assertEqual(type(person_m["cats"][0]), dict)
+        self.assertEqual(isinstance(person_m, dict), True)
+        self.assertEqual(isinstance(person_m["cats"], list), True)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
@@ -249,9 +249,10 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person.get(identifier = 1, map = True)
 
-        self.assertEqual(type(person["cats"]), list)
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(isinstance(person["cats"][0], int), True)
         self.assertEqual(len(person["cats"]), 1)
-        self.assertEqual(type(person["cats"][0]), int)
 
         person = mock.Person.get(
             identifier = 1,
@@ -259,7 +260,9 @@ class ModelTest(quorum.TestCase):
             eager = ("cats",)
         )
 
-        self.assertEqual(type(person["cats"][0]), dict)
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(isinstance(person["cats"][0], dict), True)
 
         person = mock.Person.get(identifier = 1)
 
@@ -272,4 +275,6 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person.get(map = True, eager = ("cats",))
 
-        self.assertEqual(type(person["cats"]), list)
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(len(person["cats"]), 0)
