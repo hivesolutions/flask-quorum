@@ -143,17 +143,17 @@ def route(*args, **kwargs):
             result_t = type(result)
             if isinstance(result, model.Model):
                 result = flask.Response(
-                    mongodb.dumps(result),
+                    json.dumps(result),
                     mimetype = "application/json"
                 )
             elif mongodb.is_mongo(result):
                 result = flask.Response(
-                    mongodb.dumps(result),
+                    json.dumps(result),
                     mimetype = "application/json"
                 )
             elif result_t in (dict, list, tuple, type(None)):
                 result = flask.Response(
-                    mongodb.dumps(result),
+                    json.dumps(result),
                     mimetype = "application/json"
                 )
             return result

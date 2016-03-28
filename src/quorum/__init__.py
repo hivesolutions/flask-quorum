@@ -110,7 +110,7 @@ from .util import is_iterable, request_json, get_field, get_object, is_mobile, r
     page_types, find_types, norm_object, set_object, leafs, load_form, load_locale,\
     get_locale, get_langs, set_locale, reset_locale, anotate_async, run_thread,\
     camel_to_underscore, generate_identifier, to_locale, nl_to_br, nl_to_br_jinja,\
-    sp_to_nbsp, sp_to_nbsp_jinja, date_time, quote, unquote
+    sp_to_nbsp, sp_to_nbsp_jinja, date_time, quote, unquote, JSONEncoder
 from .validation import validate, validate_b, safe, eq, gt, gte, lt, lte, not_null, not_empty,\
     not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt, field_gte,\
     field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\

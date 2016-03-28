@@ -118,6 +118,7 @@ def monkey():
 
     flask._render_template = flask.render_template
     flask.render_template = template.render_template
+    json._default_encoder = util.JSONEncoder()
 
 def call_run():
     global RUN_CALLED

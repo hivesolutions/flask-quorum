@@ -166,6 +166,7 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map()
 
+        self.assertEqual(type(person_m), dict)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -178,6 +179,7 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(all = True)
 
+        self.assertEqual(type(person_m), dict)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -198,6 +200,9 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
+        self.assertEqual(type(person_m), dict)
+        self.assertEqual(type(person_m["cats"]), list)
+        self.assertEqual(type(person_m["cats"][0]), dict)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
@@ -212,10 +217,14 @@ class ModelTest(quorum.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
+        self.assertEqual(type(person_m), dict)
+        self.assertEqual(type(person_m["cats"]), list)
+        self.assertEqual(type(person_m["cats"][0]), dict)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
 
+    @quorum.secured
     def test_references(self):
         person = mock.Person()
         person.name = "Name"
@@ -237,3 +246,30 @@ class ModelTest(quorum.TestCase):
         person = mock.Person.get(identifier = 1)
 
         self.assertEqual(person.cats[0].name, "NameCat")
+
+        person = mock.Person.get(identifier = 1, map = True)
+
+        self.assertEqual(type(person["cats"]), list)
+        self.assertEqual(len(person["cats"]), 1)
+        self.assertEqual(type(person["cats"][0]), int)
+
+        person = mock.Person.get(
+            identifier = 1,
+            map = True,
+            eager = ("cats",)
+        )
+
+        self.assertEqual(type(person["cats"][0]), dict)
+
+        person = mock.Person.get(identifier = 1)
+
+        person.cats = []
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(len(person.cats), 0)
+
+        person = mock.Person.get(map = True, eager = ("cats",))
+
+        self.assertEqual(type(person["cats"]), list)
