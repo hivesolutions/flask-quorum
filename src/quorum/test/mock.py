@@ -61,9 +61,9 @@ class Person(quorum.Model):
         type = int
     )
 
-    father = quorum.field(
+    car = quorum.field(
         type = quorum.reference(
-            "Person",
+            "Car",
             name = "identifier"
         ),
         eager = True
@@ -101,3 +101,25 @@ class Cat(quorum.Model):
     )
 
     name = quorum.field()
+
+class Car(quorum.Model):
+
+    identifier = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    name = quorum.field()
+
+    brand = quorum.field()
+
+    variant = quorum.field()
