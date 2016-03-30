@@ -65,7 +65,8 @@ class Person(quorum.Model):
         type = quorum.reference(
             "Person",
             name = "identifier"
-        )
+        ),
+        eager = True
     )
 
     cats = quorum.field(
