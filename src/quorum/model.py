@@ -1723,10 +1723,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if self.is_new(): return
         raise exceptions.OperationalError("Instance is not new, identifier is set")
 
-    def save(self, validate = True):
+    def save(self, validate = True, is_new = None):
         # checks if the instance to be saved is a new instance
         # or if this is an update operation
-        is_new = self.is_new()
+        if is_new == None: is_new = self.is_new()
 
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
