@@ -37,13 +37,11 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import unittest
-
 import quorum
 
 from . import mock
 
-class ModelTest(unittest.TestCase):
+class TypesfTest(quorum.TestCase):
 
     def setUp(self):
         try:
@@ -62,6 +60,7 @@ class ModelTest(unittest.TestCase):
         except: pass
         finally: quorum.unload()
 
+    @quorum.secured
     def test_reference(self):
         person = mock.Person()
         person.name = "Name"
@@ -119,6 +118,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person.car, quorum.Reference), True)
         self.assertEqual(len(person.car), 1)
 
+    @quorum.secured
     def test_references(self):
         person = mock.Person()
         person.name = "Name"

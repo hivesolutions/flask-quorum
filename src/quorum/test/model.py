@@ -286,6 +286,30 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(len(person["cats"]), 0)
 
     @quorum.secured
+    def test_sort(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        other = mock.Person()
+        other.name = "NameOther"
+        other.save()
+
+        result = mock.Person.find()
+
+        self.assertEqual(result[0].identifier, person.identifier)
+        self.assertEqual(result[1].identifier, other.identifier)
+
+        result = mock.Person.find(sort = [("identifier", -1)])
+
+        self.assertEqual(result[0].identifier, other.identifier)
+        self.assertEqual(result[1].identifier, person.identifier)
+
+        result = mock.Person.get(sort = [("identifier", -1)])
+
+        self.assertEqual(result.identifier, other.identifier)
+
+    @quorum.secured
     def test_eager(self):
         person = mock.Person()
         person.name = "Name"
