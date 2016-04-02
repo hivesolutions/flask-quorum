@@ -286,6 +286,38 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(len(person["cats"]), 0)
 
     @quorum.secured
+    def test_increment(self):
+        person = mock.Person()
+        person.name = "Name1"
+        person.save()
+
+        self.assertEqual(person.identifier, 1)
+        self.assertEqual(person.name, "Name1")
+
+        person = mock.Person()
+        person.name = "Name2"
+        person.save()
+
+        self.assertEqual(person.identifier, 2)
+        self.assertEqual(person.name, "Name2")
+
+        person = mock.Person()
+        person.name = "Name3"
+        person.save()
+
+        self.assertEqual(person.identifier, 3)
+        self.assertEqual(person.name, "Name3")
+
+        person.delete()
+
+        person = mock.Person()
+        person.name = "Name4"
+        person.save()
+
+        self.assertEqual(person.identifier, 4)
+        self.assertEqual(person.name, "Name4")
+
+    @quorum.secured
     def test_sort(self):
         person = mock.Person()
         person.name = "Name"
