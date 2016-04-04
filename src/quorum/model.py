@@ -228,9 +228,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
 
     def __init__(self, model = None, **kwargs):
+        fill = kwargs.pop("fill", True)
+        model = model or {}
+        if fill: model = self.__class__.fill(model)
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
-        self.__dict__["model"] = model or {}
+        self.__dict__["model"] = model
         self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
         observer.Observable.__init__(self)
@@ -358,7 +361,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         if model == None: model = util.get_object() if form else dict(kwargs)
         if fill: model = cls.fill(model)
-        instance = cls()
+        instance = cls(fill = False)
         instance.apply(model, form = form, safe_a = safe)
         build and cls.build(instance.model, map = False)
         new and instance.assert_is_new()
