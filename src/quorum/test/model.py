@@ -62,7 +62,7 @@ class ModelTest(quorum.TestCase):
 
     @quorum.secured
     def test_basic(self):
-        person = mock.Person()
+        person = mock.Person(fill = False)
         person.name = "Name"
 
         self.assertEqual(person.name, "Name")
