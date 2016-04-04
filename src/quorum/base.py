@@ -451,6 +451,10 @@ def unload():
     """
 
     global APP
+    if not APP: return
+
+    if APP.models: teardown_models(APP.models)
+
     APP = None
 
 def load_all(path = None):
@@ -719,6 +723,11 @@ def stop_execution():
 def setup_models(models):
     _models_c = models_c(models = models)
     for model_c in _models_c: model_c.setup()
+
+def teardown_models(models):
+    _models_c = models_c(models = models)
+    for model_c in _models_c:
+        model_c.teardown()
 
 def models_c(models = None):
     # retrieves the proper models defaulting to the current
