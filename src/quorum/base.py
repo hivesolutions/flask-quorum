@@ -726,8 +726,7 @@ def setup_models(models):
 
 def teardown_models(models):
     _models_c = models_c(models = models)
-    for model_c in _models_c:
-        model_c.teardown()
+    for model_c in _models_c: model_c.teardown()
 
 def models_c(models = None):
     # retrieves the proper models defaulting to the current
