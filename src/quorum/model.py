@@ -857,6 +857,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for index in indexes: collection.ensure_index(index)
 
     @classmethod
+    def teardown(cls):
+        pass
+
+    @classmethod
     def validate(cls):
         return []
 
