@@ -430,3 +430,10 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person.wrap(dict(other = "Other"))
         self.assertEqual(person.other, "Other")
+
+    def test_meta(self):
+        self.assertEqual(quorum.Model._to_meta(str), "string")
+        self.assertEqual(quorum.Model._to_meta(bool), "bool")
+        self.assertEqual(quorum.Model._to_meta("text"), "text")
+        self.assertEqual(quorum.Model._to_meta("longtext"), "longtext")
+        self.assertEqual(quorum.Model._to_meta(mock.Person.father["type"]), "reference")
