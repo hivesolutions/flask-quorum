@@ -314,6 +314,7 @@ def load(
     debug = config.conf("DEBUG", False, cast = bool)
     reloader = config.conf("RELOADER", False, cast = bool)
     level_s = config.conf("LEVEL", "WARNING")
+    adapter_s = config.conf("ADAPTER", "mongo")
     name = config.conf("NAME", name)
     instance = config.conf("INSTANCE", None)
     force_ssl = config.conf("FORCE_SSL", False)
@@ -371,6 +372,13 @@ def load(
     # take some time to be performed completely
     load_bundles(app)
 
+    # converts the naming of the adapter into a capital case one and
+    # then tries to retrieve the associated class for proper instantiation
+    # in case the class is not found the default value is set instead
+    adapter_s = adapter_s.capitalize() + "Adapter"
+    if not hasattr(data, adapter_s): adapter_s = "MongoAdapter"
+    app.adapter = getattr(data, adapter_s)()
+
     # sets the various eval context filters as such by setting their eval
     # context filter flag to true the jinja infra-structure will handle
     # the rest of the operations so that it's properly used
@@ -394,7 +402,6 @@ def load(
     app.models = models
     app.module = module
     app.path = path
-    app.adapter = data.MongoAdapter()
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route
