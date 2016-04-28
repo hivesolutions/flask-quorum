@@ -130,3 +130,55 @@ class Car(quorum.Model):
     brand = quorum.field()
 
     variant = quorum.field()
+
+    garage = quorum.field(
+        type = quorum.reference(
+            "Garage",
+            name = "identifier"
+        ),
+        eager = True
+    )
+
+class Garage(quorum.Model):
+
+    identifier = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    name = quorum.field()
+
+    address = quorum.field(
+        type = quorum.reference(
+            "Address",
+            name = "identifier"
+        ),
+        eager = True
+    )
+
+class Address(quorum.Model):
+
+    identifier = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = quorum.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    street = quorum.field()
