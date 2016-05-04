@@ -1325,6 +1325,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _res(cls, model, part):
+        if not model: return model
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
