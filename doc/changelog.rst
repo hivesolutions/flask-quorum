@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.4.3
+^^^^^
+
+    * Lots of bug fixes
+    * Better export of database
+
 0.4.2
 ^^^^^
 
