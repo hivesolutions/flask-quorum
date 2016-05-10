@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 import sys
 import json
+import time
 import flask
 import atexit
 import logging
@@ -709,7 +710,9 @@ def context_processor():
         nl_to_br = util.nl_to_br,
         sp_to_nbsp = util.sp_to_nbsp,
         date_time = util.date_time,
-        datetime = datetime
+        time = time,
+        datetime = datetime,
+        zip = zip
     )
 
 def start_execution():
