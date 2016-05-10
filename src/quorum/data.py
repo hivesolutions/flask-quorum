@@ -209,7 +209,7 @@ class Collection(object):
         extra = kwargs or args
         log.debug(
             "[%s] %10s -> %12s <-> %s" %\
-            (self.owner.name, operation, self.name, str(extra)[2046])
+            (self.owner.name, operation, self.name, str(extra)[:2046])
         )
 
     def _id(self, *args, **kwargs):
