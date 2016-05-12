@@ -383,19 +383,19 @@ class ModelTest(quorum.TestCase):
         address.street = "Address"
         address.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier = 1, eager_l = True)
         person.car = car
         person.save()
 
-        car = mock.Car.get(identifier = 1)
+        car = mock.Car.get(identifier = 1, eager_l = True)
         car.garage = garage
         car.save()
 
-        garage = mock.Garage.get(identifier = 1)
+        garage = mock.Garage.get(identifier = 1, eager_l = True)
         garage.address = address
         garage.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier = 1, eager_l = True)
 
         self.assertEqual(isinstance(person.car, quorum.Reference), True)
         self.assertEqual(person.car.is_resolved(), True)
@@ -405,18 +405,28 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person.car.garage.address.is_resolved(), True)
         self.assertEqual(person.car.garage.address.street, "Address")
 
+        person = mock.Person.get(identifier = 1, eager_l = False)
+
+        self.assertEqual(isinstance(person.car, quorum.Reference), True)
+        self.assertEqual(person.car.is_resolved(), False)
+        self.assertEqual(person.car.name, "Car")
+        self.assertEqual(person.car.garage.is_resolved(), False)
+        self.assertEqual(person.car.garage.name, "Garage")
+        self.assertEqual(person.car.garage.address.is_resolved(), False)
+        self.assertEqual(person.car.garage.address.street, "Address")
+
         person = mock.Person.get(identifier = 1, map = True)
 
         self.assertEqual(person["car"]["name"], "Car")
         self.assertEqual(person["car"]["garage"]["name"], "Garage")
         self.assertEqual(person["car"]["garage"]["address"]["street"], "Address")
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier = 1, eager_l = True)
 
         person.car.name = "CarChanged"
         person.car.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier = 1, eager_l = True)
 
         self.assertEqual(person.car.name, "CarChanged")
 
@@ -434,7 +444,7 @@ class ModelTest(quorum.TestCase):
         person.father = father
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier = 1, eager_l = True)
 
         self.assertEqual(isinstance(person.father, quorum.Reference), True)
         self.assertEqual(person.father.is_resolved(), False)
