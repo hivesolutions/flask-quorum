@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.4.5
+^^^^^
+
+    * Support for locales in exceptions
+
+
 0.4.4
 ^^^^^
 
