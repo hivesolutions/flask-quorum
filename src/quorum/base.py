@@ -671,10 +671,12 @@ def get_handlers(app = None):
 
 def get_handler(name, app = None):
     app = app or APP
+    if not app: return None
     return app.handlers.get(name, None)
 
 def get_bundle(name, app = None):
     app = app or APP
+    if not app: return None
     bundle = app.bundles.get(name, None)
     if bundle: return bundle
     name = _best_locale(name)
@@ -801,6 +803,9 @@ def bundles_path():
 
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
+
+def has_context():
+    return flask._app_ctx_stack.top
 
 def onrun(function):
     fname = function.__name__

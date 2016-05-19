@@ -688,12 +688,13 @@ def to_locale(value, locale = None, fallback = True):
         to_locale(value, locale = locale, fallback = fallback)\
         for value in value
     ])
-    locale = locale or flask.request.locale
+    has_context = common.base().has_context()
+    locale = locale or (flask.request.locale if has_context else None)
     bundle = common.base().get_bundle(locale) or {}
     result = bundle.get(value, None)
     if not result == None: return result
     app = common.base().APP
-    if fallback: return to_locale(
+    if fallback and app: return to_locale(
         value,
         locale = app._locale_d,
         fallback = False
