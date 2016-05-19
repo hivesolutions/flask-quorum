@@ -682,6 +682,12 @@ def to_locale(value, locale = None, fallback = True):
     proper (original) value in case no localization was possible.
     """
 
+    value_t = type(value)
+    is_sequence = value_t in (list, tuple)
+    if is_sequence: return _serialize([
+        to_locale(value, locale = locale, fallback = fallback)\
+        for value in value
+    ])
     locale = locale or flask.request.locale
     bundle = common.base().get_bundle(locale) or {}
     result = bundle.get(value, None)
@@ -871,6 +877,10 @@ def execute(args, command = None, path = None, shell = True, encoding = None):
         stderr = stderr,
         code = code
     )
+
+def _serialize(value):
+    if value in legacy.STRINGS: return value
+    return json.dumps(value)
 
 class JSONEncoder(json.JSONEncoder):
 

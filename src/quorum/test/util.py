@@ -43,6 +43,15 @@ import quorum
 
 class UtilTest(quorum.TestCase):
 
+    def setUp(self):
+        try:
+            quorum.load(name = __name__)
+        except:
+            self.skip()
+
+    def tearDown(self):
+        quorum.unload()
+
     @quorum.secured
     def test_generate_identifier(self):
         identifier = quorum.util.generate_identifier(
@@ -52,3 +61,11 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(len(identifier), 16)
         for char in identifier:
             self.assertTrue(char in string.ascii_uppercase)
+
+    @quorum.secured
+    def test_to_locale(self):
+        result = quorum.util.to_locale("hello world", locale = "en_us")
+        self.assertEqual(result, "hello world")
+
+        result = quorum.util.to_locale(["hello world", "hello world 2"],  locale = "en_us")
+        self.assertEqual(result, "[\"hello world\", \"hello world 2\"]")
