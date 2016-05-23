@@ -11,9 +11,9 @@ python:
   - "pypy3"
 services: mongodb
 install:
-  - pip install -r requirements.txt
-  - pip install coveralls
-  - pip install twine
+  - pip install --upgrade -r requirements.txt
+  - pip install --upgrade coveralls
+  - pip install --upgrade twine
 env:
   - ADAPTER=mongo
   - ADAPTER=tiny
