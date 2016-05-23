@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.4.7
+^^^^^
+
+    * New dump all support in typesf
+
 0.4.6
 ^^^^^
 
