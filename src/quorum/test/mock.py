@@ -64,6 +64,14 @@ class Person(quorum.Model):
     father = quorum.field(
         type = quorum.reference(
             "Person",
+            name = "identifier",
+            dumpall = True
+        )
+    )
+
+    brother = quorum.field(
+        type = quorum.reference(
+            "Person",
             name = "identifier"
         )
     )
