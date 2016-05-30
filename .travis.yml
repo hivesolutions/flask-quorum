@@ -11,7 +11,7 @@ python:
   - "pypy3"
 services: mongodb
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == "pypy3" ]]; pip install "flask<0.11"; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == "pypy3" ]]; then pip install "flask<0.11"; fi
   - pip install "pkginfo<1.3"
   - pip install -r requirements.txt
   - pip install coveralls
