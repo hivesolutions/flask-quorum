@@ -43,6 +43,7 @@ import random
 import string
 
 from . import legacy
+from . import typesf
 from . import config
 from . import exceptions
 
@@ -68,6 +69,18 @@ def try_auth(auth_callback, params, headers = None):
     if headers == None: headers = dict()
     auth_callback(params, headers)
 
+def get_f(*args, **kwargs):
+    name = kwargs.pop("name", "default")
+    handle = kwargs.get("handle", True)
+    redirect = kwargs.get("redirect", True)
+    kwargs["handle"] = handle
+    kwargs["redirect"] = redirect
+    data, response = get_json(*args, **kwargs)
+    info = response.info()
+    mime = info.get("Content-Type", None)
+    file_tuple = (name, mime, data)
+    return typesf.File(file_tuple)
+
 def get(url, auth_callback = None, **kwargs):
     # starts the variable holding the number of
     # retrieves to be used
@@ -88,14 +101,27 @@ def get(url, auth_callback = None, **kwargs):
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def get_json(url, headers = None, handle = None, auth_callback = None, **kwargs):
+def get_json(
+    url,
+    headers = None,
+    handle = None,
+    redirect = None,
+    auth_callback = None,
+    **kwargs
+):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _get_json(url, handle = handle, headers = headers, **kwargs)
+            return _get_json(
+                url,
+                headers = headers,
+                handle = handle,
+                redirect = redirect,
+                **kwargs
+            )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -118,6 +144,7 @@ def post_json(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     auth_callback = None,
     **kwargs
 ):
@@ -135,6 +162,7 @@ def post_json(
                 headers = headers,
                 mime = mime,
                 handle = handle,
+                redirect = redirect,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -159,6 +187,7 @@ def put_json(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     auth_callback = None,
     **kwargs
 ):
@@ -176,6 +205,7 @@ def put_json(
                 headers = headers,
                 mime = mime,
                 handle = handle,
+                redirect = redirect,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -192,14 +222,27 @@ def put_json(
         if retries == 0:
             raise exceptions.HttpError("Data retrieval not possible")
 
-def delete_json(url, headers = None, handle = None, auth_callback = None, **kwargs):
+def delete_json(
+    url,
+    headers = None,
+    handle = None,
+    redirect = None,
+    auth_callback = None,
+    **kwargs
+):
     # starts the variable holding the number of
     # retrieves to be used
     retries = 5
 
     while True:
         try:
-            return _delete_json(url, headers = headers, handle = handle, **kwargs)
+            return _delete_json(
+                url,
+                headers = headers,
+                handle = handle,
+                redirect = redirect,
+                **kwargs
+            )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
@@ -222,8 +265,21 @@ def _get(url, **kwargs):
     contents = file.read()
     return contents
 
-def _get_json(url, headers = None, handle = None, **kwargs):
-    return _method_empty("GET", url, headers = headers, handle = handle, **kwargs)
+def _get_json(
+    url,
+    headers = None,
+    handle = None,
+    redirect = None,
+    **kwargs
+):
+    return _method_empty(
+        "GET",
+        url,
+        headers = headers,
+        handle = handle,
+        redirect = redirect,
+        **kwargs
+    )
 
 def _post_json(
     url,
@@ -233,6 +289,7 @@ def _post_json(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     **kwargs
 ):
     return _method_payload(
@@ -244,6 +301,7 @@ def _post_json(
         headers = headers,
         mime = mime,
         handle = handle,
+        redirect = redirect,
         **kwargs
     )
 
@@ -255,6 +313,7 @@ def _put_json(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     **kwargs
 ):
     return _method_payload(
@@ -266,17 +325,39 @@ def _put_json(
         headers = headers,
         mime = mime,
         handle = handle,
+        redirect = redirect,
         **kwargs
     )
 
-def _delete_json(url, headers = None, handle = None, **kwargs):
-    return _method_empty("DELETE", url, headers = headers, handle = handle, **kwargs)
+def _delete_json(
+    url,
+    headers = None,
+    handle = None,
+    redirect = None,
+    **kwargs
+):
+    return _method_empty(
+        "DELETE",
+        url,
+        headers = headers,
+        handle = handle,
+        redirect = redirect,
+        **kwargs
+    )
 
-def _method_empty(name, url, headers = None, handle = None, **kwargs):
+def _method_empty(
+    name,
+    url,
+    headers = None,
+    handle = None,
+    redirect = None,
+    **kwargs
+):
     if handle == None: handle = False
+    if redirect == None: redirect = False
     values = kwargs or dict()
     data = _urlencode(values)
-    url, host, authorization = _parse_url(url)
+    url, scheme, host, authorization = _parse_url(url)
     headers = headers or dict()
     if host: headers["host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
@@ -285,6 +366,9 @@ def _method_empty(name, url, headers = None, handle = None, **kwargs):
     file = _resolve(url, name, headers, None, TIMEOUT)
     try: result = file.read()
     finally: file.close()
+    info = file.info()
+    location = info.get("Location", None) if redirect else None
+    if location: return _redirect(location, scheme, host, handle, redirect)
     return (result, file) if handle else result
 
 def _method_payload(
@@ -296,12 +380,14 @@ def _method_payload(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     **kwargs
 ):
     if handle == None: handle = False
+    if redirect == None: redirect = False
     values = kwargs or dict()
 
-    url, host, authorization = _parse_url(url)
+    url, scheme, host, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
     if not data == None:
@@ -333,7 +419,22 @@ def _method_payload(
     file = _resolve(url, name, headers, data, TIMEOUT)
     try: result = file.read()
     finally: file.close()
+
+    info = file.info()
+
+    location = info.get("Location", None) if redirect else None
+    if location: return _redirect(location, scheme, host, handle, redirect)
+
     return (result, file) if handle else result
+
+def _redirect(location, scheme, host, handle, redirect):
+    is_relative = location.startswith("/")
+    if is_relative: location = scheme + "://" + host + location
+    return get_json(
+        location,
+        handle = handle,
+        redirect = redirect
+    )
 
 def _resolve(*args, **kwargs):
     _global = globals()
@@ -370,7 +471,8 @@ def _resolve_netius(url, method, headers, data, timeout):
 
 def _parse_url(url):
     parse = legacy.urlparse(url)
-    secure = parse.scheme == "https"
+    scheme = parse.scheme
+    secure = scheme == "https"
     default = 443 if secure else 80
     port = parse.port or default
     url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
@@ -378,13 +480,8 @@ def _parse_url(url):
     else: host = parse.hostname + ":" + str(port)
     username = parse.username
     password = parse.password
-    if username and password:
-        payload = "%s:%s" % (username, password)
-        payload = legacy.bytes(payload)
-        authorization = base64.b64encode(payload)
-        authorization = legacy.str(authorization)
-    else: authorization = None
-    return (url, host, authorization)
+    authorization = _authorization(username, password)
+    return (url, scheme, host, authorization)
 
 def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
@@ -472,6 +569,15 @@ def _quote(values, plus = False, safe = "/"):
         final[key] = value
 
     return final
+
+def _authorization(username, password):
+    if not username: return None
+    if not password: return None
+    payload = "%s:%s" % (username, password)
+    payload = legacy.bytes(payload)
+    authorization = base64.b64encode(payload)
+    authorization = legacy.str(authorization)
+    return authorization
 
 def _encode_multipart(fields, mime = None, doseq = False):
     mime = mime or "multipart/form-data"
