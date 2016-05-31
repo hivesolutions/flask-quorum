@@ -144,6 +144,16 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(file.data, b"Hello World")
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
 
+        file_d = b"Hello World"
+        file = quorum.File(file_d)
+
+        self.assertEqual(type(file.file_name), str)
+        self.assertEqual(type(file.data_b64), str)
+        self.assertEqual(type(file.data), quorum.legacy.BYTES)
+        self.assertEqual(file.file_name, "default")
+        self.assertEqual(file.data, b"Hello World")
+        self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
+
     def test_dumpall(self):
         person = mock.Person()
         person.name = "Name"
