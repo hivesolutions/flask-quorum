@@ -42,6 +42,36 @@ import quorum
 class HttpcTest(quorum.TestCase):
 
     @quorum.secured
+    def test_parse_url(self):
+        url, scheme, host, authorization = quorum.httpc._parse_url("http://hive.pt/")
+
+        self.assertEqual(url, "http://hive.pt:80/")
+        self.assertEqual(scheme, "http")
+        self.assertEqual(host, "hive.pt")
+        self.assertEqual(authorization, None)
+
+        url, scheme, host, authorization = quorum.httpc._parse_url("http://username@hive.pt/")
+
+        self.assertEqual(url, "http://hive.pt:80/")
+        self.assertEqual(scheme, "http")
+        self.assertEqual(host, "hive.pt")
+        self.assertEqual(authorization, None)
+
+        url, scheme, host, authorization = quorum.httpc._parse_url("http://username:password@hive.pt/")
+
+        self.assertEqual(url, "http://hive.pt:80/")
+        self.assertEqual(scheme, "http")
+        self.assertEqual(host, "hive.pt")
+        self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
+
+        url, scheme, host, authorization = quorum.httpc._parse_url("http://username:password@hive.pt/hello/world")
+
+        self.assertEqual(url, "http://hive.pt:80/hello/world")
+        self.assertEqual(scheme, "http")
+        self.assertEqual(host, "hive.pt")
+        self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
+
+    @quorum.secured
     def test_redirect(self):
         _data, response = quorum.get_json(
             "https://httpbin.org/relative-redirect/2",
