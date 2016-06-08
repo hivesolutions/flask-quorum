@@ -163,7 +163,7 @@ def request_json(request = None, encoding = "utf-8"):
     # may be used as the parsed value (post information)
     return data_j
 
-def get_field(name, default = None, cast = None):
+def get_field(name, default = None, cast = None, strip = False):
     # tries to retrieve the json based representation of the provided
     # request from all the possible sources, this is required because
     # it's going to be used to try to retrieve a field from it
@@ -176,6 +176,10 @@ def get_field(name, default = None, cast = None):
     value = flask.request.files.get(name, value)
     value = flask.request.form.get(name, value)
     value = flask.request.args.get(name, value)
+
+    # in case the strip flag is enabled an "extra" strip operation is applied
+    # to the retrieved value (as requested), avoiding extra spaces
+    if strip: value = value.strip()
 
     # in case a cast operation is defined, tries to retrieve a possible
     # indirect/custom caster for the current cast operation
