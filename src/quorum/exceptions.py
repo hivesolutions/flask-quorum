@@ -98,6 +98,15 @@ class OperationalError(BaseError):
         BaseError.__init__(self, message)
         self.code = code
 
+class AssertionError(OperationalError):
+    """
+    Error raised for failure to meet any pre-condition or
+    assertion for a certain data set.
+    """
+
+    def __init__(self, message, code = 400):
+        OperationalError.__init__(self, message, code = code)
+
 class NotFoundError(OperationalError):
     """
     Error originated from an operation that was not able

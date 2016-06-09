@@ -43,8 +43,10 @@ import hashlib
 import tempfile
 
 from . import util
+from . import crypt
 from . import legacy
 from . import common
+from . import config
 
 class Type(object):
 
@@ -744,3 +746,81 @@ def references(target, name = None, dumpall = False):
             return self.objects[0].is_resolved()
 
     return _References
+
+class Encrypted(Type):
+
+    PADDING = ":encrypted"
+
+def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
+    key = key or None
+
+    class _Encrypted(Encrypted):
+
+        def __init__(self, value):
+            cls = self.__class__
+            util.verify(
+                isinstance(value, legacy.ALL_STRINGS) or\
+                isinstance(value, Encrypted)
+            )
+            self.key = key or config.conf("SECRET", None)
+            self.key = legacy.bytes(self.key)
+            if isinstance(value, Encrypted): self.build_i(value)
+            elif value.endswith(cls.PADDING): self.build_e(value)
+            else: self.build(value)
+
+        def __str__(self):
+            return self.value
+
+        def __unicode__(self):
+            return self.value
+
+        def __len__(self):
+            return self.value.__len__()
+
+        def __iter__(self):
+            return self.value.__iter__()
+
+        def __bool__(self):
+            return bool(self.value)
+
+        def build(self, value):
+            self.value = value
+            self.encrypted = self._encrypt(value)
+
+        def build_e(self, encrypted):
+            self.encrypted = encrypted
+            self.value = self._decrypt(encrypted)
+
+        def build_i(self, instance):
+            self.key = instance.key
+            self.value = instance.value
+            self.encrypted = instance.encrypted
+
+        def json_v(self, *args, **kwargs):
+            return self.encrypted
+
+        def _encrypt(self, value, strict = False):
+            if not self.key and not strict: return value
+            cls = self.__class__
+            value = legacy.bytes(value, encoding = encoding)
+            cipher_i = crypt.Cipher.new(cipher, self.key)
+            encrypted = cipher_i.encrypt(value)
+            encrypted = base64.b64encode(encrypted)
+            encrypted = legacy.str(encrypted, encoding = encoding)
+            return encrypted + cls.PADDING
+
+        def _decrypt(self, value, strict = False):
+            if not self.key and not strict: return value
+            cls = self.__class__
+            util.verify(value.endswith(cls.PADDING))
+            value = value[:-len(cls.PADDING)]
+            value = legacy.bytes(value)
+            value = base64.b64decode(value)
+            cipher_i = crypt.Cipher.new(cipher, self.key)
+            decrypted = cipher_i.decrypt(value)
+            decrypted = legacy.str(decrypted, encoding = encoding)
+            return decrypted
+
+    return _Encrypted
+
+secure = encrypted()

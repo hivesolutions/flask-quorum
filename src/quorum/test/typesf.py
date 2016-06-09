@@ -154,6 +154,33 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(file.data, b"Hello World")
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
 
+    def test_encrypted(self):
+        encrypted = quorum.encrypted(key = b"hello key")
+        result = encrypted("hello world")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
+        result = encrypted("vGgMtFgyMVwH3uE=:encrypted")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
+        encrypted = quorum.encrypted(key = None)
+        result = encrypted("hello world")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.value, "hello world")
+
+        result = encrypted("vGgMtFgyMVwH3uE=:encrypted")
+
+        self.assertEqual(str(result), "vGgMtFgyMVwH3uE=:encrypted")
+        self.assertEqual(result.value, "vGgMtFgyMVwH3uE=:encrypted")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
     def test_dumpall(self):
         person = mock.Person()
         person.name = "Name"

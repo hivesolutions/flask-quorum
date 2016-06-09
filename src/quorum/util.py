@@ -55,6 +55,7 @@ import jinja2
 from . import legacy
 from . import common
 from . import defines
+from . import exceptions
 
 SORT_MAP = {
     "1" : 1,
@@ -864,6 +865,13 @@ def unquote(value, *args, **kwargs):
     is_bytes = type(value) == legacy.BYTES
     if is_bytes: value = value.decode("utf-8")
     return value
+
+def verify(condition, message = None, code = None):
+    if condition: return
+    raise exceptions.AssertionError(
+        message = message or "Assertion of data failed",
+        code = code
+    )
 
 def execute(args, command = None, path = None, shell = True, encoding = None):
     if not encoding: encoding = sys.getfilesystemencoding()
