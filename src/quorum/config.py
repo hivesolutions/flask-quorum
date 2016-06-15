@@ -162,6 +162,8 @@ def get_homes(file_path = HOME_FILE, default = "~", encoding = "utf-8"):
     if homes: return homes
 
     default = os.path.expanduser(default)
+    default = os.path.abspath(default)
+    default = os.path.normpath(default)
     homes = [default]
 
     file_path = os.path.expanduser(file_path)
@@ -180,6 +182,9 @@ def get_homes(file_path = HOME_FILE, default = "~", encoding = "utf-8"):
     for path in paths:
         path = path.strip()
         if not path: continue
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+        path = os.path.normpath(path)
         homes.append(path)
 
     return homes
