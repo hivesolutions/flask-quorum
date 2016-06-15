@@ -474,7 +474,7 @@ def load_config(offset = 1, encoding = "utf-8"):
     element = inspect.stack()[offset]
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
-    config.load_file(base_folder, encoding = encoding)
+    config.load(path = base_folder, encoding = encoding)
 
 def load_app_config(app, configs):
     for name, value in configs.items():
