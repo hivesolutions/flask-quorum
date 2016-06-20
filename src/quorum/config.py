@@ -167,6 +167,10 @@ def get_homes(
     global homes
     if homes: return homes
 
+    homes = os.environ.get("HOMES", None)
+    homes = homes.split(";") if homes else homes
+    if not homes == None: return homes
+
     default = os.path.expanduser(default)
     default = os.path.abspath(default)
     default = os.path.normpath(default)
