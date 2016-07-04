@@ -37,16 +37,15 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import os
+import uuid
 import base64
 import hashlib
-import tempfile
 
 from . import util
 from . import crypt
 from . import legacy
 from . import common
-from . import config
+from . import storage
 
 class Type(object):
 
@@ -83,6 +82,9 @@ class File(Type):
         hash = file_m.get("hash", None)
         mime = file_m.get("mime", None)
         etag = file_m.get("etag", None)
+        guid = file_m.get("guid", None)
+        params = file_m.get("params", None)
+        engine = file_m.get("engine", None)
 
         is_valid = name and data_b64
         data_b64_b = legacy.bytes(data_b64)
@@ -91,6 +93,7 @@ class File(Type):
         size = len(data) if is_valid else 0
         hash = hash or self._hash(data)
         etag = etag or self._etag(data)
+        guid = guid or self._guid()
 
         self.data = data
         self.data_b64 = data_b64
@@ -100,6 +103,11 @@ class File(Type):
         self.file_name = name
         self.mime = mime
         self.etag = etag
+        self.guid = guid
+        self.params = params
+        self.engine = engine
+
+        self._load()
 
     def build_t(self, file_t):
         name, content_type, data = file_t
@@ -110,6 +118,7 @@ class File(Type):
         size = len(data) if is_valid else 0
         etag = self._etag(data)
         hash = self._hash(data)
+        guid = self._guid()
 
         self.data = data
         self.data_b64 = data_b64
@@ -119,6 +128,11 @@ class File(Type):
         self.file_name = name
         self.mime = content_type
         self.etag = etag
+        self.guid = guid
+        self.params = None
+        self.engine = None
+
+        self._load()
 
     def build_i(self, file):
         self.data = file.data
@@ -129,6 +143,11 @@ class File(Type):
         self.file_name = file.file_name
         self.mime = file.mime
         self.etag = file.etag
+        self.guid = file.guid
+        self.params = file.params
+        self.engine = file.engine
+
+        self._load()
 
     def build_f(self, file):
         self.data = None
@@ -139,20 +158,31 @@ class File(Type):
         self.file_name = file.filename
         self.mime = file.content_type
         self.etag = None
+        self.guid = self._guid()
+        self.params = None
+        self.engine = None
 
-        self._flush()
+        self._load()
 
-    def read(self):
-        return self.data
+    def read(self, size = None):
+        engine = self._engine()
+        return engine.read(self, size = size)
 
     def json_v(self, *args, **kwargs):
+        if not self.is_valid(): return None
+        store = kwargs.get("store", True)
+        if store: self._store()
+        data = None if self.engine else self.data_b64
         return dict(
             name = self.file_name,
-            data = self.data_b64,
+            data = data,
             hash = self.hash,
             mime = self.mime,
-            etag = self.etag
-        ) if self.is_valid() else None
+            etag = self.etag,
+            guid = self.guid,
+            params = self.params,
+            engine = self.engine
+        )
 
     def is_valid(self):
         return self.file_name or (self.data or self.data_b64)
@@ -172,24 +202,36 @@ class File(Type):
         digest = hash.hexdigest()
         return digest
 
-    def _flush(self):
-        if not self.file_name: return
-        if self.data: return
+    def _guid(self):
+        return str(uuid.uuid4())
 
-        path = tempfile.mkdtemp()
-        path_f = os.path.join(path, self.file_name)
-        self.file.save(path_f)
+    def _load(self, force = False):
+        engine = self._engine()
+        engine.load(self, force = force)
 
-        file = open(path_f, "rb")
-        try: data = file.read()
-        finally: file.close()
+    def _store(self, force = False):
+        engine = self._engine()
+        engine.store(self, force = force)
 
-        self.data = data
-        self.data_b64 = base64.b64encode(data)
+    def _compute(self):
+        """
+        Computes a series of "calculated" attributes related with
+        the data associated with the current file, these values may
+        include: length, hash values, etag, etc.
+
+        This method should be called whenever the data attributes are
+        changed as defined in specification.
+        """
+
+        self.data_b64 = base64.b64encode(self.data)
         self.data_b64 = legacy.str(self.data_b64)
-        self.hash = self._hash(data)
-        self.size = len(data)
-        self.etag = self._etag(data)
+        self.hash = self._hash(self.data)
+        self.size = len(self.data)
+        self.etag = self._etag(self.data)
+
+    def _engine(self):
+        if not self.engine: return storage.BaseEngine
+        return getattr(storage, self.engine.capitalize() + "Engine")
 
 class Files(Type):
 
@@ -230,8 +272,8 @@ class Files(Type):
     def is_empty(self):
         return len(self._files) == 0
 
-    def _flush(self):
-        for file in self._files: file._flush()
+    def _load(self):
+        for file in self._files: file._load()
 
 class ImageFile(File):
 
@@ -258,16 +300,14 @@ class ImageFile(File):
         self._ensure_all()
 
     def json_v(self, *args, **kwargs):
-        return dict(
-            name = self.file_name,
-            data = self.data_b64,
-            hash = self.hash,
-            mime = self.mime,
-            etag = self.etag,
+        if not self.is_valid(): return None
+        value = File.json_v(*args, **kwargs)
+        value.update(
             width = self.width,
             height = self.height,
             format = self.format
-        ) if self.is_valid() else None
+        )
+        return value
 
     def _ensure_all(self):
         self._ensure_size()
@@ -550,7 +590,7 @@ def reference(target, name = None, dumpall = False):
 
         @classmethod
         def _target(cls):
-            if is_reference: return getattr(common.base().APP.models, target)
+            if is_reference: return common.base().APP.models[target]
             return target
 
         @classmethod
@@ -772,7 +812,7 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
                 isinstance(value, legacy.ALL_STRINGS) or\
                 isinstance(value, Encrypted)
             )
-            self.key = key or config.conf("SECRET", None)
+            self.key = key or common.base().APP.crypt_secret
             self.key = legacy.bytes(self.key)
             if isinstance(value, Encrypted): self.build_i(value)
             elif value.endswith(cls.PADDING): self.build_e(value)

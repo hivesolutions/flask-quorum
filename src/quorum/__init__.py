@@ -63,6 +63,7 @@ from . import redisdb
 from . import request
 from . import route
 from . import session
+from . import storage
 from . import structures
 from . import template
 from . import typesf
