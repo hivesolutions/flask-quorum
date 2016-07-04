@@ -45,6 +45,7 @@ from . import util
 from . import crypt
 from . import legacy
 from . import common
+from . import config
 from . import storage
 
 class Type(object):
@@ -590,7 +591,7 @@ def reference(target, name = None, dumpall = False):
 
         @classmethod
         def _target(cls):
-            if is_reference: return common.base().APP.models[target]
+            if is_reference: return getattr(common.base().APP.models, target)
             return target
 
         @classmethod
@@ -812,7 +813,7 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
                 isinstance(value, legacy.ALL_STRINGS) or\
                 isinstance(value, Encrypted)
             )
-            self.key = key or common.base().APP.crypt_secret
+            self.key = key or config.conf("SECRET", None)
             self.key = legacy.bytes(self.key)
             if isinstance(value, Encrypted): self.build_i(value)
             elif value.endswith(cls.PADDING): self.build_e(value)
