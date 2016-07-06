@@ -38,11 +38,10 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
-import unittest
 
 import quorum
 
-class ExportTest(unittest.TestCase):
+class ExportTest(quorum.TestCase):
 
     def setUp(self):
         try:

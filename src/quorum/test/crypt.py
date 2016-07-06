@@ -37,11 +37,9 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import unittest
-
 import quorum
 
-class CryptTest(unittest.TestCase):
+class CryptTest(quorum.TestCase):
 
     @quorum.secured
     def test_rc4(self):
