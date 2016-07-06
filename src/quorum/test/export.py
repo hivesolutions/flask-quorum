@@ -50,8 +50,11 @@ class ExportTest(quorum.TestCase):
             self.skip()
 
     def tearDown(self):
-        adapter = quorum.get_adapter()
-        adapter.drop_db()
+        try:
+            adapter = quorum.get_adapter()
+            adapter.drop_db()
+        except: pass
+        finally: quorum.unload()
 
     @quorum.secured
     def test_import_single(self):
