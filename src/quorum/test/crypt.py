@@ -43,6 +43,7 @@ import quorum
 
 class CryptTest(unittest.TestCase):
 
+    @quorum.secured
     def test_rc4(self):
         rc4 = quorum.RC4(b"hello key")
         result = rc4.encrypt(b"hello world")
@@ -64,6 +65,7 @@ class CryptTest(unittest.TestCase):
 
         self.assertEqual(data, b"hello world")
 
+    @quorum.secured
     def test_spritz(self):
         spritz = quorum.Spritz(b"hello key")
         result = spritz.encrypt(b"hello world")

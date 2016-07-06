@@ -43,6 +43,7 @@ import quorum
 
 class DataTest(unittest.TestCase):
 
+    @quorum.secured
     def test_id(self):
         adapter = quorum.DataAdapter()
         identifier = adapter._id()

@@ -472,6 +472,7 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person.father.car.is_resolved(), True)
         self.assertEqual(person.father.car.name, "CarFather")
 
+    @quorum.secured
     def test_exists(self):
         person = mock.Person()
         person.name = "Name"
@@ -490,6 +491,7 @@ class ModelTest(quorum.TestCase):
 
         self.assertEqual(person.exists(), False)
 
+    @quorum.secured
     def test_wrap(self):
         person = mock.Person.wrap(dict(name = "Person"))
         self.assertEqual(person.name, "Person")
@@ -497,6 +499,7 @@ class ModelTest(quorum.TestCase):
         person = mock.Person.wrap(dict(other = "Other"))
         self.assertEqual(person.other, "Other")
 
+    @quorum.secured
     def test_meta(self):
         self.assertEqual(quorum.Model._to_meta(str), "string")
         self.assertEqual(quorum.Model._to_meta(bool), "bool")

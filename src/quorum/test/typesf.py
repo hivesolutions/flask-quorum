@@ -133,6 +133,7 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(isinstance(person.cats, quorum.References), True)
         self.assertEqual(len(person.cats), 3)
 
+    @quorum.secured
     def test_file(self):
         file_m = dict(name = "hello", data = b"SGVsbG8gV29ybGQ=")
         file = quorum.File(file_m)
@@ -154,6 +155,7 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(file.data, b"Hello World")
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
 
+    @quorum.secured
     def test_encrypted(self):
         encrypted = quorum.encrypted(key = b"hello key")
         result = encrypted("hello world")
@@ -181,6 +183,7 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(result.value, "vGgMtFgyMVwH3uE=:encrypted")
         self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
 
+    @quorum.secured
     def test_dumpall(self):
         person = mock.Person()
         person.name = "Name"

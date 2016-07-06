@@ -54,6 +54,7 @@ class ExportTest(unittest.TestCase):
         adapter = quorum.get_adapter()
         adapter.drop_db()
 
+    @quorum.secured
     def test_import_single(self):
         structure = {
             "person:id" : dict(_id = "person:id", seq = 11),
@@ -81,6 +82,7 @@ class ExportTest(unittest.TestCase):
 
         self.assertEqual(value["seq"], 11)
 
+    @quorum.secured
     def test_import_multiple(self):
         data = [
             (
