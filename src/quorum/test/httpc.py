@@ -123,4 +123,4 @@ class HttpcTest(quorum.TestCase):
 
     @quorum.secured
     def test_invalid(self):
-        self.assertRaises(BaseException, lambda: quorum.get("https://invalidlargedomain.org/redirect-to"))
+        self.assertRaises(BaseException, lambda: quorum.get("https://invalidlargedomain.org/"))
