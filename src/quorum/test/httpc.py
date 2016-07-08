@@ -124,7 +124,7 @@ class HttpcTest(quorum.TestCase):
     @quorum.secured
     def test_error(self):
         self.assertRaises(
-            quorum.HTTPError,
+            quorum.legacy.HTTPError,
             lambda: quorum.get("https://httpbin.org/status/404")
         )
 
