@@ -41,6 +41,10 @@ import quorum
 
 class HttpcTest(quorum.TestCase):
 
+    def setUp(self):
+        quorum.TestCase.setUp(self)
+        self.httpbin = quorum.conf("HTTPBIN", "httpbin.org")
+
     @quorum.secured
     def test_parse_url(self):
         url, scheme, host, authorization, params = quorum.httpc._parse_url("http://hive.pt/")
@@ -85,8 +89,9 @@ class HttpcTest(quorum.TestCase):
 
     @quorum.secured
     def test_redirect(self):
+        quoted = quorum.legacy.quote("https://%s/" % self.httpbin)
         _data, response = quorum.get_json(
-            "http://httpbin.org/redirect-to?url=https%3a%2f%2Fhttpbin.org%2f",
+            "https://%s/redirect-to?url=%s" % (self.httpbin, quoted),
             handle = True,
             redirect = True
         )
@@ -96,7 +101,7 @@ class HttpcTest(quorum.TestCase):
         self.assertEqual(code, 200)
 
         _data, response = quorum.get_json(
-            "https://httpbin.org/relative-redirect/2",
+            "https://%s/relative-redirect/2" % self.httpbin,
             handle = True,
             redirect = True
         )
@@ -107,14 +112,14 @@ class HttpcTest(quorum.TestCase):
 
     @quorum.secured
     def test_get_f(self):
-        file = quorum.get_f("https://httpbin.org/image/png")
+        file = quorum.get_f("https://%s/image/png" % self.httpbin)
 
         self.assertEqual(file.file_name, "default")
         self.assertEqual(file.mime, "image/png")
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
-        file = quorum.get_f("https://httpbin.org/image/png", name = "dummy")
+        file = quorum.get_f("https://%s/image/png" % self.httpbin, name = "dummy")
 
         self.assertEqual(file.file_name, "dummy")
         self.assertEqual(file.mime, "image/png")
@@ -125,7 +130,7 @@ class HttpcTest(quorum.TestCase):
     def test_error(self):
         self.assertRaises(
             quorum.HTTPDataError,
-            lambda: quorum.get("https://httpbin.org/status/404")
+            lambda: quorum.get("https://%s/status/404" % self.httpbin)
         )
 
     @quorum.secured
