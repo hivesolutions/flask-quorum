@@ -138,8 +138,8 @@ class HttpcTest(quorum.TestCase):
 
             def generate(index):
                 def caller():
-                    data, response = quorum.get(
-                        "https://%s/" % self.httpbin,
+                    data, response = quorum.get_json(
+                        "https://%s/ip" % self.httpbin,
                         handle = True
                     )
                     result = results[index]
