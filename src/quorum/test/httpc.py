@@ -120,3 +120,7 @@ class HttpcTest(quorum.TestCase):
         self.assertEqual(file.mime, "image/png")
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
+
+    @quorum.secured
+    def test_invalid(self):
+        self.assertRaises(BaseException, lambda: quorum.get("https://invalidlargedomain.org/redirect-to"))
