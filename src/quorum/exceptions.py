@@ -215,7 +215,7 @@ class ValidationMultipleError(ValidationInternalError):
     def add_exception(self, exception):
         self.add_error(exception.name, exception.message)
 
-class HttpError(BaseError):
+class HTTPError(BaseError):
     """
     Error raised when an http (client) related issue
     arises, most of the problems should occur during
@@ -225,7 +225,7 @@ class HttpError(BaseError):
     def __init__(self, message):
         BaseError.__init__(self, message)
 
-class JsonError(HttpError):
+class JsonError(HTTPError):
     """
     Error raised when a json based http communication
     fails or is not accepted by the server pear.
@@ -236,11 +236,11 @@ class JsonError(HttpError):
     provided by the json request  """
 
     def __init__(self, data):
-        HttpError.__init__(self, "Problem requesting json data")
+        HTTPError.__init__(self, "Problem requesting json data")
         self.data = data
 
     def __str__(self):
-        exception_s = HttpError.__str__(self)
+        exception_s = HTTPError.__str__(self)
         if not self.data: exception_s
         exception = self.data.get("exception", {})
         return exception.get("message", exception_s)

@@ -122,5 +122,15 @@ class HttpcTest(quorum.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     @quorum.secured
+    def test_error(self):
+        self.assertRaises(
+            quorum.HTTPError,
+            lambda: quorum.get("https://httpbin.org/status/404")
+        )
+
+    @quorum.secured
     def test_invalid(self):
-        self.assertRaises(BaseException, lambda: quorum.get("https://invalidlargedomain.org/"))
+        self.assertRaises(
+            BaseException,
+            lambda: quorum.get("https://invalidlargedomain.org/")
+        )

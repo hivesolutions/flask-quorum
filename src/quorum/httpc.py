@@ -97,7 +97,7 @@ def get(url, auth_callback = None, **kwargs):
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.HttpError("Data retrieval not possible")
+            raise exceptions.HTTPError("Data retrieval not possible")
 
 def get_json(
     url,
@@ -132,7 +132,7 @@ def get_json(
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.HttpError("Data retrieval not possible")
+            raise exceptions.HTTPError("Data retrieval not possible")
 
 def post_json(
     url,
@@ -175,7 +175,7 @@ def post_json(
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.HttpError("Data retrieval not possible")
+            raise exceptions.HTTPError("Data retrieval not possible")
 
 def put_json(
     url,
@@ -218,7 +218,7 @@ def put_json(
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.HttpError("Data retrieval not possible")
+            raise exceptions.HTTPError("Data retrieval not possible")
 
 def delete_json(
     url,
@@ -253,7 +253,7 @@ def delete_json(
         # number of retries has reached the limit
         retries -= 1
         if retries == 0:
-            raise exceptions.HttpError("Data retrieval not possible")
+            raise exceptions.HTTPError("Data retrieval not possible")
 
 def _get(url, **kwargs):
     values = kwargs or dict()
