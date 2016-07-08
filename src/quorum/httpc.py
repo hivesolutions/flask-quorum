@@ -127,6 +127,7 @@ def get_json(
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
+                data_r = legacy.str(data_r, encoding = "utf-8")
                 data_s = json.loads(data_r)
                 raise exceptions.JSONError(data_s)
 
@@ -170,6 +171,7 @@ def post_json(
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
+                data_r = legacy.str(data_r, encoding = "utf-8")
                 data_s = json.loads(data_r)
                 raise exceptions.JSONError(data_s)
 
@@ -213,6 +215,7 @@ def put_json(
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
+                data_r = legacy.str(data_r, encoding = "utf-8")
                 data_s = json.loads(data_r)
                 raise exceptions.JSONError(data_s)
 
@@ -248,6 +251,7 @@ def delete_json(
                 try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
+                data_r = legacy.str(data_r, encoding = "utf-8")
                 data_s = json.loads(data_r)
                 raise exceptions.JSONError(data_s)
 
