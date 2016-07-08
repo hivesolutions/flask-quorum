@@ -128,6 +128,7 @@ class HttpcTest(quorum.TestCase):
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
+    @quorum.secured
     def test_multithread(self):
         threads = []
         results = []
