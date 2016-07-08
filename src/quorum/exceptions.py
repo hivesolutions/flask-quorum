@@ -93,7 +93,7 @@ class OperationalError(BaseError):
 
     code = 500
     """ The code to be used in the consequent serialization
-    of the error in an http response """
+    of the error in an HTTP response """
 
     def __init__(self, message, code = 500):
         BaseError.__init__(self, message)
