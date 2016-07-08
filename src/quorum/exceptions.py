@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import common
 from . import legacy
 
 class BaseError(RuntimeError):
@@ -217,7 +218,7 @@ class ValidationMultipleError(ValidationInternalError):
 
 class HTTPError(BaseError):
     """
-    Error raised when an http (client) related issue
+    Error raised when an HTTP (client) related issue
     arises, most of the problems should occur during
     the communication between client and server.
     """
@@ -225,9 +226,41 @@ class HTTPError(BaseError):
     def __init__(self, message):
         BaseError.__init__(self, message)
 
-class JsonError(HTTPError):
+class HTTPDataError(HTTPError):
     """
-    Error raised when a json based http communication
+    Specialized HTTP error for data based stream where both
+    the error code and message are known.
+
+    A special error attribute is used store the original error
+    that gave origin to this exception.
+    """
+
+    error = None
+    """ The reference to the original and internal
+    HTTP error that is going to be used in the reading
+    of the underlying internal buffer """
+
+    _data = None
+    """ The underlying/internal data attribute that is
+    going to be used to cache the binary contents of the
+    error associated with this exception (data) stream """
+
+    def __init__(self, error, code = None, message = None, extended = None):
+        message = message or "Problem in the HTTP request"
+        if extended == None: extended = common.base().is_devel()
+        if code: message = "[%d] %s" % (code, message)
+        if extended:
+            data = self.read(error = error)
+            try: data = data.decode("utf-8")
+            except: data = legacy.str(data)
+            if data: message += "\n" + data
+        HTTPError.__init__(self, message)
+        self.code = code
+        self.error = error
+
+class JSONError(HTTPError):
+    """
+    Error raised when a JSON based HTTP communication
     fails or is not accepted by the server pear.
     """
 

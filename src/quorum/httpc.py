@@ -92,7 +92,8 @@ def get(url, auth_callback = None, **kwargs):
             if error.code in AUTH_ERRORS and auth_callback:
                 try_auth(auth_callback, kwargs)
             else:
-                raise
+                code = error.getcode()
+                raise exceptions.HTTPDataError(error, code)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -127,7 +128,7 @@ def get_json(
             else:
                 data_r = error.read()
                 data_s = json.loads(data_r)
-                raise exceptions.JsonError(data_s)
+                raise exceptions.JSONError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -170,7 +171,7 @@ def post_json(
             else:
                 data_r = error.read()
                 data_s = json.loads(data_r)
-                raise exceptions.JsonError(data_s)
+                raise exceptions.JSONError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -213,7 +214,7 @@ def put_json(
             else:
                 data_r = error.read()
                 data_s = json.loads(data_r)
-                raise exceptions.JsonError(data_s)
+                raise exceptions.JSONError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
@@ -248,7 +249,7 @@ def delete_json(
             else:
                 data_r = error.read()
                 data_s = json.loads(data_r)
-                raise exceptions.JsonError(data_s)
+                raise exceptions.JSONError(data_s)
 
         # decrements the number of retries and checks if the
         # number of retries has reached the limit
