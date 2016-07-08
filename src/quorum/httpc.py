@@ -41,6 +41,7 @@ import json
 import base64
 import random
 import string
+import logging
 
 from . import legacy
 from . import typesf
@@ -446,20 +447,22 @@ def _resolve(*args, **kwargs):
     except ImportError: result = _resolve_base(*args, **kwargs)
     return result
 
-def _resolve_base(url, method, headers, data, timeout):
+def _resolve_base(url, method, headers, data, timeout, **kwargs):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
     return opener.open(request, timeout = timeout)
 
-def _resolve_netius(url, method, headers, data, timeout):
+def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     import netius.clients
+    level = kwargs.get("level", logging.CRITICAL)
     result = netius.clients.HTTPClient.method_s(
         method,
         url,
         headers = headers,
         data = data,
-        async = False
+        async = False,
+        level = level
     )
     response = netius.clients.HTTPClient.to_response(result)
     code = response.getcode()
