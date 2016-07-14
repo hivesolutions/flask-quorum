@@ -139,10 +139,10 @@ def _store_ensure_index(store, *args, **kwargs):
     if is_new(): store.create_index(*args, **kwargs)
     else: store.ensure_index(*args, **kwargs)
 
-def _get_connection(url):
+def _get_connection(url, connect = False):
     global connection
     if pymongo == None: raise exceptions.ModuleNotFound("pymongo")
     if connection: return connection
-    if is_new(): connection = pymongo.MongoClient(url)
+    if is_new(): connection = pymongo.MongoClient(url, connect = connect)
     else: connection = pymongo.Connection(url)
     return connection
