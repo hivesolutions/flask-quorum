@@ -469,7 +469,7 @@ def _resolve_requests(url, method, headers, data, timeout, **kwargs):
         headers = result.headers
     )
     code = response.getcode()
-    is_error = code // 100 in (4, 5) if code else True
+    is_error = _is_error(code)
     if is_error: raise legacy.HTTPError(
         url, code, "HTTP retrieval problem", None, response
     )
@@ -488,7 +488,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     )
     response = netius.clients.HTTPClient.to_response(result)
     code = response.getcode()
-    is_error = code // 100 in (4, 5) if code else True
+    is_error = _is_error(code)
     if is_error: raise legacy.HTTPError(
         url, code, "HTTP retrieval problem", None, response
     )
@@ -710,6 +710,9 @@ def _try_boundary(fields, boundary, doseq = False):
             if not value.find(boundary_b) == -1: return False
 
     return True
+
+def _is_error(code):
+    return code // 100 in (4, 5) if code else True
 
 def _encode(value, encoding = "utf-8"):
     value_t = type(value)
