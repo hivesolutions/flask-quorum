@@ -458,6 +458,23 @@ def _resolve_base(url, method, headers, data, timeout, **kwargs):
     request.get_method = lambda: method
     return opener.open(request, timeout = timeout)
 
+def _resolve_requests(url, method, headers, data, timeout, **kwargs):
+    import requests
+    method = method.lower()
+    caller = getattr(requests, method)
+    result = caller(url, headers = headers, data = data, timeout = timeout)
+    response = HTTPResponse(
+        data = result.content,
+        code = result.status_code,
+        headers = result.headers
+    )
+    code = response.getcode()
+    is_error = code // 100 in (4, 5) if code else True
+    if is_error: raise legacy.HTTPError(
+        url, code, "HTTP retrieval problem", None, response
+    )
+    return response
+
 def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     import netius.clients
     level = kwargs.get("level", logging.CRITICAL)
@@ -699,3 +716,31 @@ def _encode(value, encoding = "utf-8"):
     if value_t == legacy.BYTES: return value
     elif value_t == legacy.UNICODE: return value.encode(encoding)
     return legacy.bytes(str(value))
+
+class HTTPResponse(object):
+    """
+    Compatibility object to be used by HTTP libraries that do
+    not support the legacy HTTP response object as a return
+    for any of their structures.
+    """
+
+    def __init__(self, data = None, code = 200, status = None, headers = None):
+        self.data = data
+        self.code = code
+        self.status = status
+        self.headers = headers
+
+    def read(self):
+        return self.data
+
+    def readline(self):
+        return self.read()
+
+    def close(self):
+        pass
+
+    def getcode(self):
+        return self.code
+
+    def info(self):
+        return self.headers
