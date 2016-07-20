@@ -85,7 +85,7 @@ from .config import conf, conf_prefix, confs
 from .crypt import Cipher, RC4, Spritz
 from .daemon import Daemon
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
-from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCALE
+from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, WINDOWS_LOCALE
 from .errors import errors_json
 from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError, AssertionError,\
     NotFoundError, ValidationError, NotImplementedError, BaseInternalError, ValidationInternalError,\
@@ -109,9 +109,9 @@ from .template import render_template, template_resolve
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
 from .unit_test import secured, TestCase
-from .util import is_iterable, request_json, get_field, get_object, is_mobile, resolve_alias,\
-    page_types, find_types, norm_object, set_object, leafs, load_form, load_locale,\
-    get_locale, get_langs, set_locale, reset_locale, anotate_async, run_thread,\
+from .util import is_iterable, request_json, get_field, get_object, is_mobile, is_tablet,\
+    resolve_alias, page_types, find_types, norm_object, set_object, leafs, load_form, \
+    load_locale, get_locale, get_langs, set_locale, reset_locale, anotate_async, run_thread,\
     camel_to_underscore, generate_identifier, to_locale, nl_to_br, nl_to_br_jinja,\
     sp_to_nbsp, sp_to_nbsp_jinja, date_time, quote, unquote, verify, execute, JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
