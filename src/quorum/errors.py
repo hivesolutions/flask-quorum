@@ -44,6 +44,7 @@ import functools
 from . import exceptions
 
 def errors_json(function):
+
     @functools.wraps(function)
     def interceptor(*args, **kwargs):
         try:

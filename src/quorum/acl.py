@@ -163,6 +163,7 @@ def ensure(token = None, json = False):
     """
 
     def decorator(function):
+
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             ensure = ensure_login(token, json)
@@ -197,6 +198,7 @@ def ensure_auth(username, password, json = False):
     """
 
     def decorator(function):
+
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             ensure = ensure_basic_auth(username, password, json)
