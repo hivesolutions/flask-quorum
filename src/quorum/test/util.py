@@ -53,8 +53,22 @@ class UtilTest(quorum.TestCase):
         quorum.unload()
 
     @quorum.secured
+    def test_camel_to_underscore(self):
+        result = quorum.camel_to_underscore("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world")
+
+        result = quorum.camel_to_underscore("HELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world")
+
+        result = quorum.camel_to_underscore("HELLOWorldHELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world_hello_world")
+
+    @quorum.secured
     def test_generate_identifier(self):
-        identifier = quorum.util.generate_identifier(
+        identifier = quorum.generate_identifier(
             size = 16,
             chars = string.ascii_uppercase
         )
