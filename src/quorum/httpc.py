@@ -363,7 +363,7 @@ def _method_empty(
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
     data = _urlencode(values)
-    headers = headers or dict()
+    headers = dict(headers) if headers else dict()
     if host: headers["host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data if data else url
@@ -415,7 +415,7 @@ def _method_payload(
     data = legacy.bytes(data)
     length = len(data) if data else 0
 
-    headers = headers or dict()
+    headers = dict(headers) if headers else dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
     if host: headers["Host"] = host
