@@ -113,6 +113,30 @@ class HttpcTest(quorum.TestCase):
         self.assertEqual(code, 200)
 
     @quorum.secured
+    def test_timeout(self):
+        self.assertRaises(
+            BaseException,
+            lambda: quorum.get_json(
+                "https://%s/delay/3" % self.httpbin,
+                handle = True,
+                redirect = True,
+                timeout = 1
+            )
+        )
+
+        data, response = quorum.get_json(
+            "https://%s/delay/1" % self.httpbin,
+            handle = True,
+            redirect = True,
+            timeout = 30
+        )
+
+        code = response.getcode()
+        self.assertEqual(code, 200)
+        self.assertNotEqual(len(data), 0)
+        self.assertNotEqual(data, None)
+
+    @quorum.secured
     def test_get_f(self):
         file = quorum.get_f("https://%s/image/png" % self.httpbin)
 

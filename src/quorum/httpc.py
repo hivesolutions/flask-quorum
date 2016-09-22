@@ -106,6 +106,7 @@ def get_json(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None,
     **kwargs
 ):
@@ -120,6 +121,7 @@ def get_json(
                 headers = headers,
                 handle = handle,
                 redirect = redirect,
+                timeout = timeout,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -146,6 +148,7 @@ def post_json(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None,
     **kwargs
 ):
@@ -164,6 +167,7 @@ def post_json(
                 mime = mime,
                 handle = handle,
                 redirect = redirect,
+                timeout = timeout,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -190,6 +194,7 @@ def put_json(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None,
     **kwargs
 ):
@@ -208,6 +213,7 @@ def put_json(
                 mime = mime,
                 handle = handle,
                 redirect = redirect,
+                timeout = timeout,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -230,6 +236,7 @@ def delete_json(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None,
     **kwargs
 ):
@@ -244,6 +251,7 @@ def delete_json(
                 headers = headers,
                 handle = handle,
                 redirect = redirect,
+                timeout = timeout,
                 **kwargs
             )
         except legacy.HTTPError as error:
@@ -274,6 +282,7 @@ def _get_json(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     return _method_empty(
@@ -282,6 +291,7 @@ def _get_json(
         headers = headers,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         **kwargs
     )
 
@@ -294,6 +304,7 @@ def _post_json(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     return _method_payload(
@@ -306,6 +317,7 @@ def _post_json(
         mime = mime,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         **kwargs
     )
 
@@ -318,6 +330,7 @@ def _put_json(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     return _method_payload(
@@ -330,6 +343,7 @@ def _put_json(
         mime = mime,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         **kwargs
     )
 
@@ -338,6 +352,7 @@ def _delete_json(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     return _method_empty(
@@ -346,6 +361,7 @@ def _delete_json(
         headers = headers,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         **kwargs
     )
 
@@ -355,10 +371,12 @@ def _method_empty(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     if handle == None: handle = False
     if redirect == None: redirect = False
+    if timeout == None: timeout = TIMEOUT
     values = kwargs or dict()
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
@@ -368,7 +386,7 @@ def _method_empty(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data if data else url
     url = str(url)
-    file = _resolve(url, name, headers, None, TIMEOUT)
+    file = _resolve(url, name, headers, None, timeout)
     try: result = file.read()
     finally: file.close()
     info = file.info()
@@ -386,10 +404,12 @@ def _method_payload(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     **kwargs
 ):
     if handle == None: handle = False
     if redirect == None: redirect = False
+    if timeout == None: timeout = TIMEOUT
     values = kwargs or dict()
 
     url, scheme, host, authorization, extra = _parse_url(url)
@@ -422,7 +442,7 @@ def _method_payload(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
-    file = _resolve(url, name, headers, data, TIMEOUT)
+    file = _resolve(url, name, headers, data, timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -484,6 +504,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
         headers = headers,
         data = data,
         async = False,
+        timeout = timeout,
         level = level
     )
     response = netius.clients.HTTPClient.to_response(result)
