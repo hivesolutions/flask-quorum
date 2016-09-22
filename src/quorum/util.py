@@ -641,7 +641,7 @@ def run_thread(function, *args, **kwargs):
         kwargs = kwargs
     ).start()
 
-def camel_to_underscore(camel):
+def camel_to_underscore(camel, separator = "_"):
     """
     Converts the provided camel cased based value into
     a normalized underscore based string.
@@ -652,13 +652,16 @@ def camel_to_underscore(camel):
     :type camel: String
     :param camel: The camel cased string that is going to be
     converted into an underscore based string.
+    :type separator: String
+    :param separator: The separator token that is going to
+    be used in the camel to underscore conversion.
     :rtype: String
     :return: The underscore based string resulting from the
     conversion of the provided camel cased one.
     """
 
-    value = FIRST_CAP_REGEX.sub(r"\1_\2", camel)
-    value = ALL_CAP_REGEX.sub(r"\1_\2", value)
+    value = FIRST_CAP_REGEX.sub(r"\1" + separator + r"\2", camel)
+    value = ALL_CAP_REGEX.sub(r"\1" + separator + r"\2", value)
     value = value.lower()
     return value
 
