@@ -526,7 +526,17 @@ def load_bundles(app, offset = 2):
         bundle.update(data_j)
         bundles[locale] = bundle
 
-def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMAT):
+def start_log(
+    app,
+    name = None,
+    level = logging.WARN,
+    format_base = log.LOGGING_FORMAT,
+    format_tid = log.LOGGING_FORMAT_TID
+):
+    # tries to retrieve some of the default configuration values
+    # that are going to be used in the logger startup
+    format = config.conf("LOGGING_FORMAT", None)
+
     # "resolves" the proper logger file path taking into account
     # the currently defined operative system, should uses the system
     # level path in case the operative system is unix based
@@ -540,7 +550,8 @@ def start_log(app, name = None, level = logging.WARN, format = log.LOGGING_FORMA
 
     # creates the formatter object from the provided string
     # so that it may be used in the various handlers
-    formatter = log.ThreadFormatter(format)
+    formatter = log.ThreadFormatter(format or format_base)
+    formatter.set_tid(format or format_tid)
 
     # retrieves the reference to the logger object currently
     # associated with the app and disable the parent in it,
