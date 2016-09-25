@@ -463,16 +463,29 @@ def _redirect(location, scheme, host, handle, redirect):
     )
 
 def _resolve(*args, **kwargs):
+    # obtains the reference to the global set of variables, so
+    # that it's possible to obtain the proper resolver method
+    # according to the requested client
     _global = globals()
+
+    # tries to retrieve the global configuration values that
+    # will condition the way the request is going to be performed
     client = config.conf("HTTP_CLIENT", "netius")
-    client = kwargs.get("client", client)
-    if "client" in kwargs: del kwargs["client"]
-    resolver = _global.get("_resolve_" + client, _resolve_base)
+
+    # tries to determine the set of configurations requested on
+    # a request basis (not global) these have priority when
+    # compared with the global configuration ones
+    client = kwargs.pop("client", client)
+
+    # tries to retrieve the reference to the resolve method for the
+    # current client and then runs it, retrieve then the final result,
+    # note that the result structure may be engine dependent
+    resolver = _global.get("_resolve_" + client, _resolve_legacy)
     try: result = resolver(*args, **kwargs)
-    except ImportError: result = _resolve_base(*args, **kwargs)
+    except ImportError: result = _resolve_legacy(*args, **kwargs)
     return result
 
-def _resolve_base(url, method, headers, data, timeout, **kwargs):
+def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
