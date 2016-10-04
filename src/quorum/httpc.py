@@ -282,7 +282,7 @@ def _get(url, **kwargs):
     values = kwargs or dict()
     data = _urlencode(values)
     url = url + "?" + data if data else url
-    file = _resolve(url, "GET", {}, None, None, TIMEOUT)
+    file = _resolve(url, "GET", {}, None, False, TIMEOUT)
     contents = file.read()
     return contents
 
@@ -557,6 +557,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
 def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     import netius.clients
+    silent = silent or False
     silent |= not common.is_devel()
     level = logging.CRITICAL if silent else logging.DEBUG
     level = kwargs.get("level", level)
