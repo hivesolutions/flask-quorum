@@ -103,9 +103,19 @@ def conf_prefix(prefix):
         config[name] = value
     return config
 
+def conf_suffix(suffix):
+    config = dict()
+    for name, value in config_g.items():
+        if not name.endswith(suffix): continue
+        config[name] = value
+    return config
+
 def confs(name, value):
     global config_g
     config_g[name] = value
+
+def confd():
+    return config_g
 
 def load(names = (FILE_NAME,), path = None, encoding = "utf-8"):
     paths = []
