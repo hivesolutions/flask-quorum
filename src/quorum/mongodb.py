@@ -86,6 +86,9 @@ class MongoMap(object):
 def get_connection():
     return _get_connection(url)
 
+def reset_connection():
+    return _reset_connection()
+
 def get_db():
     connection = get_connection()
     result = pymongo.uri_parser.parse_uri(url)
@@ -146,3 +149,9 @@ def _get_connection(url, connect = False):
     if is_new(): connection = pymongo.MongoClient(url, connect = connect)
     else: connection = pymongo.Connection(url)
     return connection
+
+def _reset_connection():
+    global connection
+    if not connection: return
+    connection.disconnect()
+    connection = None

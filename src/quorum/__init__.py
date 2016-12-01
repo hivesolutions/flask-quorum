@@ -128,6 +128,7 @@ from .amazon import delete_key as delete_amazon_key
 from .execution import insert_work as run_back
 from .execution import insert_work as run_background
 from .mongodb import get_connection as get_mongo
+from .mongodb import reset_connection as reset_mongo
 from .mongodb import get_db as get_mongo_db
 from .mongodb import drop_db as drop_mongo_db
 from .mongodb import dumps as dumps_mongo
