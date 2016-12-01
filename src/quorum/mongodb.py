@@ -153,5 +153,5 @@ def _get_connection(url, connect = False):
 def _reset_connection():
     global connection
     if not connection: return
-    connection.disconnect()
+    if hasattr(connection, "disconnect"): connection.disconnect()
     connection = None
