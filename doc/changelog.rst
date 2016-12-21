@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.4.11
+^^^^^
+
+    * New model structure
+    * Fixed issues with locales
+
 0.4.10
 ^^^^^
 
