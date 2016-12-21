@@ -409,7 +409,6 @@ def load(
     app.jinja_options = dict(
         finalize = finalize
     )
-    app.bundles = dict()
     app._locale_d = locales[0]
 
     # sets a series of conditional based attributes in both
@@ -489,6 +488,8 @@ def load_bundles(app, offset = 2):
     # object reference so that may be used latter on
     bundles = dict()
     app.bundles = bundles
+    print(id(app))
+    print(app.bundles)
 
     # inspects the current stack to obtain the reference to the base
     # application module and then uses it to calculate the base path
@@ -525,6 +526,8 @@ def load_bundles(app, offset = 2):
         bundle = bundles.get(locale, {})
         bundle.update(data_j)
         bundles[locale] = bundle
+    
+    print(id(app.bundles))
 
 def start_log(
     app,
@@ -688,6 +691,9 @@ def get_handler(name, app = None):
 def get_bundle(name, app = None):
     app = app or APP
     if not app: return None
+    print(id(app))
+    print(id(app.bundles))
+    print(app.bundles)
     bundle = app.bundles.get(name, None)
     if bundle: return bundle
     name = _best_locale(name)
