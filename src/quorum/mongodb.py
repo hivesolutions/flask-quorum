@@ -53,7 +53,7 @@ connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
 
-url = "mongodb://localhost:27017"
+url = "mongodb://localhost"
 """ The global variable containing the url to be used
 for the connection with the service """
 
