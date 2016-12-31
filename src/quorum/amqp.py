@@ -52,7 +52,7 @@ connection = None
 """ The global wide connection to the amqp server
 that is meant to be used across sessions """
 
-url = "amqp://localhost"
+url = "amqp://guest:guest@localhost"
 """ The global variable containing the url to be used
 for the connection with the service """
 
