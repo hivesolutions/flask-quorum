@@ -321,7 +321,7 @@ def load(
     force_ssl = config.conf("FORCE_SSL", False)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
-    rabbit_url = config.conf("CLOUDAMQP_URL", None)
+    rabbit_url = config.conf("AMQP_URL", None)
     amazon_id = config.conf("AMAZON_ID", None)
     amazon_secret = config.conf("AMAZON_SECRET", None)
     amazon_bucket = config.conf("AMAZON_BUCKET", None)
@@ -331,8 +331,11 @@ def load(
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
+    redis_url = config.conf("REDIS_URL", redis_url)
     mongo_url = config.conf("MONGOLAB_URI", mongo_url)
     mongo_url = config.conf("MONGO_URL", mongo_url)
+    rabbit_url = config.conf("CLOUDAMQP_URL", rabbit_url)
+    rabbit_url = config.conf("RABBITMQ_URL", rabbit_url)
 
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected

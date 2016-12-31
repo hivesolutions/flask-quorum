@@ -43,20 +43,20 @@ from . import exceptions
 try: import pika
 except: pika = None
 
-RABBIT_TIMEOUT = 100
+TIMEOUT = 100
 """ The time the retrieval of a connection waits before
 returning this avoid possible problems with the current
 implementation of the blocking client """
 
 connection = None
-""" The global wide connection to the rabbit mq server
+""" The global wide connection to the amqp server
 that is meant to be used across sessions """
 
 url = "amqp://localhost/"
 """ The global variable containing the url to be used
 for the connection with the service """
 
-def get_connection(force = False, timeout = RABBIT_TIMEOUT):
+def get_connection(force = False, timeout = TIMEOUT):
     global connection
     if pika == None: raise exceptions.ModuleNotFound("pika")
     if not force and connection: return connection

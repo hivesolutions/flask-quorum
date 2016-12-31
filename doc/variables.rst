@@ -113,16 +113,16 @@ Redis
 RabbitMQ / AMQP
 ---------------
 
-.. rst:directive:: .. CLOUDAMQP_URL:: string
+.. rst:directive:: .. AMQP_URL:: string
 
-    URL used by the RabbitMQ library (pika) to create the connection with
+    URL used by the AMQP library (pika) to create the connection with
     the server that is going to be used in the session. It should contain
     both authentication and location information.
 
     .. note::
 
-        An example url for rabbit would be something like
-        **amqp://root:root@db.hive**.
+        An example url for amqp would be something like
+        **amqp://root:root@amqp.hive**.
 
 Amazon Web Services
 -------------------

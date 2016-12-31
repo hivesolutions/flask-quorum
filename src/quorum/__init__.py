@@ -36,6 +36,7 @@ __license__ = "Apache License, Version 2.0"
 
 from . import acl
 from . import amazon
+from . import amqp
 from . import base
 from . import config
 from . import crypt
@@ -58,7 +59,6 @@ from . import model
 from . import mongodb
 from . import observer
 from . import pusherc
-from . import rabbitmq
 from . import redisdb
 from . import request
 from . import route
@@ -125,6 +125,8 @@ from .amazon import clear_bucket as clear_amazon_bucket
 from .amazon import get_key as get_amazon_key
 from .amazon import exists_key as exists_amazon_key
 from .amazon import delete_key as delete_amazon_key
+from .amqp import get_connection as get_amqp
+from .amqp import properties as properties_amqp
 from .execution import insert_work as run_back
 from .execution import insert_work as run_background
 from .mongodb import get_connection as get_mongo
@@ -134,7 +136,5 @@ from .mongodb import drop_db as drop_mongo_db
 from .mongodb import dumps as dumps_mongo
 from .mongodb import object_id as object_id
 from .pusherc import get_pusher as get_pusher
-from .rabbitmq import get_connection as get_rabbit
-from .rabbitmq import properties as properties_rabbit
 from .redisdb import get_connection as get_redis
 from .redisdb import dumps as dumps_redis
