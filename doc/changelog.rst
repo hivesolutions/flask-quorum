@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.4.14
+^^^^^
+
+    * Small set of fixes in RabbitMQ to AMQP migration
+
 0.4.13
 ^^^^^
 
