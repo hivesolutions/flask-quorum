@@ -51,6 +51,7 @@ import werkzeug.debug
 
 from . import acl
 from . import log
+from . import amqp
 from . import util
 from . import data
 from . import mail
@@ -66,7 +67,6 @@ from . import mongodb
 from . import pusherc
 from . import request
 from . import template
-from . import rabbitmq
 from . import execution
 from . import exceptions
 
@@ -321,7 +321,7 @@ def load(
     force_ssl = config.conf("FORCE_SSL", False)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
-    rabbit_url = config.conf("AMQP_URL", None)
+    amqp_url = config.conf("AMQP_URL", None)
     amazon_id = config.conf("AMAZON_ID", None)
     amazon_secret = config.conf("AMAZON_SECRET", None)
     amazon_bucket = config.conf("AMAZON_BUCKET", None)
@@ -334,8 +334,8 @@ def load(
     redis_url = config.conf("REDIS_URL", redis_url)
     mongo_url = config.conf("MONGOLAB_URI", mongo_url)
     mongo_url = config.conf("MONGO_URL", mongo_url)
-    rabbit_url = config.conf("CLOUDAMQP_URL", rabbit_url)
-    rabbit_url = config.conf("RABBITMQ_URL", rabbit_url)
+    amqp_url = config.conf("CLOUDAMQP_URL", amqp_url)
+    amqp_url = config.conf("RABBITMQ_URL", amqp_url)
 
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected
@@ -418,7 +418,7 @@ def load(
     # the associated modules and the base app object (as expected)
     if redis_url: redisdb.url = redis_url
     if mongo_url: mongodb.url = mongo_url
-    if rabbit_url: rabbitmq.url = rabbit_url
+    if amqp_url: amqp.url = amqp_url
     if amazon_id: amazon.id = amazon_id
     if amazon_secret: amazon.secret = amazon_secret
     if amazon_bucket: amazon.bucket_name = amazon_bucket
