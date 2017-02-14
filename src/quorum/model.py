@@ -1099,9 +1099,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # definition and check if their are of type index
         for name in definition:
             _definition = cls.definition_n(name)
-            is_index = _definition.get("index", False)
-            if not is_index: continue
-            indexes.append(name)
+            direction = _definition.get("index", False)
+            if not direction: continue
+            indexes.append((name, direction))
 
         # saves the index list under the class and then
         # returns the sequence to the caller method
