@@ -862,7 +862,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def setup(cls):
         indexes = cls.indexes()
         collection = cls._collection()
-        for index in indexes: collection.ensure_index(index)
+        for index, direction in indexes:
+            collection.ensure_index(index, direction = direction)
 
     @classmethod
     def teardown(cls):
