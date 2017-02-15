@@ -255,15 +255,16 @@ class MongoCollection(Collection):
 
         is_simple = direction == "simple"
         is_all = direction == "all"
+        is_multiple = isinstance(direction, (list, tuple))
         is_direction = not is_all and not is_simple and\
             (legacy.is_string(direction) or type(direction) == int)
+        is_single = is_simple or is_direction
 
         if is_all: kwargs["directions"] = "all"
+        if is_multiple: kwargs["directions"] = direction
         if is_direction: args = list(args); args[0] = [(args[0], direction)]
 
-        if is_simple: return mongodb._store_ensure_index(self._base, *args, **kwargs)
-        elif is_all: return mongodb._store_ensure_index_many(self._base, *args, **kwargs)
-        elif is_direction: return mongodb._store_ensure_index(self._base, *args, **kwargs)
+        if is_single: return mongodb._store_ensure_index(self._base, *args, **kwargs)
         else: return mongodb._store_ensure_index_many(self._base, *args, **kwargs)
 
 class TinyCollection(Collection):
