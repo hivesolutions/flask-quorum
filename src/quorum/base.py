@@ -387,7 +387,9 @@ def load(
     # context filter flag to true the jinja infra-structure will handle
     # the rest of the operations so that it's properly used
     util.nl_to_br_jinja.evalcontextfilter = True
+    util.nl_to_br_jinja.environmentfilter = True
     util.sp_to_nbsp_jinja.evalcontextfilter = True
+    util.sp_to_nbsp_jinja.environmentfilter = True
 
     # updates the base app reference object with a series of operations
     # that should transform it's base execution and behavior
