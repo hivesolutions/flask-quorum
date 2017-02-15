@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.3
+^^^^^
+
+    * Fixed issue with new version of Jinja 2
+
 0.5.2
 ^^^^^
 
