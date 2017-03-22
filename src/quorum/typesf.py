@@ -47,6 +47,7 @@ from . import legacy
 from . import common
 from . import config
 from . import storage
+from . import exceptions
 
 class Type(object):
 
@@ -55,6 +56,25 @@ class Type(object):
 
     def map_v(self, *args, **kwargs):
         return self.json_v()
+
+class CustomType(Type):
+
+    def __init__(self, value):
+        cls = self.__class__
+        if isinstance(value, cls): self.clone(value)
+        else: self.loads(value)
+
+    def json_v(self, *args, **kwargs):
+        return self.dumps()
+
+    def loads(self, value):
+        raise exceptions.NotImplementedError()
+
+    def dumps(self):
+        raise exceptions.NotImplementedError()
+
+    def clone(self, value):
+        raise exceptions.NotImplementedError()
 
 class File(Type):
 
