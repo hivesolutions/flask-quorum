@@ -61,8 +61,7 @@ class CustomType(Type):
 
     def __init__(self, value):
         cls = self.__class__
-        if isinstance(value, cls): self.clone(value)
-        else: self.loads(value)
+        self.loads(value)
 
     def json_v(self, *args, **kwargs):
         return self.dumps()
@@ -71,9 +70,6 @@ class CustomType(Type):
         raise exceptions.NotImplementedError()
 
     def dumps(self):
-        raise exceptions.NotImplementedError()
-
-    def clone(self, value):
         raise exceptions.NotImplementedError()
 
 class File(Type):
