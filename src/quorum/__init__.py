@@ -106,7 +106,7 @@ from .model import Model, Field, operation, field
 from .observer import Observable
 from .structures import OrderedDict
 from .template import render_template, template_resolve
-from .typesf import Type, CustomType, File, Files, ImageFile, ImageFiles, image, images, Reference,\
+from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
 from .unit_test import secured, TestCase
 from .util import is_iterable, request_json, get_field, get_object, is_mobile, is_tablet,\
