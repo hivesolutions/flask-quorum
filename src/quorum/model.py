@@ -1249,7 +1249,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         kwargs[name] = filter
 
     @classmethod
-    def is_attached(self):
+    def is_attached(cls):
         return True
 
     @classmethod
