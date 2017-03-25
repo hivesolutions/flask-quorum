@@ -1249,8 +1249,22 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         kwargs[name] = filter
 
     @classmethod
+    def is_abstract(cls):
+        return False
+
+    @classmethod
     def is_attached(cls):
         return True
+
+    @classmethod
+    def is_concrete(cls):
+        if not "is_abstract" in cls.__dict__: return True
+        return not cls.is_abstract()
+
+    @classmethod
+    def assert_is_concrete_g(cls):
+        if cls.is_concrete(): return
+        raise exceptions.OperationalError("Model is not concrete")
 
     @classmethod
     def _build(cls, model, map):
@@ -1795,6 +1809,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if self.is_new(): return
         raise exceptions.OperationalError("Instance is not new, identifier is set")
 
+    def assert_is_concrete(self):
+        cls = self.__class__
+        cls.assert_is_concrete_g()
+
     def save(
         self,
         validate = True,
@@ -1810,6 +1828,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         post_create = True,
         post_update = True
     ):
+        # ensures that the current instance is associated with
+        # a concrete model, ready to be persisted in database
+        self.assert_is_concrete()
+
         # checks if the instance to be saved is a new instance
         # or if this is an update operation and then determines
         # series of default values taking that into account
@@ -1866,6 +1888,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return self
 
     def delete(self, pre_delete = True, post_delete = True):
+        # ensures that the current instance is associated with
+        # a concrete model, ready to be persisted in database
+        self.assert_is_concrete()
+
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
         pre_delete and self.pre_delete()
@@ -2160,7 +2186,7 @@ class LocalModel(Model):
     """
 
     @classmethod
-    def is_attached(self):
+    def is_attached(cls):
         return False
 
 class Field(dict):
