@@ -1000,6 +1000,43 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             return default
 
     @classmethod
+    def to_description(cls, name):
+        """
+        Converts the provided model attribute/field name into a
+        description ready to be human readable.
+
+        This conversion process may be automated (simple string
+        based replacement) or manually guided (through
+        configuration).
+
+        These strings should be english readable.
+        Some of the process involves caching for performance
+        reasons (avoids multiple description computation).
+
+        :type name: String
+        :param name: The name of the attribute/field to retrieve
+        the human readable description.
+        :rtype: String
+        :return: The human readable version of the attribute or
+        field name according to automated or manual rules.
+        """
+
+        # tries to retrieve the info dictionary for the attribute
+        # name and then uses it to retrieve the possible manual
+        # description value for the field, returning immediately
+        # the value if there's success
+        info = getattr(cls, name) if hasattr(cls, name) else dict()
+        description = info.get("description", None)
+        if description: return description
+
+        # because there's no explicit description defined
+        # runs the automatic underscore to readable conversion
+        # and sets the value on the field info dictionary
+        description = util.underscore_to_readable(name, capitalize = True)
+        info["description"] = description
+        return description
+
+    @classmethod
     def all_parents(cls):
         # in case the all parents are already "cached" in the current
         # class (fast retrieval) returns immediately
@@ -1338,6 +1375,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # name of the collection to be used
         name = cls.__name__.lower()
         return name
+
+    @classmethod
+    def _readable(cls):
+        camel = cls.__name__
+        return util.camel_to_readable(camel, capitalize = True)
 
     @classmethod
     def _eager(cls, model, names):

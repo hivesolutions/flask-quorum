@@ -665,6 +665,54 @@ def camel_to_underscore(camel, separator = "_"):
     value = value.lower()
     return value
 
+def camel_to_readable(camel, capitalize = False):
+    """
+    Converts the given camel cased oriented string value
+    into a readable one meaning that the returned value
+    is a set of strings separated by spaces.
+
+    This method may be used to convert class names into
+    something that is readable by an end user.
+
+    :type camel: String
+    :param camel: The camel case string value that is going
+    to be used in the conversion into a readable string.
+    :type capitalize: bool
+    :param capitalize: If all of the words should be capitalized
+    or if instead only the first one should.
+    :rtype: String
+    :return: The final human readable string that may be
+    used to display a value to an end user.
+    """
+
+    underscore = camel_to_underscore(camel)
+    return underscore_to_readable(underscore, capitalize = capitalize)
+
+def underscore_to_readable(underscore, capitalize = False):
+    """
+    Converts the given underscore oriented string value
+    into a readable one meaning that the returned value
+    is a set of strings separated by spaces.
+
+    This method may be used to class attributes into
+    something that is readable by an end user.
+
+    :type camel: String
+    :param camel: The underscore string value that is going
+    to be used in the conversion into a readable string.
+    :type capitalize: bool
+    :param capitalize: If all of the words should be capitalized
+    or if instead only the first one should.
+    :rtype: String
+    :return: The final human readable string that may be
+    used to display a value to an end user.
+    """
+
+    parts = underscore.split("_")
+    if capitalize: parts = [part.title() for part in parts]
+    else: parts[0] = parts[0].title()
+    return " ".join(parts)
+
 def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
     """
     Generates a random identifier (may be used as password) with
