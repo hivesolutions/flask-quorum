@@ -860,6 +860,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return definition.get(name, {})
 
     @classmethod
+    def register(cls, lazy = False):
+        if lazy: return
+        cls.setup()
+
+    @classmethod
     def setup(cls):
         cls._build_indexes()
 
