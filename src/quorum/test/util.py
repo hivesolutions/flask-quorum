@@ -66,6 +66,48 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello_world_hello_world")
 
+    def test_camel_to_readable(self):
+        result = quorum.camel_to_readable("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = quorum.camel_to_readable("HelloWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = quorum.camel_to_readable("HELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = quorum.camel_to_readable("HELLOWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = quorum.camel_to_readable("HELLOWorldHELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world hello world")
+
+        result = quorum.camel_to_readable("HELLOWorldHELLOWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World Hello World")
+
+    def test_underscore_to_readable(self):
+        result = quorum.underscore_to_readable("hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = quorum.underscore_to_readable("hello_world", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = quorum.underscore_to_readable("hello_world_hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world hello world")
+
+        result = quorum.underscore_to_readable("hello_world_hello_world", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World Hello World")
+
     @quorum.secured
     def test_generate_identifier(self):
         identifier = quorum.generate_identifier(
