@@ -415,6 +415,11 @@ def image(width = None, height = None, format = "png"):
         def build_b64(self, file_m):
             ImageFile.build_b64(self, file_m)
 
+            # verifies if there's valid data in the current file
+            # if that's not the case there's nothing remaining to
+            # be done (not going to process the file)
+            if not self.data_b64: return
+
             # determines if a resize operation is required for the
             # current image data, if that's not the case returns the
             # control flow immediately (nothing to be done)
@@ -451,19 +456,19 @@ def image(width = None, height = None, format = "png"):
 
         def build_t(self, file_t):
             name, content_type, data = file_t
-            try: _data = self.resize(data)
+            try: _data = self.resize(data) if data else data
             except: _data = data
             file_t = (name, content_type, _data)
             ImageFile.build_t(self, file_t)
 
         def resize(self, data = None):
-            import PIL.Image
-
             data = data or self.data
             if not data: return data
 
             is_resized = True if width or height else False
             if not is_resized: return data
+
+            import PIL.Image
 
             size = (width, height)
             in_buffer = legacy.BytesIO(data)
