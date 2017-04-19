@@ -931,6 +931,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls.setup()
 
     @classmethod
+    def unregister(cls, lazy = False):
+        if lazy: return
+        cls.teardown()
+
+    @classmethod
     def setup(cls):
         cls._build_indexes()
 
