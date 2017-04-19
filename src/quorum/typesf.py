@@ -470,13 +470,13 @@ def image(width = None, height = None, format = "png"):
             ImageFile.build_t(self, file_t)
 
         def resize(self, data = None):
+            import PIL.Image
+
             data = data or self.data
             if not data: return data
 
             is_resized = True if width or height else False
             if not is_resized: return data
-
-            import PIL.Image
 
             size = (width, height)
             in_buffer = legacy.BytesIO(data)
@@ -646,6 +646,7 @@ def reference(target, name = None, dumpall = False):
         def __start__(self):
             if is_reference: self._target = self.__class__._target()
             else: self._target = target
+            util.verify(self._target)
             meta = getattr(self._target, name)
             self._type = meta.get("type", legacy.UNICODE)
 
