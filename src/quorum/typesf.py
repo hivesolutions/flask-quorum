@@ -831,6 +831,16 @@ def references(target, name = None, dumpall = False):
         def resolve(self, *args, **kwargs):
             return [object.resolve(*args, **kwargs) for object in self.objects]
 
+        def find(self, *args, **kwargs):
+            kwargs = dict(kwargs)
+            kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
+            return self._target.find(*args, **kwargs)
+
+        def paginate(self, *args, **kwargs):
+            kwargs = dict(kwargs)
+            kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
+            return self._target.paginate(*args, **kwargs)
+
         def is_empty(self):
             ids_l = len(self.ids)
             return ids_l == 0
