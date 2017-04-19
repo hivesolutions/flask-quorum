@@ -749,6 +749,8 @@ class References(AbstractType):
 
 def references(target, name = None, dumpall = False):
     name = name or "id"
+    target_t = type(target)
+    is_reference = target_t in legacy.STRINGS
     reference_c = reference(target, name = name, dumpall = dumpall)
 
     class _References(References):
@@ -759,6 +761,7 @@ def references(target, name = None, dumpall = False):
         may latter be used to cast the value """
 
         def __init__(self, ids):
+            self.__start__()
             if isinstance(ids, _References): self.build_i(ids)
             else: self.build(ids)
 
@@ -776,6 +779,11 @@ def references(target, name = None, dumpall = False):
 
         def __contains__(self, item):
             return self.contains(item)
+
+        def __start__(self):
+            if is_reference: self._target = self.__class__._target()
+            else: self._target = target
+            util.verify(self._target)
 
         @classmethod
         def _default(cls):
