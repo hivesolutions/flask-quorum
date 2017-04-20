@@ -62,7 +62,13 @@ class DataAdapter(object):
     def name_g(cls):
         return cls.__name__[:-7].lower()
 
+    def encoder(self):
+        return None
+
     def collection(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def reset(self):
         raise exceptions.NotImplementedError()
 
     def get_db(self):
@@ -75,7 +81,7 @@ class DataAdapter(object):
         if not value: return self._id()
         if not len(value) == 24:
             raise exceptions.OperationalError(
-                "Expected object id of length 24 chars"
+                message = "Expected object id of length 24 chars"
             )
         return value
 
@@ -107,10 +113,16 @@ class DataAdapter(object):
 
 class MongoAdapter(DataAdapter):
 
+    def encoder(self):
+        return mongodb.MongoEncoder
+
     def collection(self, name, *args, **kwargs):
         db = self.get_db()
         collection = db[name]
         return MongoCollection(self, name, collection)
+
+    def reset(self):
+        return mongodb.reset_connection()
 
     def get_db(self):
         return mongodb.get_db()
@@ -138,6 +150,9 @@ class TinyAdapter(DataAdapter):
         db = self.get_db()
         table = db.table(name)
         return TinyCollection(self, name, table)
+
+    def reset(self):
+        pass
 
     def get_db(self):
         if not self._db == None: return self._db

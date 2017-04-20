@@ -103,6 +103,7 @@ from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler,
 from .mail import send_mail, send_mail_a
 from .meta import Ordered
 from .model import Model, LocalModel, Field, link, operation, view, field
+from .mongodb import MongoMap, MongoEncoder
 from .observer import Observable
 from .structures import OrderedDict
 from .template import render_template, template_resolve

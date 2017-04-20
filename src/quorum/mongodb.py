@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
+from . import legacy
 from . import common
 from . import typesf
 from . import exceptions
@@ -82,6 +83,14 @@ class MongoMap(object):
 
     def get(self, value, default = None):
         return self.collection.find_one({self.key : value}) or default
+
+class MongoEncoder(json.JSONEncoder):
+
+    def default(self, obj, **kwargs):
+        if not bson: return json.JSONEncoder.default(self, obj, **kwargs)
+        if isinstance(obj, bson.objectid.ObjectId): return str(obj)
+        if isinstance(obj, legacy.BYTES): return legacy.str(obj, encoding = "utf-8")
+        else: return json.JSONEncoder.default(self, obj, **kwargs)
 
 def get_connection():
     return _get_connection(url)
