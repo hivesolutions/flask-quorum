@@ -69,25 +69,48 @@ class UtilTest(quorum.TestCase):
     def test_camel_to_readable(self):
         result = quorum.camel_to_readable("HelloWorld")
         self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = quorum.camel_to_readable("HelloWorld", lower = True)
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.camel_to_readable("HelloWorld", capitalize = True)
+        result = quorum.camel_to_readable("HelloWorld", lower = True, capitalize = True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
         result = quorum.camel_to_readable("HELLOWorld")
         self.assertEqual(type(result), str)
+        self.assertEqual(result, "HELLO World")
+
+        result = quorum.camel_to_readable("HELLOWorld", lower = True)
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.camel_to_readable("HELLOWorld", capitalize = True)
+        result = quorum.camel_to_readable(
+            "HELLOWorld",
+            lower = True,
+            capitalize = True
+        )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
         result = quorum.camel_to_readable("HELLOWorldHELLOWorld")
         self.assertEqual(type(result), str)
+        self.assertEqual(result, "HELLO World HELLO World")
+
+        result = quorum.camel_to_readable(
+            "HELLOWorldHELLOWorld",
+            lower = True
+        )
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world hello world")
 
-        result = quorum.camel_to_readable("HELLOWorldHELLOWorld", capitalize = True)
+        result = quorum.camel_to_readable(
+            "HELLOWorldHELLOWorld",
+            lower = True,
+            capitalize = True
+        )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
