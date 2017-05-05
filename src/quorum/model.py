@@ -2364,6 +2364,10 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
+    def __getattr__(self, name):
+        if name in self: return self[name]
+        raise AttributeError("'%s' not found" % name)
+
 class Action(dict):
     """
     The abstract class that defines an action to be performed
@@ -2373,6 +2377,10 @@ class Action(dict):
     The base interface should conform with the dictionary
     interface in order to provide backwards compatibility.
     """
+
+    def __getattr__(self, name):
+        if name in self: return self[name]
+        raise AttributeError("'%s' not found" % name)
 
     def cast(self, values, keyword = False):
         """
