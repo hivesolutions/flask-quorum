@@ -66,6 +66,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello_world_hello_world")
 
+    @quorum.secured
     def test_camel_to_readable(self):
         result = quorum.camel_to_readable("HelloWorld")
         self.assertEqual(type(result), str)
@@ -114,6 +115,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
+    @quorum.secured
     def test_underscore_to_readable(self):
         result = quorum.underscore_to_readable("hello_world")
         self.assertEqual(type(result), str)
@@ -140,3 +142,58 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(len(identifier), 16)
         for char in identifier:
             self.assertTrue(char in string.ascii_uppercase)
+
+    @quorum.secured
+    def test_is_content_type(self):
+        result = quorum.is_content_type("text/plain", "text/plain")
+        self.assertEqual(result, True)
+
+        result = quorum.is_content_type("text/plain", ("text/plain",))
+        self.assertEqual(result, True)
+
+        result = quorum.is_content_type("text/plain", "text/html")
+        self.assertEqual(result, False)
+
+        result = quorum.is_content_type("text/plain", ("text/html",))
+        self.assertEqual(result, False)
+
+        result = quorum.is_content_type("text/plain", ("text/plain", "text/html"))
+        self.assertEqual(result, True)
+
+        result = quorum.is_content_type("text/*", "text/plain")
+        self.assertEqual(result, True)
+
+        result = quorum.is_content_type("text/*", "text/json")
+        self.assertEqual(result, True)
+
+    @quorum.secured
+    def test_parse_content_type(self):
+        result = quorum.parse_content_type("text/plain")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain"])
+        self.assertEqual(result[1], dict())
+
+        result = quorum.parse_content_type("text/plain+json")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict())
+
+        result = quorum.parse_content_type("text/plain+json; charset=utf-8")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8"))
+
+        result = quorum.parse_content_type("text/plain+json   ; charset=utf-8")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8"))
+
+        result = quorum.parse_content_type("text/plain+json; charset=utf-8; boundary=hello;")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
