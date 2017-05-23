@@ -197,3 +197,21 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ["text/plain", "text/json"])
         self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
+
+        result = quorum.parse_content_type("")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], [])
+        self.assertEqual(result[1], dict())
+
+        result = quorum.parse_content_type("text")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], [])
+        self.assertEqual(result[1], dict())
+
+        result = quorum.parse_content_type("text/plain+json; charset")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict())
