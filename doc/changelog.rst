@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.6
+^^^^^
+
+    * Some ACL bug fixes
+
 0.5.5
 ^^^^^
 
