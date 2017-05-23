@@ -274,9 +274,11 @@ def get_tokens_m(set = True):
             token_l = token.split(".")
             head, tail = token_l[:-1], token_l[-1]
             for token_p in head:
-                new = dict()
-                tokens_c[token_p] = new
-                tokens_c = new
+                current = tokens_c.get(token_p, {})
+                is_dict = isinstance(current, dict)
+                if not is_dict: current = dict()
+                tokens_c[token_p] = current
+                tokens_c = current
             tokens_c[tail] = True
 
         # in case the set flag is set the tokens map should
