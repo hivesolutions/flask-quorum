@@ -68,9 +68,9 @@ def check_login(token = None):
     if "username" in flask.session and not token: return True
     if check_tokens(tokens): return True
 
-    # returns the default value as valid because if all the
-    # validation procedures have passed the check is valid
-    return True
+    # returns the default value as invalid because if all the
+    # validation procedures have failed the check is invalid
+    return False
 
 def check_token(token, tokens_m = None):
     # tries to retrieve the tokens map from the provided argument

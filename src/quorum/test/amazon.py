@@ -43,9 +43,7 @@ class AmazonTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(
-                name = __name__
-            )
+            quorum.load(name = __name__)
             quorum.get_amazon()
         except:
             self.skip()

@@ -42,9 +42,7 @@ import quorum.mail
 class MailTest(quorum.TestCase):
 
     def setUp(self):
-        try: quorum.load(
-                name = __name__
-            )
+        try: quorum.load(name = __name__)
         except: self.skip()
 
     def tearDown(self):

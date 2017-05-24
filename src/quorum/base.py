@@ -156,8 +156,8 @@ def prepare_app():
     object used instead of the global one.
 
     :rtype: Application
-    :return: The decorated application object with the proper
-    capabilities enabled, this object should be used for the
+    :return: The decorated application object with the proper\
+    capabilities enabled, this object should be used for the\
     serving operations instead of the global one.
     """
 
@@ -458,7 +458,7 @@ def unload():
 
     .. note::
 
-        After the call to this method most of the functionally of quorum\
+        After the call to this method most of the functionally of quorum
         will become unavailable until further call to :func:`quorum.load`.
     """
 

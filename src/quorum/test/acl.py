@@ -37,9 +37,85 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import flask
+
 import quorum
 
 class AclTest(quorum.TestCase):
+
+    def setUp(self):
+        try:
+            self.app = quorum.load(
+                name = __name__,
+                secret_key = "secret"
+            )
+        except:
+            self.skip()
+
+    def tearDown(self):
+        quorum.unload()
+
+    @quorum.secured
+    def test_check_login(self):
+        with self.app.test_client() as client:
+            client.get("/")
+
+            flask.session["tokens"] = ["*"]
+            result = quorum.check_login(token = "admin")
+            self.assertEqual(result, True)
+            self.assertEqual(flask.session["tokens"], {"*" : True})
+
+            flask.session["tokens"] = []
+            result = quorum.check_login(token = "admin")
+            self.assertEqual(result, False)
+            self.assertEqual(flask.session["tokens"], {})
+
+            flask.session["tokens"] = ["admin"]
+            result = quorum.check_login(token = "admin")
+            self.assertEqual(result, True)
+            self.assertEqual(flask.session["tokens"], {"admin" : True})
+
+            flask.session["tokens"] = ["admin.read"]
+            result = quorum.check_login(token = "admin.read")
+            self.assertEqual(result, True)
+            self.assertEqual(flask.session["tokens"], {
+                "admin" : {
+                    "read" : True
+                }
+            })
+
+            flask.session["tokens"] = ["admin.*"]
+            result = quorum.check_login(token = "admin.read")
+            self.assertEqual(result, True)
+            self.assertEqual(flask.session["tokens"], {
+                "admin" : {
+                    "*" : True
+                }
+            })
+
+            flask.session["tokens"] = ["admin", "admin.write"]
+            result = quorum.check_login(token = "admin.read")
+            self.assertEqual(result, False)
+            self.assertEqual(flask.session["tokens"], {
+                "admin" : {
+                    "write" : True
+                }
+            })
+
+            flask.session["tokens"] = ["admin.write", "admin.*"]
+            result = quorum.check_login(token = "admin.read")
+            self.assertEqual(result, True)
+            self.assertEqual(flask.session["tokens"], {
+                "admin" : {
+                    "write" : True,
+                    "*" : True
+                }
+            })
+
+            del flask.session["tokens"]
+            result = quorum.check_login(token = "admin.read")
+            self.assertEqual(result, False)
+            self.assertEqual("tokens" in flask.session, False)
 
     @quorum.secured
     def test_check_tokens(self):
