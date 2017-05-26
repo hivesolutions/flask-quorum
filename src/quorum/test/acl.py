@@ -159,3 +159,6 @@ class AclTest(quorum.TestCase):
             }
         })
         self.assertEqual(result, True)
+
+        result = quorum.check_token(None, None, tokens_m = {})
+        self.assertEqual(result, True)
