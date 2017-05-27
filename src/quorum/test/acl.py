@@ -76,6 +76,8 @@ class AclTest(quorum.TestCase):
             self.assertEqual(flask.session["tokens"], {"admin" : True})
 
             flask.session["tokens"] = ["admin.read"]
+            result = quorum.check_login(token = "admin")
+            self.assertEqual(result, False)
             result = quorum.check_login(token = "admin.read")
             self.assertEqual(result, True)
             self.assertEqual(flask.session["tokens"], {
