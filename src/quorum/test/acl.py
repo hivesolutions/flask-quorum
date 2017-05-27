@@ -98,6 +98,7 @@ class AclTest(quorum.TestCase):
             self.assertEqual(result, False)
             self.assertEqual(flask.session["tokens"], {
                 "admin" : {
+                    "_" : True,
                     "write" : True
                 }
             })
@@ -162,3 +163,23 @@ class AclTest(quorum.TestCase):
 
         result = quorum.check_token(None, tokens_m = {})
         self.assertEqual(result, True)
+
+    def test_to_tokens_m(self):
+        result = quorum.to_tokens_m(["admin"])
+        self.assertEqual(result, {"admin" : True})
+
+        result = quorum.to_tokens_m(["admin", "admin.read"])
+        self.assertEqual(result, {
+            "admin" : {
+                "_" : True,
+                "read" : True
+            }
+        })
+
+        result = quorum.to_tokens_m(["admin", "admin.*"])
+        self.assertEqual(result, {
+            "admin" : {
+                "_" : True,
+                "*" : True
+            }
+        })
