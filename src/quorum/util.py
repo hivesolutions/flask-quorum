@@ -146,7 +146,7 @@ FIND_DEFAULTS = dict(
 for a series of find related attributes """
 
 def is_iterable(object):
-    return type(object) in defines.ITERABLES
+    return isinstance(object, defines.ITERABLES)
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
