@@ -79,7 +79,7 @@ number way of representing the same information """
 
 CASTERS = {
     list : lambda v: [y for y in itertools.chain(*[x.split(",") for x in v])],
-    bool : lambda v: v if type(v) == bool else\
+    bool : lambda v: v if isinstance(v, bool) else\
         not v in ("", "0", "false", "False")
 }
 """ The map associating the various data types with a proper custom
