@@ -1,4 +1,4 @@
-# [![Quorum Extensions for Flask](res/logo.png)](http://flask_quorum.hive.pt)
+# [![Quorum Extensions for Flask](res/logo.png)](http://flask-quorum.hive.pt)
 
 A small extension framework for Flask to easy a series of simple tasks.
 
