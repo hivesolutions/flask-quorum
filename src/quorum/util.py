@@ -1037,11 +1037,14 @@ def parse_content_type(data):
     # mime types for the content and the extra key to value items
     return types, extra_m
 
-def verify(condition, message = None, code = None):
+def verify(condition, message = None, code = None, exception = None):
     if condition: return
-    raise exceptions.AssertionError(
-        message = message or "Assertion of data failed",
-        code = code
+    exception = exception or exceptions.AssertionError
+    kwargs = dict()
+    if not code == None: kwargs["code"] = code
+    raise exception(
+        message or "Assertion of data failed",
+        **kwargs
     )
 
 def execute(args, command = None, path = None, shell = True, encoding = None):
