@@ -41,6 +41,7 @@ import quorum
 
 class OrderedDictTest(quorum.TestCase):
 
+    @quorum.secured
     def test_order(self):
         struct = quorum.OrderedDict()
 
@@ -56,6 +57,7 @@ class OrderedDictTest(quorum.TestCase):
 
 class LazyDictTest(quorum.TestCase):
 
+    @quorum.secured
     def test_lazy(self):
         struct = quorum.LazyDict()
 
@@ -63,8 +65,29 @@ class LazyDictTest(quorum.TestCase):
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.LazyValue), True)
         self.assertEqual(struct["first"], 2)
-        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)
 
+    @quorum.secured
+    def test_resolve(self):
+        struct = quorum.LazyDict(
+            first = quorum.LazyValue(lambda: 1),
+            second = quorum.LazyValue(lambda: 2)
+        )
+
+        resolved = struct.resolve(force = True)
+
+        self.assertNotEqual(type(struct) == dict, True)
+        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertEqual(type(resolved) == dict, True)
+        self.assertEqual(resolved, dict(first = 1, second = 2))
+
+        resolved = struct.to_dict()
+
+        self.assertNotEqual(type(struct) == dict, True)
+        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertEqual(type(resolved) == dict, True)
+        self.assertEqual(resolved, dict(first = 1, second = 2))
+
+    @quorum.secured
     def test_naming(self):
         struct = quorum.lazy_dict()
 
@@ -72,4 +95,3 @@ class LazyDictTest(quorum.TestCase):
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.lazy), True)
         self.assertEqual(struct["first"], 2)
-        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)

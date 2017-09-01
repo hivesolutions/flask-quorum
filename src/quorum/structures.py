@@ -77,13 +77,21 @@ class OrderedDict(list):
 
 class LazyDict(dict):
 
-    def __getitem__(self, key, force = False):
+    def __getitem__(self, key, force = False, resolve = False):
         value = dict.__getitem__(self, key)
-        is_lazy = isinstance(value, LazyValue)
-        if not is_lazy or force: return value
-        value = value.resolve()
-        self[key] = value
-        return value
+        if force: return value
+        return value.resolve(force = resolve)
+
+    def resolve(self, force = False):
+        result = dict()
+        for key in self:
+            value = dict.__getitem__(self, key)
+            value = value.resolve(force = force)
+            result[key] = value
+        return result
+
+    def to_dict(self, force = True):
+        return self.resolve(force = force)
 
 class LazyValue(object):
 
@@ -93,8 +101,11 @@ class LazyValue(object):
     def __call__(self):
         return self.call()
 
-    def resolve(self):
-        return self.callable()
+    def resolve(self, force = False):
+        if hasattr(self, "_value") and not force:
+            return self._value
+        self._value = self.callable()
+        return self._value
 
     def call(self):
         return self.resolve()
