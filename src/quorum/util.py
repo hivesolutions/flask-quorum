@@ -550,7 +550,7 @@ def load_locale(available, fallback = "en_us"):
     return fallback
 
 def get_locale(fallback = "en_us"):
-    # tries to retrieve the locale value from the provided url
+    # tries to retrieve the locale value from the provided URL
     # parameters (this is the highest priority) and in case it
     # exists returns this locale immediately
     locale = flask.request.args.get("locale", None)
@@ -912,13 +912,13 @@ def quote(value, *args, **kwargs):
     into the expected utf-8 encoding as defined by standard.
 
     This method should be used instead of a direct call to
-    the equivalent call in the url library.
+    the equivalent call in the URL library.
 
     :type value: String
     :param value: The string value that is going to be quoted
-    according to the url escaping scheme.
+    according to the URL escaping scheme.
     :rtype: String
-    :return: The quoted value according to the url scheme this
+    :return: The quoted value according to the URL scheme this
     value may be safely used in urls.
     """
 
@@ -928,17 +928,17 @@ def quote(value, *args, **kwargs):
 
 def unquote(value, *args, **kwargs):
     """
-    Unquotes the provided value according to the url scheme
+    Unquotes the provided value according to the URL scheme
     the resulting value should be an unicode string representing
     the same value, the intermediary string value from the decoding
     should be an utf-8 based value.
 
     This method should be used instead of a direct call to
-    the equivalent call in the url library.
+    the equivalent call in the URL library.
 
     :type value: String
     :param value: The string value that is going to be unquoted
-    according to the url escaping scheme.
+    according to the URL escaping scheme.
     :rtype: String
     :return: The unquoted value extracted as an unicode
     string that the represents the same value.

@@ -53,7 +53,7 @@ connection = None
 that is meant to be used across sessions """
 
 url = "amqp://guest:guest@localhost"
-""" The global variable containing the url to be used
+""" The global variable containing the URL to be used
 for the connection with the service """
 
 def get_connection(force = False, timeout = TIMEOUT):

@@ -46,7 +46,7 @@ complete year (365 days) """
 class SSLify(object):
     """
     Secures your flask app by enabling the forcing
-    of the protocol in the http connection.
+    of the protocol in the HTTP connection.
     """
 
     def __init__(self, app, age = YEAR_IN_SECS, subdomains = False):

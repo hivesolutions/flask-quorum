@@ -52,7 +52,7 @@ connection = None
 the connection relation with the database service """
 
 url = None
-""" The global variable containing the url to be used
+""" The global variable containing the URL to be used
 for the connection with the service """
 
 class RedisMemory(object):

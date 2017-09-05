@@ -52,7 +52,7 @@ from . import exceptions
 
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
-operations in the http connection """
+operations in the HTTP connection """
 
 RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
@@ -63,7 +63,7 @@ SEQUENCE_TYPES = (list, tuple)
 considered to be sequence based for python """
 
 AUTH_ERRORS = (401, 403, 440, 499)
-""" The sequence that defines the various http errors
+""" The sequence that defines the various HTTP errors
 considered to be authentication related and for which a
 new authentication try will be performed """
 
