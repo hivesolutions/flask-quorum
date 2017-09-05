@@ -95,3 +95,15 @@ class LazyDictTest(quorum.TestCase):
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.lazy), True)
         self.assertEqual(struct["first"], 2)
+
+    @quorum.secured
+    def test_concrete(self):
+        struct = quorum.lazy_dict()
+
+        struct["first"] = quorum.lazy(lambda: 1)
+        struct["second"] = 2
+
+        self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.lazy), True)
+        self.assertEqual(struct["first"], 1)
+        self.assertEqual(isinstance(struct.__getitem__("second", True), int), True)
+        self.assertEqual(struct["second"], 2)
