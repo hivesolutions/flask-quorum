@@ -100,7 +100,7 @@ class SSLify(object):
 
     def redirect_to_ssl(self):
         """
-        Redirect incoming requests to https in case the current
+        Redirect incoming requests to HTTPS in case the current
         protocol is not considered secure.
 
         This is a conditional execution that verifies the current
