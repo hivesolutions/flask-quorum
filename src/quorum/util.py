@@ -795,17 +795,17 @@ def to_locale(value, locale = None, fallback = True):
 def nl_to_br(value):
     """
     Replaces the occurrences of the newline character in the
-    string with the html break line character.
+    string with the HTML break line character.
 
     This is useful for one trying to convert a plain text
-    representation of a string into html representation.
+    representation of a string into HTML representation.
 
     :type value: String
     :param value: The base value that is going to be used in
-    the conversion to the html value.
+    the conversion to the HTML value.
     :rtype: String
     :return: The string containing the newline characters replaced
-    with line breaking html tags.
+    with line breaking HTML tags.
     """
 
     return value.replace("\n", "<br/>\n")
@@ -813,7 +813,7 @@ def nl_to_br(value):
 def nl_to_br_jinja(eval_ctx, value):
     """
     Optimized version of the function that replaces newline
-    characters with the html break lines that handles the
+    characters with the HTML break lines that handles the
     autoescape properties of the jinja engine.
 
     :type eval_ctx: Context
@@ -825,7 +825,7 @@ def nl_to_br_jinja(eval_ctx, value):
     the conversion to the html value.
     :rtype: String
     :return: The string containing the newline characters replaced
-    with line breaking html tags.
+    with line breaking HTML tags.
     """
 
     if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
@@ -836,17 +836,17 @@ def nl_to_br_jinja(eval_ctx, value):
 def sp_to_nbsp(value):
     """
     Replaces the occurrences of the space character in the
-    string with the html non breaking space character.
+    string with the HTML non breaking space character.
 
     This is useful for one trying to convert a plain text
-    representation of a string into html representation.
+    representation of a string into HTML representation.
 
     :type value: String
     :param value: The base value that is going to be used in
-    the conversion to the html value.
+    the conversion to the HTML value.
     :rtype: String
     :return: The string containing the space characters replaced
-    with non breaking space characters for html.
+    with non breaking space characters for HTML.
     """
 
     return value.replace(" ", "&nbsp;")
@@ -854,7 +854,7 @@ def sp_to_nbsp(value):
 def sp_to_nbsp_jinja(eval_ctx, value):
     """
     Optimized version of the function that replaces space
-    characters with the html non breaking space characters
+    characters with the HTML non breaking space characters
     that handles the autoescape properties of the jinja engine.
 
     :type eval_ctx: Context
@@ -863,10 +863,10 @@ def sp_to_nbsp_jinja(eval_ctx, value):
     determine if the autoescape mode is being used.
     :type value: String
     :param value: The base value that is going to be used in
-    the conversion to the html value.
+    the conversion to the HTML value.
     :rtype: String
     :return: The string containing the space characters replaced
-    with non breaking space characters for html.
+    with non breaking space characters for HTML.
     """
 
     if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))

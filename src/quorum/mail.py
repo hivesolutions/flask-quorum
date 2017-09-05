@@ -167,14 +167,14 @@ def send_mail(
     plain_data = plain and _render(app, plain, **context) or data
     html_data = rich and _render(app, rich, **context) or data
 
-    # verifies the existence of data (both plain and html) and in
+    # verifies the existence of data (both plain and HTML) and in
     # there's data it should be encoded using the currently provided
     # one so that the raw data is used instead of the unicode one
     if plain_data: plain_data = plain_data.encode(encoding)
     if html_data: html_data = html_data.encode(encoding)
 
     # creates the mime's multipart object with the appropriate header
-    # values set and in the alternative model (for html compatibility)
+    # values set and in the alternative model (for HTML compatibility)
     message = _multipart()
     message["Subject"] = subject
     message["From"] = _format(sender)
