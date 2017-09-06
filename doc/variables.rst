@@ -57,10 +57,15 @@ Global
 Mail / SMTP
 -----------
 
+.. rst:directive:: .. SMTP_URL:: string
+
+    URL that describes the multiple SMTP configurations to be used as gateway
+    for sending SMTP messages (e-mails) under quorum.
+
 .. rst:directive:: .. SMTP_HOST:: string
 
     Hostname or IP address of the server to be used as gateway
-    for sending smtp messages (e-mails) under quorum.
+    for sending SMTP messages (e-mails) under quorum.
 
     This value may contain an optional port value separated by
     a **':'** character.
