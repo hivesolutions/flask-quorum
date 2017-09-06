@@ -63,7 +63,7 @@ def get_connection(force = False, timeout = TIMEOUT):
     url_p = legacy.urlparse(url)
     parameters = pika.ConnectionParameters(
         host = url_p.hostname,
-        virtual_host = url_p.path[1:],
+        virtual_host = url_p.path or "/",
         credentials = pika.PlainCredentials(url_p.username, url_p.password)
     )
     parameters.socket_timeout = timeout
