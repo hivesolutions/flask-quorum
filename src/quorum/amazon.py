@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
 from . import exceptions
 
 try: import boto
@@ -67,7 +68,7 @@ def get_connection():
     global connection
     if boto == None: raise exceptions.ModuleNotFound("boto")
     if connection: return connection
-    connection = boto.connect_s3(id, secret)
+    connection = _boto().connect_s3(id, secret)
     return connection
 
 def get_bucket():
@@ -84,16 +85,24 @@ def clear_bucket():
 
 def get_key(name):
     bucket = get_bucket()
-    key = boto.s3.key.Key(bucket)
+    key = _boto().s3.key.Key(bucket)
     key.key = name
     return key
 
 def exists_key(name):
     bucket = get_bucket()
-    key = boto.s3.key.Key(bucket)
+    key = _boto().s3.key.Key(bucket)
     key.key = name
     return key.exists()
 
 def delete_key(name):
     bucket = get_bucket()
     bucket.delete_key(name)
+
+def _boto(verify = True):
+    if verify: util.verify(
+        not boto == None,
+        message = "boto library not available",
+        exception = exceptions.OperationalError
+    )
+    return boto

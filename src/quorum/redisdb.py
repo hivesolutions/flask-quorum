@@ -41,6 +41,7 @@ import os
 import json
 import shelve
 
+from . import util
 from . import config
 from . import exceptions
 
@@ -145,5 +146,13 @@ def dumps(*args):
 def _get_connection(url):
     global connection
     if redis == None: raise exceptions.ModuleNotFound("redis")
-    if not connection: connection = url and redis.from_url(url) or RedisShelve()
+    if not connection: connection = url and _redis().from_url(url) or RedisShelve()
     return connection
+
+def _redis(verify = True):
+    if verify: util.verify(
+        not redis == None,
+        message = "redis library not available",
+        exception = exceptions.OperationalError
+    )
+    return redis

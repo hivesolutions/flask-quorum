@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
+from . import util
 from . import legacy
 from . import common
 from . import typesf
@@ -100,7 +101,7 @@ def reset_connection():
 
 def get_db():
     connection = get_connection()
-    result = pymongo.uri_parser.parse_uri(url)
+    result = _pymongo().uri_parser.parse_uri(url)
     _database = result.get("database", None) or database
     db = connection[_database]
     return db
@@ -125,12 +126,12 @@ def serialize(obj):
 
 def directions(all = False):
     return (
-        pymongo.ASCENDING,
-        pymongo.DESCENDING,
-        pymongo.HASHED
+        _pymongo().ASCENDING,
+        _pymongo().DESCENDING,
+        _pymongo().HASHED
     ) if all else (
-        pymongo.ASCENDING,
-        pymongo.DESCENDING
+        _pymongo().ASCENDING,
+        _pymongo().DESCENDING
     )
 
 def is_mongo(obj):
@@ -139,7 +140,7 @@ def is_mongo(obj):
     return False
 
 def is_new():
-    return int(pymongo.version[0]) >= 3 if pymongo else False
+    return int(_pymongo().version[0]) >= 3 if pymongo else False
 
 def _store_find_and_modify(store, *args, **kwargs):
     if is_new(): store.find_one_and_update(*args, **kwargs)
@@ -175,8 +176,8 @@ def _get_connection(url, connect = False):
     global connection
     if pymongo == None: raise exceptions.ModuleNotFound("pymongo")
     if connection: return connection
-    if is_new(): connection = pymongo.MongoClient(url, connect = connect)
-    else: connection = pymongo.Connection(url)
+    if is_new(): connection = _pymongo().MongoClient(url, connect = connect)
+    else: connection = _pymongo().Connection(url)
     return connection
 
 def _reset_connection():
@@ -185,3 +186,11 @@ def _reset_connection():
     if is_new(): connection.close()
     else: connection.disconnect()
     connection = None
+
+def _pymongo(verify = True):
+    if verify: util.verify(
+        not pymongo == None,
+        message = "pymongo library not available",
+        exception = exceptions.OperationalError
+    )
+    return pymongo

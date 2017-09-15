@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
 from . import exceptions
 
 try: import pusher
@@ -64,9 +65,17 @@ def get_pusher():
     global pusher_c
     if pusher_c: return pusher_c
     if pusher == None: raise exceptions.ModuleNotFound("pusher")
-    pusher_c = pusher.Pusher(
+    pusher_c = _pusher().Pusher(
         app_id = str(app_id),
         key = str(key),
         secret = str(secret)
     )
     return pusher_c
+
+def _pusher(verify = True):
+    if verify: util.verify(
+        not pusher == None,
+        message = "pusher library not available",
+        exception = exceptions.OperationalError
+    )
+    return pusher

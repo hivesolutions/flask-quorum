@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
 from . import legacy
 from . import exceptions
 
@@ -61,18 +62,18 @@ def get_connection(force = False, timeout = TIMEOUT):
     if pika == None: raise exceptions.ModuleNotFound("pika")
     if not force and connection: return connection
     url_p = legacy.urlparse(url)
-    parameters = pika.ConnectionParameters(
+    parameters = _pika().ConnectionParameters(
         host = url_p.hostname,
         virtual_host = url_p.path or "/",
-        credentials = pika.PlainCredentials(url_p.username, url_p.password)
+        credentials = _pika().PlainCredentials(url_p.username, url_p.password)
     )
     parameters.socket_timeout = timeout
-    connection = pika.BlockingConnection(parameters)
+    connection = _pika().BlockingConnection(parameters)
     connection = _set_fixes(connection)
     return connection
 
 def properties(*args, **kwargs):
-    return pika.BasicProperties(*args, **kwargs)
+    return _pika().BasicProperties(*args, **kwargs)
 
 def _set_fixes(connection):
     def disconnect():
@@ -81,3 +82,11 @@ def _set_fixes(connection):
     if not hasattr(connection, "disconnect"):
         connection.disconnect = disconnect
     return connection
+
+def _pika(verify = True):
+    if verify: util.verify(
+        not pika == None,
+        message = "pika library not available",
+        exception = exceptions.OperationalError
+    )
+    return pika
