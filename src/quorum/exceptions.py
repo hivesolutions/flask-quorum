@@ -105,8 +105,7 @@ class AssertionError(OperationalError):
     assertion for a certain data set.
     """
 
-    def __init__(self, message, code = 500):
-        OperationalError.__init__(self, message, code = code)
+    pass
 
 class NotFoundError(OperationalError):
     """
