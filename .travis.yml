@@ -17,6 +17,8 @@ python:
   - "pypy2.7-5.8.0"
   - "pypy3.5-5.8.0"
 services: mongodb
+before_install:
+  - if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then pip install --upgrade pip setuptools; fi
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == "pypy3" ]]; then pip install "flask<0.11"; fi
   - pip install "pkginfo<1.3"
