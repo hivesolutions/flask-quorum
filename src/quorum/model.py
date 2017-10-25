@@ -1401,9 +1401,19 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return issubclass(cls, parent)
 
     @classmethod
+    def assert_is_attached_g(cls):
+        if cls.is_attached(): return
+        raise exceptions.OperationalError("Model is not attached")
+
+    @classmethod
     def assert_is_concrete_g(cls):
         if cls.is_concrete(): return
         raise exceptions.OperationalError("Model is not concrete")
+
+    @classmethod
+    def assert_is_child_g(cls, parent):
+        if cls.is_child(parent): return
+        raise exceptions.OperationalError("Model is not child of %s" % parent)
 
     @classmethod
     def _build(cls, model, map):
@@ -1985,9 +1995,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if self.is_new(): return
         raise exceptions.OperationalError("Instance is not new, identifier is set")
 
+    def assert_is_attached(self):
+        cls = self.__class__
+        cls.assert_is_attached_g()
+
     def assert_is_concrete(self):
         cls = self.__class__
         cls.assert_is_concrete_g()
+
+    def assert_is_child(self, parent):
+        cls = self.__class__
+        cls.assert_is_child_g(parent)
 
     def save(
         self,
