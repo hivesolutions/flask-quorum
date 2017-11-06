@@ -313,6 +313,82 @@ def is_tablet(user_agent = None):
     is_tablet = True if tablet or mobile_prefix else False
     return is_tablet
 
+def is_browser(user_agent = None):
+    """
+    Verifies if the provided user agent string represents a
+    browser (interactive) agent, for that a series of verifications
+    are going to be performed against the user agent string.
+
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
+    value that is going to be verified for browser presence.
+    :rtype: bool
+    :return: If the provided user agent string represents an
+    interactive browser or not.
+    """
+
+    user_agent = flask.request.headers.get("User-Agent", "")\
+        if user_agent == None else user_agent
+    info = browser_info(user_agent = user_agent)
+    if not info: return False
+    interactive = info.get("interactive", False)
+    if not interactive: return False
+    return True
+
+def browser_info(user_agent = None):
+    """
+    Retrieves a dictionary containing information about the browser
+    and the operative system associated with the provided user agent.
+
+    The retrieval of the information depends on the kind of user
+    agent string provided, as coverage is limited.
+
+    :type user_agent: String
+    :param user_agent: The HTTP based user agent string to be processed.
+    :rtype: Dictionary
+    :return: The dictionary/map containing the information processed from
+    the provided user agent.
+    """
+
+    user_agent = flask.request.headers.get("User-Agent", "")\
+        if user_agent == None else user_agent
+
+    info = dict()
+
+    for browser_i in defines.BROWSER_INFO:
+        identity = browser_i["identity"]
+        sub_string = browser_i.get("sub_string", identity)
+        version_search = browser_i.get("version_search", sub_string + "/")
+        interactive = browser_i.get("interactive", True)
+
+        if not sub_string in user_agent: continue
+        if not version_search in user_agent: continue
+
+        version_i = user_agent.index(version_search) + len(version_search)
+        version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
+        version_f = float(".".join(version.split(".")[:2]))
+        version_i = int(version_f)
+
+        info.update(
+            name = identity,
+            version = version,
+            version_f = version_f,
+            version_i = version_i,
+            interactive = interactive
+        )
+        break
+
+    for os_i in defines.OS_INFO:
+        identity = os_i["identity"]
+        sub_string = os_i.get("sub_string", identity)
+
+        if not sub_string in user_agent: continue
+
+        info.update(os = identity)
+        break
+
+    return info if info else None
+
 def resolve_alias(object):
     for name, value in legacy.eager(object.items()):
         if not name in ALIAS: continue

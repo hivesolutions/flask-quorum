@@ -55,6 +55,65 @@ MOBILE_PREFIX_REGEX = re.compile(r"1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a
 """ The regular expression to test the base prefix
 of the user agent string for mobile browser """
 
+BROWSER_INFO = [dict(
+    identity = "Edge",
+    sub_string = "Edge"
+), dict(
+    identity = "Chrome",
+    sub_string = "Chrome"
+), dict(
+    identity = "Safari",
+    sub_string = "Safari"
+), dict(
+    identity = "Opera"
+), dict(
+    identity = "Firefox",
+    sub_string = "Firefox"
+), dict(
+    identity = "Explorer",
+    sub_string = "MSIE",
+    version_search = "MSIE "
+), dict(
+    identity = "AppleWebKit",
+    sub_string = "AppleWebKit"
+), dict(
+    identity = "Googlebot",
+    sub_string = "Googlebot",
+    interactive = False
+), dict(
+    identity = "Bingbot",
+    sub_string = "Bingbot",
+    interactive = False
+), dict(
+    identity = "DuckDuckBot",
+    sub_string = "DuckDuckBot",
+    interactive = False
+), dict(
+    identity = "netius",
+    sub_string = "netius",
+    interactive = False
+)]
+""" List that contains the complete information used
+for the parsing and identification of the browser information
+from a typical user agent string """
+
+OS_INFO = [dict(
+    identity = "Windows",
+    sub_string = "Win"
+), dict(
+    identity = "Mac",
+    sub_string = "Mac"
+), dict(
+    identity = "iPhone/iPod",
+    sub_string = "iPhone"
+), dict(
+    sub_string = "Linux",
+    identity = "Linux"
+)]
+""" List that contains the complete information used
+for the parsing and identification of the os information
+from a typical user agent string """
+
 WINDOWS_LOCALE = dict(
     af = "Afrikaans",
     sq = "Albanian",
