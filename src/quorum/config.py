@@ -123,6 +123,9 @@ def confs(name, value):
     global config_g
     config_g[name] = value
 
+def confr(name):
+    del config_g[name]
+
 def confd():
     return config_g
 
