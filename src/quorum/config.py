@@ -124,6 +124,7 @@ def confs(name, value):
     config_g[name] = value
 
 def confr(name):
+    if not name in config_g: return
     del config_g[name]
 
 def confd():
