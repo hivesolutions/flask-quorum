@@ -492,6 +492,37 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person.exists(), False)
 
     @quorum.secured
+    def test_unresolvable(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        car = mock.Car()
+        car.name = "Car"
+        car.save()
+
+        person = mock.Person.get(identifier = 1)
+        person.car = car
+        person.save()
+
+        self.assertEqual(isinstance(person.car, quorum.Reference), False)
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(isinstance(person.car, quorum.Reference), True)
+        self.assertEqual(person.car.is_resolvable(), True)
+        self.assertEqual(person.car == None, False)
+        self.assertEqual(person.car.name, "Car")
+
+        car.delete()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(isinstance(person.car, quorum.Reference), True)
+        self.assertEqual(person.car.is_resolvable(), False)
+        self.assertEqual(person.car == None, False)
+
+    @quorum.secured
     def test_wrap(self):
         person = mock.Person.wrap(dict(name = "Person"))
         self.assertEqual(person.name, "Person")
