@@ -338,6 +338,32 @@ def load(
     amqp_url = config.conf("CLOUDAMQP_URL", amqp_url)
     amqp_url = config.conf("RABBITMQ_URL", amqp_url)
 
+    # retrieves the possible base URL configuration value and uses it
+    # as the basis for the creation of the static URL values to be used
+    # by the Flask infra-structure when using _external parameter
+    base_url = config.conf("BASE_URL", None)
+    if base_url:
+        base_parse = legacy.urlparse(base_url)
+        server_name = "%s:%d" % (base_parse.hostname, base_parse.port)
+        url_scheme = base_parse.scheme
+        application_root = base_parse.path
+    else:
+        server_name, url_scheme, application_root = None, None, None
+
+    # tries to retrieve the more specific URL related configuration values
+    # defaulting to the base URL calculated ones in case they do not exist
+    server_name = config.conf("SERVER_NAME", server_name)
+    application_root = config.conf("APPLICATION_ROOT", application_root)
+    url_scheme = config.conf("URL_SCHEME", url_scheme)
+    url_scheme = config.conf("PREFERRED_URL_SCHEME", url_scheme)
+
+    # re-sets the URL related configuration values, making sure that they
+    # are properly set in the current configuration environment as they
+    # are critical for proper external URL value generation
+    config.confs("SERVER_NAME", server_name)
+    config.confs("APPLICATION_ROOT", application_root)
+    config.confs("PREFERRED_URL_SCHEME", url_scheme)
+
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected
     name = name + "-" + instance if instance else name
@@ -362,9 +388,11 @@ def load(
     APP = app
 
     # loads the app configuration from the provided keyword arguments
-    # map and then starts the logging process with the requested logger
-    # and with the provided "verbosity" level
+    # map and from the current dictionary of configuration values
+    # (value propagation) and then starts the logging process with the
+    # requested logger and provided "verbosity" level
     load_app_config(app, kwargs)
+    load_app_config(app, config.confd())
     start_log(app, name = logger, level = level)
 
     # loads the various paths associated with the application into the
