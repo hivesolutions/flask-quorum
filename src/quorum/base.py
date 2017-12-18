@@ -823,7 +823,7 @@ def base_path(*args, **kwargs):
 def has_context():
     return True if flask._app_ctx_stack.top else False
 
-def ensure_context():
+def ensure_context(function):
     """
     Decorator that makes sure that the underlying execution
     method/function is run inside a valid app context.
@@ -831,26 +831,25 @@ def ensure_context():
     In case there's currently no app context defined it uses
     the global Application reference to create a new one.
 
+    :type function: Function
+    :param function: The function that is going to be decorated
+    by the current ensure decorator.
     :rtype: Decorator
     :return: The decorator that should be used for the ensuring
     of the app context in the current execution environment.
     """
 
-    def decorator(function):
+    @functools.wraps(function)
+    def interceptor(*args, **kwargs):
+        _ctx = has_context()
+        try:
+            if not _ctx: flask._app_ctx_stack.push(APP)
+            result = function(*args, **kwargs)
+        finally:
+            if not _ctx: flask._app_ctx_stack.pop()
+        return result
 
-        @functools.wraps(function)
-        def interceptor(*args, **kwargs):
-            _ctx = has_context()
-            try:
-                if not _ctx: flask._app_ctx_stack.push(APP)
-                result = function(*args, **kwargs)
-            finally:
-                if not _ctx: flask._app_ctx_stack.pop()
-            return result
-
-        return interceptor
-
-    return decorator
+    return interceptor
 
 def onrun(function):
     fname = function.__name__
