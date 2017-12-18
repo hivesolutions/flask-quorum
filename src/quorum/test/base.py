@@ -102,7 +102,7 @@ class BaseTest(quorum.TestCase):
         result = quorum.to_locale("bye", locale = "pt_pt", fallback = False)
         self.assertEqual(result, "bye")
 
-    @quorum.secure
+    @quorum.secured
     def test_context(self):
 
         def without_context():
@@ -111,9 +111,15 @@ class BaseTest(quorum.TestCase):
         result = without_context()
         self.assertEqual(result, False)
 
-        @quorum.ensure_context
+        @quorum.ensure_context()
         def with_context():
             return quorum.has_context()
 
         result = with_context()
         self.assertEqual(result, True)
+
+        def new_without_context():
+            return quorum.has_context()
+
+        result = new_without_context()
+        self.assertEqual(result, False)

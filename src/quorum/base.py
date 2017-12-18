@@ -821,7 +821,7 @@ def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
 
 def has_context():
-    return flask._app_ctx_stack.top
+    return True if flask._app_ctx_stack.top else False
 
 def ensure_context(app = None):
     app = app or APP
@@ -829,11 +829,11 @@ def ensure_context(app = None):
     def decorator(function):
 
         @functools.wraps(function)
-        def interceptor(self, *args, **kwargs):
+        def interceptor(*args, **kwargs):
             is_ready = has_context()
             try:
                 if not is_ready: flask._app_ctx_stack.push(app)
-                result = function(self, *args, **kwargs)
+                result = function(*args, **kwargs)
             finally:
                 if not is_ready: flask._app_ctx_stack.pop()
             return result
