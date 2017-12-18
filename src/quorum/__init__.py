@@ -80,7 +80,7 @@ from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare
     load_paths, load_bundles, start_log, extra_logging, get_app, get_adapter, get_log,\
     get_level, get_handlers, get_handler, get_bundle, is_devel, finalize, before_request,\
     after_request, context_processor, start_execution, stop_execution, setup_models,\
-    models_c, resolve, templates_path, bundles_path, base_path, has_context, onrun
+    models_c, resolve, templates_path, bundles_path, base_path, has_context, ensure_context, onrun
 from .config import conf, conf_prefix, conf_suffix, confs, confr, confd
 from .crypt import Cipher, RC4, Spritz
 from .daemon import Daemon

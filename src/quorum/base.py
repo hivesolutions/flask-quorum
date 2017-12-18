@@ -46,6 +46,7 @@ import atexit
 import logging
 import inspect
 import datetime
+import functools
 
 import werkzeug.debug
 
@@ -821,6 +822,25 @@ def base_path(*args, **kwargs):
 
 def has_context():
     return flask._app_ctx_stack.top
+
+def ensure_context(app = None):
+    app = app or APP
+
+    def decorator(function):
+
+        @functools.wraps(function)
+        def interceptor(self, *args, **kwargs):
+            is_ready = has_context()
+            try:
+                if not is_ready: flask._app_ctx_stack.push(app)
+                result = function(self, *args, **kwargs)
+            finally:
+                if not is_ready: flask._app_ctx_stack.pop()
+            return result
+
+        return interceptor
+
+    return decorator
 
 def onrun(function):
     fname = function.__name__
