@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.18
+^^^^^
+
+    * Fixed issue with default port and URL generation
+
 0.5.17
 ^^^^^
 
