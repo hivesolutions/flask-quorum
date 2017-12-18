@@ -824,6 +824,22 @@ def has_context():
     return True if flask._app_ctx_stack.top else False
 
 def ensure_context(app = None):
+    """
+    Decorator that makes sure that the underlying execution
+    method/function is run inside a valid app context.
+
+    In case there's currently no app context defined it uses
+    the global Application reference to create a new one or
+    if provided the app argument.
+
+    :type app: Application
+    :param app: Possible application instance that is going
+    to be used for the creation of the context.
+    :rtype: Decorator
+    :return: The decorator that should be used for the ensuring
+    of the app context in the current execution environment.
+    """
+
     app = app or APP
 
     def decorator(function):
