@@ -846,12 +846,12 @@ def ensure_context(app = None):
 
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
-            is_ready = has_context()
+            _ctx = has_context()
             try:
-                if not is_ready: flask._app_ctx_stack.push(app)
+                if not _ctx: flask._app_ctx_stack.push(app)
                 result = function(*args, **kwargs)
             finally:
-                if not is_ready: flask._app_ctx_stack.pop()
+                if not _ctx: flask._app_ctx_stack.pop()
             return result
 
         return interceptor
