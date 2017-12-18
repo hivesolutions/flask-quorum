@@ -344,7 +344,9 @@ def load(
     base_url = config.conf("BASE_URL", None)
     if base_url:
         base_parse = legacy.urlparse(base_url)
-        server_name = "%s:%d" % (base_parse.hostname, base_parse.port)
+        is_secure = base_parse.scheme == "https"
+        default_port = 443 if is_secure else 80
+        server_name = "%s:%d" % (base_parse.hostname, base_parse.port or default_port)
         url_scheme = base_parse.scheme
         application_root = base_parse.path
     else:
