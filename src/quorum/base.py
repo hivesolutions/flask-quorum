@@ -840,15 +840,14 @@ def ensure_context(app = None):
     of the app context in the current execution environment.
     """
 
-    app = app or APP
-
     def decorator(function):
 
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
+            _app = app or APP
             _ctx = has_context()
             try:
-                if not _ctx: flask._app_ctx_stack.push(app)
+                if not _ctx: flask._app_ctx_stack.push(_app)
                 result = function(*args, **kwargs)
             finally:
                 if not _ctx: flask._app_ctx_stack.pop()
