@@ -111,7 +111,7 @@ class BaseTest(quorum.TestCase):
         result = without_context()
         self.assertEqual(result, False)
 
-        @quorum.ensure_context()
+        @quorum.ensure_context
         def with_context():
             return quorum.has_context()
 
@@ -126,7 +126,7 @@ class BaseTest(quorum.TestCase):
 
         class ContextTest(object):
 
-            @quorum.ensure_context()
+            @quorum.ensure_context
             def with_context(self):
                 return quorum.has_context()
 
