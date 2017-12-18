@@ -123,3 +123,13 @@ class BaseTest(quorum.TestCase):
 
         result = new_without_context()
         self.assertEqual(result, False)
+
+        class ContextTest(object):
+
+            @quorum.ensure_context()
+            def with_context(self):
+                return quorum.has_context()
+
+        test = ContextTest()
+        result = test.with_context()
+        self.assertEqual(result, True)
