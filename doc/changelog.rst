@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.17
+^^^^^
+
+    * Support for BASE_URL and _external URL generation
+
 0.5.16
 ^^^^^
 
