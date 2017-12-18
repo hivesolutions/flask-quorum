@@ -258,6 +258,14 @@ def seconds_work(callable, offset = 0, *args, **kwargs):
     eval = lambda: seconds_eval(offset)
     return interval_work(callable, eval = eval, *args, **kwargs)
 
+def minutes_work(callable, offset = 0, *args, **kwargs):
+    eval = lambda: minutes_eval(offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
+def hourly_work(callable, offset = 0, *args, **kwargs):
+    eval = lambda: hourly_eval(offset)
+    return interval_work(callable, eval = eval, *args, **kwargs)
+
 def daily_work(callable, offset = 0, *args, **kwargs):
     eval = lambda: daily_eval(offset)
     return interval_work(callable, eval = eval, *args, **kwargs)
@@ -273,6 +281,26 @@ def monthly_work(callable, monthday = 1, offset = 0, *args, **kwargs):
 def seconds_eval(offset, now = None):
     now = now or datetime.datetime.utcnow()
     next = now + datetime.timedelta(seconds = offset)
+    next_tuple = next.utctimetuple()
+    return calendar.timegm(next_tuple)
+
+def minutes_eval(offset, now = None):
+    now = now or datetime.datetime.utcnow()
+    current = datetime.datetime(
+        year = now.year,
+        month = now.month,
+        day = now.day,
+        hour = now.hour,
+        minute = now.minute
+    )
+    next = current + datetime.timedelta(minutes = 1, seconds = offset)
+    next_tuple = next.utctimetuple()
+    return calendar.timegm(next_tuple)
+
+def hourly_eval(offset, now = None):
+    now = now or datetime.datetime.utcnow()
+    current = datetime.datetime(year = now.year, month = now.month, day = now.day, hour = now.hour)
+    next = current + datetime.timedelta(hours = 1, seconds = offset)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
