@@ -73,6 +73,8 @@ class OrderedDictTest(quorum.TestCase):
 
         struct = quorum.OrderedDict(base)
 
+        self.assertEqual(struct._dict, base)
+
         iterator = iter(struct)
 
         self.assertEqual(next(iterator), ["first", 1])
@@ -80,6 +82,8 @@ class OrderedDictTest(quorum.TestCase):
         self.assertEqual(next(iterator), ["third", 3])
 
         struct.sort()
+
+        self.assertEqual(struct._dict, base)
 
         iterator = iter(struct)
 
@@ -123,7 +127,7 @@ class OrderedDictTest(quorum.TestCase):
         self.assertEqual(next(iterator), ["fourth", 4])
         self.assertEqual(next(iterator), ["fifth", 5])
 
-    @quorum.secured    
+    @quorum.secured
     def test_stack(self):
         struct = quorum.OrderedDict()
 
