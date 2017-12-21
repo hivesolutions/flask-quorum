@@ -730,6 +730,7 @@ def get_bundle(name, app = None):
 def is_devel(app = None):
     level = get_level(app = app)
     if not level: return False
+    return level < logging.INFO
 
 def finalize(value):
     # returns an empty string as value representation
