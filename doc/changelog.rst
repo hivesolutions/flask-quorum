@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.20
+^^^^^
+
+    * Fixed some bugs
+    * Support for better OrderedDict structure
+
 0.5.19
 ^^^^^
 
