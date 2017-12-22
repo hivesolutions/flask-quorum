@@ -47,7 +47,7 @@ from . import log
 
 BACKGROUND = []
 """ The list containing the various global registered
-function to be executed as background operations, note
+functions to be executed as background operations, note
 that only the name is used in the list so a possible
 collision of tasks is possible """
 
