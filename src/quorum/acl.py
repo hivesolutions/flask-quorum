@@ -137,7 +137,7 @@ def ensure_basic_auth(username, password, json_s = False):
 def ensure_login(token = None, json_s = False):
     if check_login(token = token): return None
 
-    log.info("Not enough permissions for operation '%s'" % token)
+    log.info("Not enough permissions for operation")
 
     if json_s:
         return flask.Response(
