@@ -567,7 +567,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         url,
         headers = headers,
         data = data,
-        async = False,
+        asynchronous = False,
         timeout = timeout,
         level = level
     )
