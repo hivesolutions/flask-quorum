@@ -155,6 +155,21 @@ class OrderedDictTest(quorum.TestCase):
         self.assertEqual(len(value), 2)
 
     @quorum.secured
+    def test_delete(self):
+        struct = quorum.OrderedDict()
+
+        struct.push(["first", 1])
+        struct.push(["second", 2])
+
+        self.assertEqual("first" in struct, True)
+        self.assertEqual("second" in struct, True)
+
+        del struct["first"]
+
+        self.assertEqual("first" in struct, False)
+        self.assertEqual("second" in struct, True)
+
+    @quorum.secured
     def test_repr(self):
         struct = quorum.OrderedDict()
 
