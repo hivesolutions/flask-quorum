@@ -102,7 +102,7 @@ def conf(name, default = None, cast = None):
     if is_string: cast = __builtins__.get(cast, None)
     cast = CASTS.get(cast, cast)
     value = config_g.get(name, default)
-    value = cast(value) if cast else value
+    if cast and not value == None: value = cast(value)
     return value
 
 def conf_prefix(prefix):

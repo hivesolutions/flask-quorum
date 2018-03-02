@@ -77,3 +77,13 @@ class ConfigTest(quorum.TestCase):
         result = quorum.conf("HEIGHT")
 
         self.assertEqual(result, None)
+
+    def test_none(self):
+        quorum.confs("AGE", None)
+        result = quorum.conf("AGE", cast = int)
+
+        self.assertEqual(result, None)
+
+        result = quorum.conf("HEIGHT", cast = int)
+
+        self.assertEqual(result, None)
