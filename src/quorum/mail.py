@@ -176,7 +176,7 @@ def send_mail(
     port = port or config.conf("SMTP_PORT", port_p, cast = int)
     username = username or config.conf("SMTP_USER", user_p)
     password = password or config.conf("SMTP_PASSWORD", password_p)
-    stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = int)
+    stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = bool)
 
     # sets the sender with the smtp user value in case no values
     # has been provided (expected behavior)
