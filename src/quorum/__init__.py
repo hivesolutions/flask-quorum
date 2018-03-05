@@ -99,7 +99,7 @@ from .httpc import get_f, get, get_json, post_json, put_json, delete_json, HTTPR
 from .info import NAME, VERSION, AUTHOR, EMAIL, DESCRIPTION, LICENSE, KEYWORDS, URL,\
     COPYRIGHT
 from .jsonf import load_json
-from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler,\
+from .log import MemoryHandler, BaseFormatter, ThreadFormatter, rotating_handler, smtp_handler,\
     in_signature, has_exception, debug, info, warning, error, critical
 from .mail import send_mail, send_mail_a
 from .meta import Ordered

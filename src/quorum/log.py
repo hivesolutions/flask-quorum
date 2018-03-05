@@ -38,6 +38,8 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import sys
+import json
+import socket
 import inspect
 import itertools
 import threading
@@ -65,6 +67,11 @@ used for messages called from outside the main thread """
 LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast = bool) else ""
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
+
+LOGGIGN_SYSLOG = "1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d \
+[quorumSDID@0 tid=\"%%(thread)d\"] %%(json)s"
+""" The format to be used for the message sent using the syslog
+logger, should contain extra structured data """
 
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
@@ -97,6 +104,10 @@ LEVEL_ALIAS = {
 }
 """ Map defining a series of alias that may be used latter
 for proper debug level resolution """
+
+SYSLOG_PORTS = dict(tcp = 601, udp = 514)
+""" Dictionary that maps the multiple transport protocol
+used by syslog with the appropriate default ports """
 
 LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
@@ -189,7 +200,48 @@ class MemoryHandler(logging.Handler):
         slice = itertools.islice(messages, 0, count)
         return list(slice)
 
-class ThreadFormatter(logging.Formatter):
+class BaseFormatter(logging.Formatter):
+    """
+    The base Quorum logging formatted used to add some extra
+    functionality on top of Python's base formatting infra-structure.
+
+    Most of its usage focus on empowering the base record object
+    with some extra values.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self._wrap = kwargs.pop("wrap", False)
+        logging.Formatter.__init__(self, *args, **kwargs)
+
+    @classmethod
+    def _wrap_record(cls, record):
+        if hasattr(record, "_wrapped"): return
+        record.hostname = socket.gethostname()
+        record.json = json.dumps(
+            dict(
+                message = str(record.msg),
+                hostname = record.hostname,
+                lineno = record.lineno,
+                module = record.module,
+                callable = record.funcName,
+                level = record.levelname,
+                thread = record.thread,
+                process = record.process,
+                logger = record.name
+            )
+        )
+        record._wrapped = True
+
+    def format(self, record):
+        # runs the wrapping operation on the record so that more
+        # information becomes available in it (as expected)
+        if self._wrap: self.__class__._wrap_record(record)
+
+        # runs the basic format operation on the record so that
+        # it gets properly formatted into a plain string
+        return logging.Formatter.format(self, record)
+
+class ThreadFormatter(BaseFormatter):
     """
     Custom formatter class that changing the default format
     behavior so that the thread identifier is printed when
@@ -197,20 +249,24 @@ class ThreadFormatter(logging.Formatter):
     """
 
     def __init__(self, *args, **kwargs):
-        logging.Formatter.__init__(self, *args, **kwargs)
-        self._tidfmt = logging.Formatter(self._fmt)
+        BaseFormatter.__init__(self, *args, **kwargs)
+        self._tidfmt = BaseFormatter(*args, **kwargs)
 
     def format(self, record):
+        # runs the wrapping operation on the record so that more
+        # information becomes available in it (as expected)
+        if self._wrap: self.__class__._wrap_record(record)
+
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
         if not is_main: return self._tidfmt.format(record)
-        return logging.Formatter.format(self, record)
+        return BaseFormatter.format(self, record)
 
-    def set_tid(self, value):
-        self._tidfmt = logging.Formatter(value)
+    def set_tid(self, value, *args, **kwargs):
+        self._tidfmt = logging.Formatter(value, *args, **kwargs)
 
 def rotating_handler(
     path = "quorum.log",

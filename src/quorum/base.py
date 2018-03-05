@@ -43,6 +43,7 @@ import json
 import time
 import flask
 import atexit
+import socket
 import logging
 import inspect
 import datetime
@@ -570,6 +571,20 @@ def start_log(
     # tries to retrieve some of the default configuration values
     # that are going to be used in the logger startup
     format = config.conf("LOGGING_FORMAT", None)
+    file_log = config.conf("FILE_LOG", False, cast = bool)
+    stream_log = config.conf("STREAM_LOG", True, cast = bool)
+    memory_log = config.conf("MEMORY_LOG", True, cast = bool)
+    syslog_host = config.conf("SYSLOG_HOST", None)
+    syslog_port = config.conf("SYSLOG_PORT", None, cast = int)
+    syslog_proto = config.conf("SYSLOG_PROTO", "udp")
+    syslog_kwargs = dict(socktype = socket.SOCK_STREAM) if\
+        syslog_proto in ("tcp",) else dict()
+    syslog_log = True if syslog_host else False
+
+    # tries to determine the default syslog port in case no port
+    # is defined and syslog logging is enabled
+    if not syslog_port and syslog_log:
+        syslog_port = log.SYSLOG_PORTS.get(syslog_proto)
 
     # "resolves" the proper logger file path taking into account
     # the currently defined operative system, should uses the system
@@ -599,13 +614,13 @@ def start_log(
 
     # creates both the stream and the memory based handlers that
     # are going to be used for the current logger
-    stream_handler = logging.StreamHandler()
-    memory_handler = log.MemoryHandler()
+    stream_handler = logging.StreamHandler() if stream_log else None
+    memory_handler = log.MemoryHandler() if memory_log else None
 
     try:
         # tries to create the file handler for the logger with the
         # resolve path (operation may fail for permissions)
-        file_handler = path and logging.FileHandler(path)
+        file_handler = path and file_log and logging.FileHandler(path)
     except:
         # in case there's an error creating the file handler for
         # the logger prints an error message indicating the problem
@@ -630,6 +645,25 @@ def start_log(
     for handler in logger.handlers:
         handler.setFormatter(formatter)
         handler.setLevel(level)
+
+    # determines if the creation of the syslog handler is required and
+    # it that the case created it setting the appropriate formatter to it
+    syslog_handler = logging.handlers.SysLogHandler(
+        (syslog_host, syslog_port), **syslog_kwargs
+    ) if syslog_log else None if syslog_log else None
+
+    # in case the syslog handler has been created creates the appropriate
+    # formatter for it, sets the level and adds it to the logger
+    if syslog_handler:
+        syslog_formatter = log.BaseFormatter(
+            log.LOGGIGN_SYSLOG % "quorum",
+            datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
+            wrap = True
+        )
+        syslog_handler.setLevel(level)
+        syslog_handler.setFormatter(syslog_formatter)
+        logger.addHandler(syslog_handler)
+        app.handlers["syslog"] = syslog_handler
 
     # runs the extra logging step for the current state, meaning that
     # some more handlers may be created according to the logging config
