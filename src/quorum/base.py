@@ -656,7 +656,7 @@ def start_log(
     # formatter for it, sets the level and adds it to the logger
     if syslog_handler:
         syslog_formatter = log.BaseFormatter(
-            log.LOGGIGN_SYSLOG % "quorum",
+            log.LOGGIGN_SYSLOG % APP.name if APP else "quorum",
             datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
             wrap = True
         )
