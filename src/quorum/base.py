@@ -330,6 +330,7 @@ def load(
     pusher_app_id = config.conf("PUSHER_APP_ID", None)
     pusher_key = config.conf("PUSHER_KEY", None)
     pusher_secret = config.conf("PUSHER_SECRET", None)
+    pusher_cluster = config.conf("PUSHER_CLUSTER", None)
     smtp_host = config.conf("SMTP_HOST", None)
     smtp_user = config.conf("SMTP_USER", None)
     smtp_password = config.conf("SMTP_PASSWORD", None)
@@ -458,6 +459,7 @@ def load(
     if pusher_app_id: pusherc.app_id = pusher_app_id
     if pusher_key: pusherc.key = pusher_key
     if pusher_secret: pusherc.secret = pusher_secret
+    if pusher_cluster: pusherc.cluster = pusher_cluster
     if smtp_host: mail.SMTP_HOST = smtp_host
     if smtp_user: mail.SMTP_USER = smtp_user
     if smtp_password: mail.SMTP_PASSWORD = smtp_password

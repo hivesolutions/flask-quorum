@@ -61,14 +61,21 @@ secret = None
 """ The secret key value that should be used by the publisher to
 authenticate it "against" the pusher service """
 
+cluster = None
+""" The cluster (datacenter) that should be used in the client
+connection that is going to be established """
+
 def get_pusher():
     global pusher_c
     if pusher_c: return pusher_c
     if pusher == None: raise exceptions.ModuleNotFound("pusher")
+    kwargs = dict()
+    if cluster: kwargs["cluster"] = cluster
     pusher_c = _pusher().Pusher(
         app_id = str(app_id),
         key = str(key),
-        secret = str(secret)
+        secret = str(secret),
+        **kwargs
     )
     return pusher_c
 
