@@ -1159,7 +1159,7 @@ def verify(condition, message = None, code = None, exception = None):
     )
 
 def verify_equal(first, second, message = None, code = None, exception = None):
-    message = message or "Expected '%s' got '%s'" % (str(second), str(first))
+    message = message or "Expected %s got %s" % (repr(second), repr(first))
     return verify(
         first == second,
         message = message,
@@ -1168,7 +1168,7 @@ def verify_equal(first, second, message = None, code = None, exception = None):
     )
 
 def verify_not_equal(first, second, message = None, code = None, exception = None):
-    message = message or "Expected '%s' got '%s'" % (str(second), str(first))
+    message = message or "Expected %s not equal to %s" % (repr(first), repr(second))
     return verify(
         not first == second,
         message = message,
