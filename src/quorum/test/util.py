@@ -434,3 +434,48 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ["text/plain", "text/json"])
         self.assertEqual(result[1], dict())
+
+    @quorum.secured
+    def test_verify(self):
+        result = quorum.verify(1 == 1)
+        self.assertEqual(result, None)
+
+        result = quorum.verify("hello" == "hello")
+        self.assertEqual(result, None)
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify(1 == 2))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify(1 == 2, exception = quorum.OperationalError)
+        )
+
+    @quorum.secured
+    def test_verify_equal(self):
+        result = quorum.verify_equal(1, 1)
+        self.assertEqual(result, None)
+
+        result = quorum.verify_equal("hello", "hello")
+        self.assertEqual(result, None)
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_equal(1, 2))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify_equal(1, 2, exception = quorum.OperationalError)
+        )
+
+    @quorum.secured
+    def test_verify_not_equal(self):
+        result = quorum.verify_not_equal(1, 2)
+        self.assertEqual(result, None)
+
+        result = quorum.verify_not_equal("hello", "world")
+        self.assertEqual(result, None)
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_not_equal(1, 1))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify_not_equal(1, 1, exception = quorum.OperationalError)
+        )
