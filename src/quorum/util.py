@@ -1158,6 +1158,24 @@ def verify(condition, message = None, code = None, exception = None):
         **kwargs
     )
 
+def verify_equal(first, second, message = None, code = None, exception = None):
+    message = message or "Expected '%s' got '%s'" % (str(second), str(first))
+    return verify(
+        first == second,
+        message = message,
+        code = code,
+        exception = exception
+    )
+
+def verify_not_equal(first, second, message = None, code = None, exception = None):
+    message = message or "Expected '%s' got '%s'" % (str(second), str(first))
+    return verify(
+        not first == second,
+        message = message,
+        code = code,
+        exception = exception
+    )
+
 def execute(args, command = None, path = None, shell = True, encoding = None):
     if not encoding: encoding = sys.getfilesystemencoding()
     if command: args = command.split(" ")
