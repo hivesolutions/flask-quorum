@@ -958,10 +958,6 @@ def _best_locale(locale, app = None):
         is_valid = _locale.startswith(locale)
         if not is_valid: continue
         return _locale
-    for _locale in app.locales:
-        is_valid = locale.startswith(_locale)
-        if not is_valid: continue
-        return _locale
     return locale
 
 # runs the monkey patching of the flask module so that it
