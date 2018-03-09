@@ -760,7 +760,7 @@ def get_bundle(name, app = None, split = True):
     if not app: return None
     bundle = app.bundles.get(name, None)
     if bundle: return bundle
-    if split:
+    if split and name:
         base = name.split("_", 1)[0]
         bundle = app.bundles.get(base, None)
         if bundle: return bundle
