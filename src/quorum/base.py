@@ -755,11 +755,15 @@ def get_handler(name, app = None):
     if not app: return None
     return app.handlers.get(name, None)
 
-def get_bundle(name, app = None):
+def get_bundle(name, app = None, split = True):
     app = app or APP
     if not app: return None
     bundle = app.bundles.get(name, None)
     if bundle: return bundle
+    if split:
+        base = name.split("_", 1)[0]
+        bundle = app.bundles.get(base, None)
+        if bundle: return bundle
     name = _best_locale(name)
     return app.bundles.get(name, None)
 

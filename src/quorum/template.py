@@ -73,11 +73,10 @@ def template_resolve(template):
     fbase, name = os.path.split(template)
     fname, extension = name.split(".", 1)
 
-    # creates the base file name for the target (locale based) template
-    # and then joins the file name with the proper base path to create
-    # the "full" target file name
-    target = fname + "." + flask.request.locale + "." + extension
-    target = fbase + "/" + target if fbase else target
+    # retrieves both the complete locale set under the current request and
+    # the language base value for the same locale (to be used as fallback)
+    locale = flask.request.locale
+    language = locale.split("_", 1)
 
     # sets the fallback name as the "original" template path, because
     # that's the default and expected behavior for the template engine
@@ -88,11 +87,20 @@ def template_resolve(template):
     # file in order to verify existence of the file
     templates_path = common.base().templates_path()
 
-    # "joins" the target path and the templates (base) path to create
-    # the full path to the target template, then verifies if it exists
-    # and in case it does sets it as the template name
-    target_f = os.path.join(templates_path, target)
-    if os.path.exists(target_f): return target
+    # iterates over the complete set of locale values eligible for the
+    # resolution (this also takes into account the base language)
+    for _locale in (locale, language):
+        # creates the base file name for the target (locale based) template
+        # and then joins the file name with the proper base path to create
+        # the "full" target file name
+        target = fname + "." + locale + "." + extension
+        target = fbase + "/" + target if fbase else target
+
+        # "joins" the target path and the templates (base) path to create
+        # the full path to the target template, then verifies if it exists
+        # and in case it does sets it as the template name
+        target_f = os.path.join(templates_path, target)
+        if os.path.exists(target_f): return target
 
     # runs the same operation for the fallback template name and verifies
     # for its existence in case it exists uses it as the resolved value
