@@ -656,7 +656,9 @@ def load_locale(available, fallback = "en_us"):
     # of the valid locales for the app returns the locale, otherwise
     # returns the fallback value instead
     locale = get_locale(fallback = fallback)
+    language = locale.split("_", 1)[0]
     if locale in available: return locale
+    if language in available: return locale
     return fallback
 
 def get_locale(fallback = "en_us"):
