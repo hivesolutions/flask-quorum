@@ -6,6 +6,12 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.26
+^^^^^
+
+    * Support for secure headers
+    * Bug fixes
+
 0.5.25
 ^^^^^
 
