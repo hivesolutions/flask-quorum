@@ -748,6 +748,30 @@ def anotate_async(response):
     is_async = True if get_field("async") else is_async
     if is_async: response.status_code = 280
 
+def anotate_secure(response):
+    # retrieves the reference to the master application object to be used
+    # in some of the verification
+    app = common.base().APP
+
+    # verifies if the secure headers flag is set in the current application
+    # and if that's not the case returns the control flow immediately
+    if not app.secure_headers: return
+
+    # sets the multiple secure header values taking into account if they
+    # are defined or not in the current application context
+    if app.allow_origin:
+        response.headers["Access-Control-Allow-Origin"] = app.allow_origin
+    if app.allow_headers:
+        response.headers["Access-Control-Allow-Headers"] = app.allow_headers
+    if app.content_security:
+        response.headers["Content-Security-Policy"] = app.content_security
+    if app.frame_options:
+        response.headers["X-Frame-Options"] = app.frame_options
+    if app.xss_protection:
+        response.headers["X-XSS-Protection"] = app.xss_protection
+    if app.content_options:
+        response.headers["X-Content-Type-Options"] = app.content_options
+
 def run_thread(function, *args, **kwargs):
     return threading.Thread(
         target = function,

@@ -84,6 +84,33 @@ RUN_F = {}
 """ The map that will contain the various functions that
 will be called upon the start of the main run loop """
 
+ALLOW_ORIGIN = "*"
+""" The default value to be used in the "Access-Control-Allow-Origin"
+header value, this should not be too restrictive """
+
+ALLOW_HEADERS = "*, X-Requested-With"
+""" The default value to be used in the "Access-Control-Allow-Headers"
+header value, this should not be too restrictive """
+
+CONTENT_SECURITY = "default-src * ws://* wss://* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
+""" The default value to be used in the "Content-Security-Policy"
+header value, this should not be too restrictive """
+
+FRAME_OPTIONS = "SAMEORIGIN"
+""" The value to be as the default/original for the "X-Frame-Options"
+header, this should ensure that the same origin is always used when
+trying to embed a dynamic content into a web page """
+
+XSS_PROTECTION = "1; mode=block"
+""" Value to be used as the original one for the "X-XSS-Protection"
+header value, should provide a way of preventing XSS attach under the
+internet explorer browser """
+
+CONTENT_OPTIONS = "nosniff"
+""" Default "X-Content-Type-Options" header value to be used to prevent
+the sniffing of content type values, ensuring that the browser sticks to
+value of content type provided by the server """
+
 ESCAPE_EXTENSIONS = (
     ".xml",
     ".html",
@@ -437,6 +464,13 @@ def load(
     app.debug = debug
     app.use_debugger = debug
     app.use_reloader = reloader
+    app.secure_headers = True
+    app.allow_origin = ALLOW_ORIGIN
+    app.allow_headers = ALLOW_HEADERS
+    app.content_security = CONTENT_SECURITY
+    app.frame_options = FRAME_OPTIONS
+    app.xss_protection = XSS_PROTECTION
+    app.content_options = CONTENT_OPTIONS
     app.models = models
     app.module = module
     app.path = path
@@ -788,6 +822,7 @@ def before_request():
 def after_request(response):
     if APP.safe: util.reset_locale()
     util.anotate_async(response)
+    util.anotate_secure(response)
     return response
 
 def context_processor():
