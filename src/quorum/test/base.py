@@ -56,6 +56,7 @@ class BaseTest(quorum.TestCase):
         app.locales = ("en_us", "pt_pt", "es_es")
         app.bundles["en_us"] = dict(hello = "Hello")
         app.bundles["pt_pt"] = dict(hello = "Olá")
+        app.bundles["fr"] = dict(hello = "Bonjour")
 
         result = quorum.to_locale("hello", locale = "en-us")
         self.assertEqual(result, "Hello")
@@ -66,6 +67,12 @@ class BaseTest(quorum.TestCase):
         result = quorum.to_locale("hello", locale = "pt-pt")
         self.assertNotEqual(result, "Olá")
         self.assertEqual(result, "Hello")
+
+        result = quorum.to_locale("hello", locale = "fr_fr")
+        self.assertEqual(result, "Bonjour")
+
+        result = quorum.to_locale("hello", locale = "fr")
+        self.assertEqual(result, "Bonjour")
 
         result = quorum.to_locale("hello", locale = "es_es")
         self.assertNotEqual(result, "Hola")
