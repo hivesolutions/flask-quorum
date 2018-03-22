@@ -920,6 +920,10 @@ def to_locale(value, locale = None, fallback = True):
     bundle = common.base().get_bundle(locale) or {}
     result = bundle.get(value, None)
     if not result == None: return result
+    language = locale.split("_", 1)[0]
+    bundle = common.base().get_bundle(language) or {}
+    result = bundle.get(value, None)
+    if not result == None: return result
     app = common.base().APP
     if fallback and app: return to_locale(
         value,
