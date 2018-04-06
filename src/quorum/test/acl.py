@@ -41,7 +41,7 @@ import flask
 
 import quorum
 
-class AclTest(quorum.TestCase):
+class ACLTest(quorum.TestCase):
 
     def setUp(self):
         try:
