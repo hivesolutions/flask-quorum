@@ -41,7 +41,7 @@ import threading
 
 import quorum
 
-class HttpcTest(quorum.TestCase):
+class HTTPCTest(quorum.TestCase):
 
     def setUp(self):
         quorum.TestCase.setUp(self)
