@@ -556,6 +556,15 @@ def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
 
 def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     import requests
+
+    # verifies if the provided data is a generator, assumes that if the
+    # data is not invalid and not of types string then it's a generator
+    # and then if that's the case skips the first iteration (data size)
+    # and joins the rest of the buffer (in the generator), this must be
+    # done because requests is not compatible with generator data input
+    is_generator = not data == None and not legacy.is_string(data)
+    if is_generator: next(data); data = b"".join(list(data))
+
     method = method.lower()
     caller = getattr(requests, method)
     result = caller(url, headers = headers, data = data, timeout = timeout)
