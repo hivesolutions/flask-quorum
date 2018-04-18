@@ -549,6 +549,8 @@ def _resolve(*args, **kwargs):
     return result
 
 def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
+    is_generator = not data == None and not legacy.is_string(data)
+    if is_generator: next(data); data = b"".join(data)
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
@@ -563,7 +565,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # and joins the rest of the buffer (in the generator), this must be
     # done because requests is not compatible with generator data input
     is_generator = not data == None and not legacy.is_string(data)
-    if is_generator: next(data); data = b"".join(list(data))
+    if is_generator: next(data); data = b"".join(data)
 
     method = method.lower()
     caller = getattr(requests, method)
