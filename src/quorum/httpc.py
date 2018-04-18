@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import json
 import base64
 import random
@@ -67,10 +68,16 @@ AUTH_ERRORS = (401, 403, 440, 499)
 considered to be authentication related and for which a
 new authentication try will be performed """
 
-def try_auth(auth_callback, params, headers = None):
-    if not auth_callback: raise
-    if headers == None: headers = dict()
-    auth_callback(params, headers)
+def file_g(path, chunk = 40960):
+    yield os.path.getsize(path)
+    file = open(path, "rb")
+    try:
+        while True:
+            data = file.read(chunk)
+            if not data: break
+            yield data
+    finally:
+        file.close()
 
 def get_f(*args, **kwargs):
     name = kwargs.pop("name", "default")
@@ -92,7 +99,7 @@ def get(url, auth_callback = None, **kwargs):
             return _get(url, **kwargs)
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
-                try_auth(auth_callback, kwargs)
+                _try_auth(auth_callback, kwargs)
             else:
                 code = error.getcode()
                 raise exceptions.HTTPDataError(error, code)
@@ -130,7 +137,7 @@ def get_json(
             )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
-                try_auth(auth_callback, kwargs)
+                _try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
                 data_r = legacy.str(data_r, encoding = "utf-8")
@@ -178,7 +185,7 @@ def post_json(
             )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
-                try_auth(auth_callback, kwargs)
+                _try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
                 data_r = legacy.str(data_r, encoding = "utf-8")
@@ -226,7 +233,7 @@ def put_json(
             )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
-                try_auth(auth_callback, kwargs)
+                _try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
                 data_r = legacy.str(data_r, encoding = "utf-8")
@@ -266,7 +273,7 @@ def delete_json(
             )
         except legacy.HTTPError as error:
             if error.code in AUTH_ERRORS and auth_callback:
-                try_auth(auth_callback, kwargs)
+                _try_auth(auth_callback, kwargs)
             else:
                 data_r = error.read()
                 data_r = legacy.str(data_r, encoding = "utf-8")
@@ -278,6 +285,11 @@ def delete_json(
         retries -= 1
         if retries == 0:
             raise exceptions.HTTPError("Data retrieval not possible")
+
+def _try_auth(auth_callback, params, headers = None):
+    if not auth_callback: raise
+    if headers == None: headers = dict()
+    auth_callback(params, headers)
 
 def _get(url, **kwargs):
     values = kwargs or dict()
