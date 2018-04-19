@@ -153,6 +153,39 @@ class HTTPCTest(quorum.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     @quorum.secured
+    def test_generator(self):
+        def text_g(message = [b"hello", b" ", b"world"]):
+            yield sum(len(value) for value in message)
+            for value in message:
+                yield value
+
+        data, response = quorum.post_json(
+            "https://%s/post" % self.httpbin,
+            data = text_g(),
+            handle = True,
+            reuse = False
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+        self.assertEqual(data["data"], "hello world")
+
+    @quorum.secured
+    def test_file(self):
+        data, response = quorum.post_json(
+            "https://%s/post" % self.httpbin,
+            data = quorum.legacy.BytesIO(b"hello world"),
+            handle = True,
+            reuse = False
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+        self.assertEqual(data["data"], "hello world")
+
+    @quorum.secured
     def test_multithread(self):
         threads = []
         results = []

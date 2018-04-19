@@ -433,6 +433,7 @@ def _method_empty(
         redirect = redirect,
         timeout = timeout
     )
+    result = _result(result, info)
     return (result, file) if handle else result
 
 def _method_payload(
@@ -505,6 +506,7 @@ def _method_payload(
         timeout = timeout
     )
 
+    result = _result(result, info)
     return (result, file) if handle else result
 
 def _redirect(
@@ -550,8 +552,10 @@ def _resolve(*args, **kwargs):
     return result
 
 def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
-    is_generator = not data == None and not legacy.is_string(data)
+    is_generator = not data == None and legacy.is_generator(data)
     if is_generator: next(data); data = b"".join(data)
+    is_file = hasattr(data, "tell")
+    if is_file: data = data.read()
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
@@ -561,11 +565,11 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     import requests
 
     # verifies if the provided data is a generator, assumes that if the
-    # data is not invalid and not of types string then it's a generator
+    # data is not invalid and is of type generator then it's a generator
     # and then if that's the case encapsulates this size based generator
     # into a generator based file-like object so that it can be used inside
     # the request infra-structure (as it accepts only file objects)
-    is_generator = not data == None and not legacy.is_string(data)
+    is_generator = not data == None and legacy.is_generator(data)
     if is_generator: data = structures.GeneratorFile(data)
 
     method = method.lower()
