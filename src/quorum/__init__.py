@@ -106,7 +106,7 @@ from .meta import Ordered
 from .model import Model, LocalModel, Field, link, operation, view, field
 from .mongodb import MongoMap, MongoEncoder
 from .observer import Observable
-from .structures import OrderedDict, LazyDict, LazyValue, lazy_dict, lazy
+from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy
 from .template import render_template, template_resolve
 from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure

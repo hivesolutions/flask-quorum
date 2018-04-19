@@ -50,6 +50,7 @@ from . import typesf
 from . import config
 from . import common
 from . import exceptions
+from . import structures
 
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
@@ -561,11 +562,11 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
     # verifies if the provided data is a generator, assumes that if the
     # data is not invalid and not of types string then it's a generator
-    # and then if that's the case skips the first iteration (data size)
-    # and joins the rest of the buffer (in the generator), this must be
-    # done because requests is not compatible with generator data input
+    # and then if that's the case encapsulates this size based generator
+    # into a generator based file-like object so that it can be used inside
+    # the request infra-structure (as it accepts only file objects)
     is_generator = not data == None and not legacy.is_string(data)
-    if is_generator: next(data); data = b"".join(data)
+    if is_generator: data = structures.GeneratorFile(data)
 
     method = method.lower()
     caller = getattr(requests, method)
