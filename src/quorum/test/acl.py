@@ -49,6 +49,7 @@ class ACLTest(quorum.TestCase):
                 name = __name__,
                 secret_key = "secret"
             )
+            self.app.config["APPLICATION_ROOT"] = "/"
         except:
             self.skip()
 
