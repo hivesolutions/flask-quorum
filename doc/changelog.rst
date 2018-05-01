@@ -6,6 +6,14 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.27
+^^^^^
+
+    * Improved quality of the HTTP client
+    * Generators as input for HTTP requests
+    * Support for Flask 1.0.x
+    * Bug fixes
+
 0.5.26
 ^^^^^
 
