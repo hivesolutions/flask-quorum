@@ -92,6 +92,10 @@ ALLOW_HEADERS = "*, X-Requested-With"
 """ The default value to be used in the "Access-Control-Allow-Headers"
 header value, this should not be too restrictive """
 
+ALLOW_METHODS = "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS"
+""" The default value to be used in the "Access-Control-Allow-Methods"
+header value, this should not be too restrictive """
+
 CONTENT_SECURITY = "default-src * ws://* wss://* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
 """ The default value to be used in the "Content-Security-Policy"
 header value, this should not be too restrictive """
@@ -467,6 +471,7 @@ def load(
     app.secure_headers = True
     app.allow_origin = ALLOW_ORIGIN
     app.allow_headers = ALLOW_HEADERS
+    app.allow_methods = ALLOW_METHODS
     app.content_security = CONTENT_SECURITY
     app.frame_options = FRAME_OPTIONS
     app.xss_protection = XSS_PROTECTION

@@ -763,6 +763,8 @@ def anotate_secure(response):
         response.headers["Access-Control-Allow-Origin"] = app.allow_origin
     if app.allow_headers:
         response.headers["Access-Control-Allow-Headers"] = app.allow_headers
+    if app.allow_methods:
+        response.headers["Access-Control-Allow-Methods"] = app.allow_methods
     if app.content_security:
         response.headers["Content-Security-Policy"] = app.content_security
     if app.frame_options:
