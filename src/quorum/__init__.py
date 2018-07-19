@@ -119,9 +119,9 @@ from .util import is_iterable, request_json, get_field, get_object, is_mobile, i
     quote, unquote, is_content_type, parse_content_type, verify, verify_equal, verify_not_equal, execute,\
     JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
-    not_empty, not_false, is_in, is_lower, is_simple, is_email, is_url, is_regex, field_eq, field_gt,\
-    field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
-    all_different, no_self
+    not_empty, not_false, is_in, is_upper, is_lower, is_simple, is_email, is_url, is_regex, field_eq,\
+    field_gt, field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past,\
+    not_duplicate, all_different, no_self
 
 from .amazon import get_connection as get_amazon
 from .amazon import get_bucket as get_amazon_bucket
