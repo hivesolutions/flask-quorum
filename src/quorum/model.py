@@ -79,10 +79,13 @@ the types function, this is relevant for the built-in
 types that are meant to avoid using the default constructor """
 
 BUILDERS_META = dict(
+    text = BUILDERS[legacy.UNICODE],
     country = BUILDERS[legacy.UNICODE],
     longtext = BUILDERS[legacy.UNICODE],
     map = BUILDERS[dict],
     longmap = BUILDERS[dict],
+    date = lambda v: datetime.datetime.utcfromtimestamp(float(v)),
+    datetetime = lambda v: datetime.datetime.utcfromtimestamp(float(v)),
     file = None
 )
 """ Map equivalent to the builders map but appliable
