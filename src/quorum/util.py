@@ -858,6 +858,7 @@ def underscore_to_readable(underscore, capitalize = False):
     """
 
     parts = underscore.split("_")
+    parts = [part for part in parts if part]
     if capitalize: parts = [part[0].upper() + part[1:] for part in parts]
     else: parts[0] = parts[0][0].upper() + parts[0][1:]
     return " ".join(parts)
