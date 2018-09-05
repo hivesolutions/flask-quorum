@@ -43,8 +43,8 @@ import flask
 import datetime
 
 from . import util
-from . import legacy
 from . import common
+from . import legacy
 from . import exceptions
 
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
