@@ -607,12 +607,13 @@ def image(width = None, height = None, format = "png", **kwargs):
 
     return _ImageFile
 
-def images(width = None, height = None, format = "png"):
+def images(width = None, height = None, format = "png", **kwargs):
 
     image_c = image(
         width = width,
         height = height,
-        format = format
+        format = format,
+        **kwargs
     )
 
     class _ImageFiles(ImageFiles):
