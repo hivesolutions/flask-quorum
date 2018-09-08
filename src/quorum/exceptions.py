@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import uuid
+
 from . import common
 from . import legacy
 
@@ -54,6 +56,13 @@ class BaseError(RuntimeError):
     def __init__(self, message):
         RuntimeError.__init__(self, message)
         self.message = message
+        self._uid = None
+
+    @property
+    def uid(self):
+        if self._uid: return self._uid
+        self._uid = uuid.uuid4()
+        return self._uid
 
 class ServerInitError(BaseError):
     """
