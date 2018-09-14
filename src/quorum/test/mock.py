@@ -61,6 +61,10 @@ class Person(quorum.Model):
         type = int
     )
 
+    info = quorum.field(
+        type = dict
+    )
+
     father = quorum.field(
         type = quorum.reference(
             "Person",

@@ -103,7 +103,7 @@ from .log import MemoryHandler, BaseFormatter, ThreadFormatter, rotating_handler
     in_signature, has_exception, debug, info, warning, error, critical
 from .mail import send_mail, send_mail_a
 from .meta import Ordered
-from .model import Model, LocalModel, Field, link, operation, view, field
+from .model import Model, LocalModel, Field, link, operation, view, field, type_d
 from .mongodb import MongoMap, MongoEncoder
 from .observer import Observable
 from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy

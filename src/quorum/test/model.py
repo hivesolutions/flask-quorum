@@ -523,6 +523,15 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person.car == None, False)
 
     @quorum.secured
+    def test_fill(self):
+        first = mock.Person(fill = True)
+        second = mock.Person(fill = True)
+
+        self.assertEqual(first.info, {})
+        self.assertEqual(second.info, {})
+        self.assertNotEqual(id(first.info), id(second.info))
+
+    @quorum.secured
     def test_wrap(self):
         person = mock.Person.wrap(dict(name = "Person"))
         self.assertEqual(person.name, "Person")
