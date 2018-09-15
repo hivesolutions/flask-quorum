@@ -546,3 +546,69 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(quorum.Model._to_meta("text"), "text")
         self.assertEqual(quorum.Model._to_meta("longtext"), "longtext")
         self.assertEqual(quorum.Model._to_meta(mock.Person.father["type"]), "reference")
+
+    @quorum.secured
+    def test_meta_map(self):
+        method = quorum.model.METAS["map"]
+
+        map = dict(hello = "world")
+        result = method(map, {})
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "{\"hello\": \"world\"}")
+
+        map = dict(mundo = "olá")
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+
+    @quorum.secured
+    def test_meta_longmap(self):
+        method = quorum.model.METAS["longmap"]
+
+        map = dict(hello = "world")
+        result = method(map, {})
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "{\"hello\": \"world\"}")
+
+        map = dict(mundo = "olá")
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+
+    @quorum.secured
+    def test_is_unset(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        father = mock.Person()
+        father.name = "Father"
+        father.save()
+
+        person.father = father
+        person.save()
+
+        self.assertEqual(quorum.is_unset(person.father), False)
+        self.assertEqual(isinstance(person.father, quorum.Reference), False)
+        self.assertEqual(quorum.is_unset(person.car), True)
+        self.assertEqual(person.car, None)
+
+        person = person.reload()
+
+        self.assertEqual(quorum.is_unset(person.father), False)
+        self.assertEqual(isinstance(person.father, quorum.Reference), True)
+        self.assertEqual(person.father.is_resolved(), True)
+        self.assertEqual(quorum.is_unset(person.car), True)
+        self.assertEqual(person.car, None)
+
+        father.delete()
+
+        person = person.reload()
+
+        self.assertEqual(quorum.is_unset(person.father), True)
+        self.assertEqual(isinstance(person.father, quorum.Reference), True)
+        self.assertEqual(person.father.is_resolved(), False)
+        self.assertEqual(quorum.is_unset(person.car), True)
+        self.assertEqual(person.car, None)
