@@ -226,66 +226,6 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
 
-    @quorum.secured
-    def test_references(self):
-        person = mock.Person()
-        person.name = "Name"
-
-        cat = mock.Cat()
-        cat.name = "NameCat"
-        cat.save()
-
-        person.cats = [cat]
-        person.save()
-
-        person = mock.Person.get(identifier = 1)
-
-        self.assertEqual(person.cats[0].name, "NameCat")
-
-        person.cats = mock.Person.cats["type"]([cat])
-        person.save()
-
-        person = mock.Person.get(identifier = 1)
-
-        self.assertEqual(person.cats.is_resolved(), False)
-        self.assertEqual(person.car, None)
-        self.assertEqual(person.cats[0].name, "NameCat")
-
-        person = mock.Person.get(identifier = 1, map = True)
-
-        self.assertEqual(isinstance(person, dict), True)
-        self.assertEqual(isinstance(person["cats"], list), True)
-        self.assertEqual(isinstance(person["cats"][0], int), True)
-        self.assertEqual(len(person["cats"]), 1)
-
-        person = mock.Person.get(identifier = 1, eager = ("cats",))
-
-        self.assertEqual(person.cats.is_resolved(), True)
-
-        person = mock.Person.get(
-            identifier = 1,
-            map = True,
-            eager = ("cats",)
-        )
-
-        self.assertEqual(isinstance(person, dict), True)
-        self.assertEqual(isinstance(person["cats"], list), True)
-        self.assertEqual(isinstance(person["cats"][0], dict), True)
-
-        person = mock.Person.get(identifier = 1)
-
-        person.cats = []
-        person.save()
-
-        person = mock.Person.get(identifier = 1)
-
-        self.assertEqual(len(person.cats), 0)
-
-        person = mock.Person.get(map = True, eager = ("cats",))
-
-        self.assertEqual(isinstance(person, dict), True)
-        self.assertEqual(isinstance(person["cats"], list), True)
-        self.assertEqual(len(person["cats"]), 0)
 
     @quorum.secured
     def test_increment(self):
@@ -364,6 +304,67 @@ class ModelTest(quorum.TestCase):
 
         self.assertEqual(len(result), 7)
         self.assertEqual(result[0].name, "Name3")
+
+    @quorum.secured
+    def test_references(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        cat = mock.Cat()
+        cat.name = "NameCat"
+        cat.save()
+
+        person.cats = [cat]
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.cats[0].name, "NameCat")
+
+        person.cats = mock.Person.cats["type"]([cat])
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.cats.is_resolved(), False)
+        self.assertEqual(person.car, None)
+        self.assertEqual(person.cats[0].name, "NameCat")
+
+        person = mock.Person.get(identifier = 1, map = True)
+
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(isinstance(person["cats"][0], int), True)
+        self.assertEqual(len(person["cats"]), 1)
+
+        person = mock.Person.get(identifier = 1, eager = ("cats",))
+
+        self.assertEqual(person.cats.is_resolved(), True)
+
+        person = mock.Person.get(
+            identifier = 1,
+            map = True,
+            eager = ("cats",)
+        )
+
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(isinstance(person["cats"][0], dict), True)
+
+        person = mock.Person.get(identifier = 1)
+
+        person.cats = []
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(len(person.cats), 0)
+
+        person = mock.Person.get(map = True, eager = ("cats",))
+
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(len(person["cats"]), 0)
 
     @quorum.secured
     def test_eager(self):
@@ -473,25 +474,6 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person.father.car.name, "CarFather")
 
     @quorum.secured
-    def test_exists(self):
-        person = mock.Person()
-        person.name = "Name"
-
-        self.assertEqual(person.exists(), False)
-
-        person.save()
-
-        self.assertEqual(person.exists(), True)
-
-        person = mock.Person.get(name = "Name")
-
-        self.assertEqual(person.exists(), True)
-
-        person.delete()
-
-        self.assertEqual(person.exists(), False)
-
-    @quorum.secured
     def test_unresolvable(self):
         person = mock.Person()
         person.name = "Name"
@@ -521,6 +503,25 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(isinstance(person.car, quorum.Reference), True)
         self.assertEqual(person.car.is_resolvable(), False)
         self.assertEqual(person.car == None, False)
+
+    @quorum.secured
+    def test_exists(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertEqual(person.exists(), False)
+
+        person.save()
+
+        self.assertEqual(person.exists(), True)
+
+        person = mock.Person.get(name = "Name")
+
+        self.assertEqual(person.exists(), True)
+
+        person.delete()
+
+        self.assertEqual(person.exists(), False)
 
     @quorum.secured
     def test_fill(self):
