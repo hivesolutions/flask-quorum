@@ -75,8 +75,8 @@ def template_resolve(template):
 
     # retrieves both the complete locale set under the current request and
     # the language base value for the same locale (to be used as fallback)
-    locale = flask.request.locale
-    language = locale.split("_", 1)[0]
+    locale = flask.request.locale if hasattr(flask.request, "locale") else None
+    language = locale.split("_", 1)[0] if locale else None
 
     # sets the fallback name as the "original" template path, because
     # that's the default and expected behavior for the template engine
@@ -90,6 +90,10 @@ def template_resolve(template):
     # iterates over the complete set of locale values eligible for the
     # resolution (this also takes into account the base language)
     for _locale in (locale, language):
+        # in case the current value in iteration is not valid (not set
+        # or empty) then the current iteration is not required
+        if not _locale: continue
+
         # creates the base file name for the target (locale based) template
         # and then joins the file name with the proper base path to create
         # the "full" target file name
@@ -115,7 +119,7 @@ def template_resolve(template):
     # any previously "visited" locale value (redundant) so that the list
     # represents the non visited locales by order of preference
     locales = list(app.locales)
-    if flask.request.locale in locales: locales.remove(flask.request.locale)
+    if locale in locales: locales.remove(flask.request.locale)
 
     # iterates over the complete list of locales trying to find the any
     # possible existing template that is compatible with the specification
