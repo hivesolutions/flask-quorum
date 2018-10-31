@@ -1018,7 +1018,7 @@ def sp_to_nbsp_jinja(eval_ctx, value):
     if eval_ctx.autoescape: value = jinja2.Markup(value)
     return value
 
-def unset(value, default = "", extra = ()):
+def unset(value, default = "", empty = False, extra = ()):
     """
     Verifies if the provided value is not unset (by default) testing
     it against the unset and None values.
@@ -1032,14 +1032,18 @@ def unset(value, default = "", extra = ()):
     :type default: String
     :param default: The default value to be returned if the value is
     considered to be unset.
-    :type extra: String/Tuple
-    :param extra: A string or a tuple that represent the multiple values
-    that are going to be considered to be unset ones.
+    :type empty: bool
+    :param empty: If the empty string should also be considered as part
+    of the extra (unset) values for comparison.
+    :type extra: Tuple
+    :param extra: A tuple that represents the multiple values that are
+    going to be considered to be unset ones.
     :rtype: String
     :return: The processed string value according to the unset validation.
     """
 
-    if not isinstance(extra, (list, tuple)): extra = (extra,)
+    if empty and extra: extra = tuple(list(extra) + [""])
+    elif empty and not extra: extra = ("")
     if isinstance(value, jinja2.Undefined): return default
     if value in (None,): return default
     if value in extra: return default
