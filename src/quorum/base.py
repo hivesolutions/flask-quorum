@@ -462,6 +462,7 @@ def load(
     app.template_filter("locale")(util.to_locale)
     app.template_filter("nl_to_br")(util.nl_to_br_jinja)
     app.template_filter("sp_to_nbsp")(util.sp_to_nbsp_jinja)
+    app.template_filter("unset")(util.unset)
     app.request_class = request.Request
     app.locales = locales
     app.safe = safe

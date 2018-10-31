@@ -1018,6 +1018,33 @@ def sp_to_nbsp_jinja(eval_ctx, value):
     if eval_ctx.autoescape: value = jinja2.Markup(value)
     return value
 
+def unset(value, default = "", extra = ()):
+    """
+    Verifies if the provided value is not unset (by default) testing
+    it against the unset and None values.
+
+    If an extra set of values is provided does values are also going
+    to be used in the comparison against the unset value.
+
+    :type value: String
+    :param value: The value that is going to be compared against the
+    unset concept of a value.
+    :type default: String
+    :param default: The default value to be returned if the value is
+    considered to be unset.
+    :type extra: String/Tuple
+    :param extra: A string or a tuple that represent the multiple values
+    that are going to be considered to be unset ones.
+    :rtype: String
+    :return: The processed string value according to the unset validation.
+    """
+
+    if not isinstance(extra, (list, tuple)): extra = (extra,)
+    if isinstance(value, jinja2.Undefined): return default
+    if value in (None,): return default
+    if value in extra: return default
+    return value
+
 def date_time(value, format = "%d/%m/%Y"):
     """
     Formats the provided as a date string according to the

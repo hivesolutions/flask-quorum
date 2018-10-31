@@ -226,7 +226,6 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
 
-
     @quorum.secured
     def test_increment(self):
         person = mock.Person()
