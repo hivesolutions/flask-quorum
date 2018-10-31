@@ -1043,7 +1043,7 @@ def unset(value, default = "", empty = False, extra = ()):
     """
 
     if empty and extra: extra = tuple(list(extra) + [""])
-    elif empty and not extra: extra = ("")
+    elif empty and not extra: extra = ("",)
     if isinstance(value, jinja2.Undefined): return default
     if value in (None,): return default
     if value in extra: return default
