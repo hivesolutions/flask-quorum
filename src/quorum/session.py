@@ -133,8 +133,8 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         total_seconds = self.get_seconds(redis_expire)
         self.redis.setex(
             self.prefix + session.sid,
-            value,
-            int(total_seconds)
+            value = value,
+            time = int(total_seconds)
         )
 
         # sets the proper cookie value (with session identifier) in the
