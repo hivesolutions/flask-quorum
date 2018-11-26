@@ -884,7 +884,7 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
 
     return "".join(random.choice(chars) for _index in range(size))
 
-def to_locale(value, locale = None, fallback = True):
+def to_locale(value, locale = None, default = None, fallback = True):
     """
     Utility function used to localize the provided value according
     to the currently loaded set of bundles, the bundles are loaded
@@ -895,7 +895,8 @@ def to_locale(value, locale = None, fallback = True):
     is used as an alternative.
 
     In case the value is not localizable (no valid bundle available)
-    it is returned as it is without change.
+    it is returned as it is without change, or in alternative a default
+    value (if passed) is returned.
 
     :type value: String
     :param value: The value that is going to be localized according
@@ -904,6 +905,9 @@ def to_locale(value, locale = None, fallback = True):
     :type locale: String
     :param locale: The (target) locale value to be used in the
     translation process for the provided string value.
+    :type default: String
+    :param default: The default value to be returned in case it's not
+    possible to run the localization process.
     :type fallback: bool
     :param fallback: If a fallback operation should be performed in
     case no value was retrieved from the base/request locale.
@@ -915,8 +919,12 @@ def to_locale(value, locale = None, fallback = True):
     value_t = type(value)
     is_sequence = value_t in (list, tuple)
     if is_sequence: return _serialize([
-        to_locale(value, locale = locale, fallback = fallback)\
-        for value in value
+        to_locale(
+            value,
+            locale = locale,
+            default = default,
+            fallback = fallback
+        ) for value in value
     ])
     has_context = common.base().has_context()
     locale = locale or (flask.request.locale if has_context else None)
@@ -932,9 +940,10 @@ def to_locale(value, locale = None, fallback = True):
     if fallback and app: return to_locale(
         value,
         locale = app._locale_d,
+        default = default,
         fallback = False
     )
-    return value
+    return value if default == None else default
 
 def nl_to_br(value):
     """
