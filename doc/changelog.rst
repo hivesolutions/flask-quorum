@@ -6,10 +6,15 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.31
+^^^^^
+
+    * Support dor the default field in the to_locale method
+
 0.5.30
 ^^^^^
 
-    * New |unset filter
+    * Small set of fixes
 
 0.5.29
 ^^^^^

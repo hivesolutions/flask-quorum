@@ -38,7 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 NAME = "quorum"
-VERSION = "0.5.30"
+VERSION = "0.5.31"
 AUTHOR = "Hive Solutions Lda."
 EMAIL = "development@hive.pt"
 DESCRIPTION = "Quorum Extensions for Flask"
