@@ -108,7 +108,7 @@ def get_db():
 
 def drop_db():
     db = get_db()
-    names = db.collection_names()
+    names = _list_names(db)
     for name in names:
         if name.startswith("system."): continue
         db.drop_collection(name)
@@ -139,12 +139,31 @@ def is_mongo(obj):
     if bson and isinstance(obj, bson.DBRef): return True
     return False
 
-def is_new():
-    return int(_pymongo().version[0]) >= 3 if pymongo else False
+def is_new(major = 3, minor = 0, patch = 0):
+    if not pymongo: return False
+    _version = _pymongo().version
+    _major = int(_version[0])
+    _minor = int(_version[2])
+    _patch = int(_version[4])
+    if _major > major: return True
+    elif _major < major: return False
+    if _minor > minor: return True
+    elif _minor < minor: return False
+    if _patch >= patch: return True
+    else: return False
+
+def _list_names(db, *args, **kwargs):
+    if is_new(3, 7): return db.list_collection_names()
+    else: return db.collection_names()
+
+def _count(store, *args, **kwargs):
+    if len(args) == 0: args = [{}]
+    if is_new(3, 7): return store.count_documents(*args, **kwargs)
+    return store.count(*args, **kwargs)
 
 def _store_find_and_modify(store, *args, **kwargs):
-    if is_new(): store.find_one_and_update(*args, **kwargs)
-    else: store.find_and_modify(*args, **kwargs)
+    if is_new(): return store.find_one_and_update(*args, **kwargs)
+    else: return store.find_and_modify(*args, **kwargs)
 
 def _store_insert(store, *args, **kwargs):
     if is_new(): store.insert_one(*args, **kwargs)
