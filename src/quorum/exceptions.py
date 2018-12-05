@@ -195,7 +195,7 @@ class ValidationInternalError(BaseInternalError):
 
     name = None
     """ The name of the attribute that failed
-    the validation """
+    the validation, for latter reference """
 
     def __init__(self, name, message):
         BaseInternalError.__init__(self, message)
