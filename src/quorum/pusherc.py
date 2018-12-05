@@ -82,7 +82,7 @@ def get_pusher():
 def _pusher(verify = True):
     if verify: util.verify(
         not pusher == None,
-        message = "pusher library not available",
+        message = "Pusher library not available",
         exception = exceptions.OperationalError
     )
     return pusher

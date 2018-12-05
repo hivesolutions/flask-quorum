@@ -102,7 +102,7 @@ def delete_key(name):
 def _boto(verify = True):
     if verify: util.verify(
         not boto == None,
-        message = "boto library not available",
+        message = "Boto library not available",
         exception = exceptions.OperationalError
     )
     return boto

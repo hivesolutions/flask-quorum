@@ -152,7 +152,7 @@ def _get_connection(url):
 def _redis(verify = True):
     if verify: util.verify(
         not redis == None,
-        message = "redis library not available",
+        message = "RedisPy library not available",
         exception = exceptions.OperationalError
     )
     return redis

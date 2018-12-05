@@ -209,7 +209,7 @@ def _reset_connection():
 def _pymongo(verify = True):
     if verify: util.verify(
         not pymongo == None,
-        message = "pymongo library not available",
+        message = "PyMongo library not available",
         exception = exceptions.OperationalError
     )
     return pymongo
