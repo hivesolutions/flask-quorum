@@ -1222,32 +1222,34 @@ def parse_content_type(data):
     # mime types for the content and the extra key to value items
     return types, extra_m
 
-def verify(condition, message = None, code = None, exception = None):
+def verify(condition, message = None, code = None, exception = None, **kwargs):
     if condition: return
     exception = exception or exceptions.AssertionError
-    kwargs = dict()
+    kwargs = dict(kwargs)
     if not code == None: kwargs["code"] = code
     raise exception(
         message or "Assertion of data failed",
         **kwargs
     )
 
-def verify_equal(first, second, message = None, code = None, exception = None):
+def verify_equal(first, second, message = None, code = None, exception = None, **kwargs):
     message = message or "Expected %s got %s" % (repr(second), repr(first))
     return verify(
         first == second,
         message = message,
         code = code,
-        exception = exception
+        exception = exception,
+        **kwargs
     )
 
-def verify_not_equal(first, second, message = None, code = None, exception = None):
+def verify_not_equal(first, second, message = None, code = None, exception = None, **kwargs):
     message = message or "Expected %s not equal to %s" % (repr(first), repr(second))
     return verify(
         not first == second,
         message = message,
         code = code,
-        exception = exception
+        exception = exception,
+        **kwargs
     )
 
 def execute(args, command = None, path = None, shell = True, encoding = None):
