@@ -95,38 +95,46 @@ be set on the initial loading of the ".home" file """
 if not isinstance(__builtins__, dict):
     __builtins__ = __builtins__.__dict__
 
-def conf(name, default = None, cast = None):
+def conf(name, default = None, cast = None, ctx = None):
+    config = ctx["config"] if ctx else config_g
     cast = _cast_r(cast)
-    value = config_g.get(name, default)
+    value = config.get(name, default)
     if cast and not value == None: value = cast(value)
     return value
 
-def conf_prefix(prefix):
-    config = dict()
-    for name, value in config_g.items():
+def conf_prefix(prefix, ctx = None):
+    config = ctx["config"] if ctx else config_g
+    config_prefix = dict()
+    for name, value in config.items():
         if not name.startswith(prefix): continue
-        config[name] = value
-    return config
+        config_prefix[name] = value
+    return config_prefix
 
-def conf_suffix(suffix):
-    config = dict()
-    for name, value in config_g.items():
+def conf_suffix(suffix, ctx = None):
+    config = ctx["config"] if ctx else config_g
+    config_suffix = dict()
+    for name, value in config.items():
         if not name.endswith(suffix): continue
-        config[name] = value
+        config_suffix[name] = value
+    return config_suffix
+
+def confs(name, value, ctx = None):
+    config = ctx["config"] if ctx else config_g
+    config[name] = value
+
+def confr(name, ctx = None):
+    config = ctx["config"] if ctx else config_g
+    if not name in config: return
+    del config[name]
+
+def confd(ctx = None):
+    config = ctx["config"] if ctx else config_g
     return config
 
-def confs(name, value):
-    global config_g
-    config_g[name] = value
+def confctx():
+    return dict(config = dict(), config_f = dict())
 
-def confr(name):
-    if not name in config_g: return
-    del config_g[name]
-
-def confd():
-    return config_g
-
-def load(names = (FILE_NAME,), path = None, encoding = "utf-8"):
+def load(names = (FILE_NAME,), path = None, encoding = "utf-8", ctx = None):
     paths = []
     homes = get_homes()
     for home in homes:
@@ -138,10 +146,13 @@ def load(names = (FILE_NAME,), path = None, encoding = "utf-8"):
     paths.append(path)
     for path in paths:
         for name in names:
-            load_file(name = name, path = path, encoding = encoding)
-    load_env()
+            load_file(name = name, path = path, encoding = encoding, ctx = ctx)
+    load_env(ctx = ctx)
 
-def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
+def load_file(name = FILE_NAME, path = None, encoding = "utf-8", ctx = None):
+    config = ctx["config"] if ctx else config_g
+    _config_f = ctx["config_f"] if ctx else config_f
+
     if path: path = os.path.normpath(path)
     if path: file_path = os.path.join(path, name)
     else: file_path = name
@@ -153,9 +164,9 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
     exists = os.path.exists(file_path)
     if not exists: return
 
-    exists = file_path in config_f
-    if exists: config_f.remove(file_path)
-    config_f.append(file_path)
+    exists = file_path in _config_f
+    if exists: _config_f.remove(file_path)
+    _config_f.append(file_path)
 
     file = open(file_path, "rb")
     try: data = file.read()
@@ -169,9 +180,11 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
 
     for key, value in data_j.items():
         if not _is_valid(key): continue
-        config_g[key] = value
+        config[key] = value
 
-def load_env():
+def load_env(ctx = None):
+    _config = ctx["config"] if ctx else config_g
+
     config = dict(os.environ)
     homes = get_homes()
 
@@ -180,14 +193,14 @@ def load_env():
 
     for key, value in legacy.iteritems(config):
         if not _is_valid(key): continue
-        config_g[key] = value
+        _config[key] = value
         is_bytes = legacy.is_bytes(value)
         if not is_bytes: continue
         for encoding in ENV_ENCODINGS:
             try: value = value.decode(encoding)
             except UnicodeDecodeError: pass
             else: break
-        config_g[key] = value
+        _config[key] = value
 
 def get_homes(
     file_path = HOME_FILE,
