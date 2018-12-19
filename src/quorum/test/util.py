@@ -133,6 +133,9 @@ class UtilTest(quorum.TestCase):
         result = quorum.is_browser(user_agent = "netius/1.1.10")
         self.assertEqual(result, False)
 
+        result = quorum.is_browser(user_agent = "netius/1.1b")
+        self.assertEqual(result, False)
+
         result = quorum.is_browser(user_agent = "")
         self.assertEqual(result, False)
 
@@ -166,6 +169,9 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(result, True)
 
         result = quorum.is_bot(user_agent = "netius/1.1.10")
+        self.assertEqual(result, False)
+
+        result = quorum.is_bot(user_agent = "netius/1.1b")
         self.assertEqual(result, False)
 
         result = quorum.is_bot(user_agent = "")
@@ -264,6 +270,16 @@ class UtilTest(quorum.TestCase):
             version = "1.1.10",
             version_f = 1.1,
             version_i = 1,
+            interactive = False,
+            bot = False
+        ))
+
+        result = quorum.browser_info(user_agent = "netius/1.1b")
+        self.assertEqual(result, dict(
+            name = "netius",
+            version = "1.1b",
+            version_f = 0,
+            version_i = 0,
             interactive = False,
             bot = False
         ))
