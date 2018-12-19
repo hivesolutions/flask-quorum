@@ -6,10 +6,17 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.32
+^^^^^
+
+    * Improved pyMongo integration
+    * Support for context in configuration
+    * Better `verify` functions
+
 0.5.31
 ^^^^^
 
-    * Support dor the default field in the to_locale method
+    * Support for the default field in the to_locale method
 
 0.5.30
 ^^^^^
