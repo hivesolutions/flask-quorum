@@ -47,6 +47,8 @@ import string
 import locale
 import random
 import datetime
+import warnings
+import functools
 import itertools
 import threading
 import subprocess
@@ -1274,6 +1276,40 @@ def execute(args, command = None, path = None, shell = True, encoding = None):
         stderr = stderr,
         code = code
     )
+
+def deprecated(message = "Function %s is now deprecated"):
+    """
+    Decorator that marks a certain function or method as
+    deprecated so that whenever such function is called
+    an output messaged warns the developer about the
+    deprecation (incentive).
+
+    :type message: String
+    :param message: The message template to be used in the
+    output operation of the error.
+    :rtype: Decorator
+    :return: The decorator that should be used to wrap a
+    function and mark it as deprecated (send warning).
+    """
+
+    def decorator(function):
+
+        name = function.__name__ if hasattr(function, "__name__") else None
+
+        @functools.wraps(function)
+        def interceptor(*args, **kwargs):
+            warnings.simplefilter("always", DeprecationWarning)
+            warnings.warn(
+                message % name,
+                category = DeprecationWarning,
+                stacklevel = 2
+            )
+            warnings.simplefilter("default", DeprecationWarning)
+            return function(*args, **kwargs)
+
+        return interceptor
+
+    return decorator
 
 def _serialize(value):
     if value in legacy.STRINGS: return value
