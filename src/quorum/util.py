@@ -1256,6 +1256,16 @@ def verify_not_equal(first, second, message = None, code = None, exception = Non
         **kwargs
     )
 
+def verify_many(sequence, message = None, code = None, exception = None, **kwargs):
+    for condition in sequence:
+        verify(
+            condition,
+            message = message,
+            code = code,
+            exception = exception,
+            **kwargs
+        )
+
 def execute(args, command = None, path = None, shell = True, encoding = None):
     if not encoding: encoding = sys.getfilesystemencoding()
     if command: args = command.split(" ")

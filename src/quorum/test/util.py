@@ -519,3 +519,22 @@ class UtilTest(quorum.TestCase):
             quorum.OperationalError,
             lambda: quorum.verify_not_equal(1, 1, exception = quorum.OperationalError)
         )
+
+    def test_verify_many(self):
+        result = quorum.verify_many((1 == 1, 2 == 2, 3 == 3))
+        self.assertEqual(result, None)
+
+        result = quorum.verify_many(("hello" == "hello",))
+        self.assertEqual(result, None)
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_many((1 == 2,)))
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_many((1 == 1, 1 == 2)))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify_many(
+                (1 == 1, 1 == 2),
+                exception = quorum.OperationalError
+            )
+        )
