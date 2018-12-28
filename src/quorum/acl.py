@@ -242,7 +242,7 @@ def ensure_auth(username, password, json = False):
 def get_tokens_m(set = True):
     """
     Retrieves the map of tokens from the current session so that
-    they can be used for proper acl validation.
+    they can be used for proper ACL validation.
 
     In case the current session contains a sequence based representation
     of the tokens they are converted to their equivalent map value.
@@ -251,7 +251,7 @@ def get_tokens_m(set = True):
     :param set: If the possible converted tokens list should be persisted
     into the current session.
     :rtype: Dictionary
-    :return: The map of tokens to be used for acl validation.
+    :return: The map of tokens to be used for ACL validation.
     """
 
     # tries to retrieve the tokens map from the current session
