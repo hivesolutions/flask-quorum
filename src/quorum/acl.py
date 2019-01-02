@@ -178,8 +178,8 @@ def ensure(token = None, json = False):
     The optional token parameter may be used to enforce presence
     of the string in the tokens sequence contained in session.
 
-    An optional json parameter may be set in case the return
-    error value should be returned as a json response instead
+    An optional JSON parameter may be set in case the return
+    error value should be returned as a JSON response instead
     of the normal (default) login page redirection.
 
     :type token: String
@@ -188,7 +188,7 @@ def ensure(token = None, json = False):
     verification is done.
     :type json: bool
     :param json: Flag indicating id an eventual error should be
-    serialized as json and returned or if a page redirection
+    serialized as JSON and returned or if a page redirection
     should be used instead (default behavior).
     """
 
@@ -210,8 +210,8 @@ def ensure_auth(username, password, json = False):
     request basic authentication information for the provided
     username and password.
 
-    An optional json parameter may be set in case the return
-    error value should be returned as a json response instead
+    An optional JSON parameter may be set in case the return
+    error value should be returned as a JSON response instead
     of the normal (default) login page redirection.
 
     :type username: String
@@ -222,7 +222,7 @@ def ensure_auth(username, password, json = False):
     if the basic authentication values verification.
     :type json: bool
     :param json: Flag indicating id an eventual error should be
-    serialized as json and returned or if a page redirection
+    serialized as JSON and returned or if a page redirection
     should be used instead (default behavior).
     :see: http://en.wikipedia.org/wiki/Basic_access_authentication
     """
