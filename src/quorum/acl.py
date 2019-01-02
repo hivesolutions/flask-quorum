@@ -71,7 +71,7 @@ def check_login(token = None):
     # validation procedures have failed the check is invalid
     return False
 
-def check_user(self):
+def check_user():
     # runs the multiple verification strategies available an
     # in case at least one of them succeeds the user is considered
     # to be currently authenticated
