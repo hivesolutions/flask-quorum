@@ -64,11 +64,22 @@ def check_login(token = None):
     # in case the username value is set in session and there's
     # no token to be validated returns valid and in case the checking
     # of the complete set of tokens is valid also returns valid
-    if "username" in flask.session and not token: return True
+    if check_user() and not token: return True
     if check_tokens(tokens): return True
 
     # returns the default value as invalid because if all the
     # validation procedures have failed the check is invalid
+    return False
+
+def check_user(self):
+    # runs the multiple verification strategies available an
+    # in case at least one of them succeeds the user is considered
+    # to be currently authenticated
+    if "username" in flask.session: return True
+    if hasattr(flask, "tokens_p"): return True
+
+    # by default the user is considered to be not authenticated, all
+    # of the tests for authentication have failed
     return False
 
 def check_token(token, tokens_m = None):
@@ -254,10 +265,17 @@ def get_tokens_m(set = True):
     :return: The map of tokens to be used for ACL validation.
     """
 
-    # tries to retrieve the tokens map from the current session
-    # and then verifies if the resulting value is either a map
-    # or a sequence, going to be used for decisions
-    tokens_m = flask.session.get("tokens", {})
+    # tries to retrieve the "provider method "for the tokens under the
+    # current request an in case it's not available used the default
+    # one (simple session access)
+    try:
+        if hasattr(flask, "tokens_p"): tokens_m = flask.tokens_p()
+        else: tokens_m = flask.session.get("tokens", {})
+    except BaseException:
+        return dict()
+
+    # verifies if the resulting value is either a map or a sequence,
+    # going to be used for decisions on normalization
     is_map = isinstance(tokens_m, dict)
     is_sequence = isinstance(tokens_m, (list, tuple))
 
