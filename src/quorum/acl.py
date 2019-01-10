@@ -259,11 +259,19 @@ def get_tokens_m(set = True):
     of the tokens they are converted to their equivalent map value.
 
     :type set: bool
-    :param set: If the possible converted tokens list should be persisted
-    into the current session.
+    :param set: If the possibly converted tokens list should be persisted
+    into the current session, sparing some CPU cycles on next execution,
+    in case no value is provided a default value is applied taking into
+    account the current execution context.
     :rtype: Dictionary
     :return: The map of tokens to be used for ACL validation.
     """
+
+    # verifies if the set flag is set and if that's not the case
+    # ensures proper default value taking into account if there's
+    # a token "provider method" defined or not
+    if set == None:
+        set = False if hasattr(flask, "tokens_p") else True
 
     # tries to retrieve the "provider method "for the tokens under the
     # current request an in case it's not available used the default
