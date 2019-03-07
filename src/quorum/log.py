@@ -52,12 +52,12 @@ from . import common
 from . import config
 from . import legacy
 
-LOGGING_FORMAT = "%%(asctime)s [%%(levelname)s] %s%%(message)s"
+LOGGING_FORMAT_T = "%%(asctime)s [%%(levelname)s] %s%%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers """
 
-LOGGING_FORMAT_TID = "%%(asctime)s [%%(levelname)s] %s[%%(thread)d] %%(message)s"
+LOGGING_FORMAT_TID_T = "%%(asctime)s [%%(levelname)s] %s[%%(thread)d] %%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers, this version of the string
@@ -109,8 +109,8 @@ SYSLOG_PORTS = dict(tcp = 601, udp = 514)
 """ Dictionary that maps the multiple transport protocol
 used by syslog with the appropriate default ports """
 
-LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
-LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
+LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
+LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
 
 class MemoryHandler(logging.Handler):
     """
@@ -250,6 +250,7 @@ class ThreadFormatter(BaseFormatter):
 
     def __init__(self, *args, **kwargs):
         BaseFormatter.__init__(self, *args, **kwargs)
+        self._basefmt = BaseFormatter(*args, **kwargs)
         self._tidfmt = BaseFormatter(*args, **kwargs)
 
     def format(self, record):
@@ -263,10 +264,13 @@ class ThreadFormatter(BaseFormatter):
         current = threading.current_thread()
         is_main = current.name == "MainThread"
         if not is_main: return self._tidfmt.format(record)
-        return BaseFormatter.format(self, record)
+        return self._basefmt.format(record)
+
+    def set_base(self, value, *args, **kwargs):
+        self._basefmt = BaseFormatter(value, *args, **kwargs)
 
     def set_tid(self, value, *args, **kwargs):
-        self._tidfmt = logging.Formatter(value, *args, **kwargs)
+        self._tidfmt = BaseFormatter(value, *args, **kwargs)
 
 def rotating_handler(
     path = "quorum.log",
