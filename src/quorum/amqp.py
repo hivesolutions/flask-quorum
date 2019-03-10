@@ -42,7 +42,7 @@ from . import legacy
 from . import exceptions
 
 try: import pika
-except: pika = None
+except ImportError: pika = None
 
 TIMEOUT = 100
 """ The time the retrieval of a connection waits before
