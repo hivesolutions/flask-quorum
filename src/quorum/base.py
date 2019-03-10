@@ -587,14 +587,14 @@ def load_bundles(app, offset = 2):
         path_f = os.path.join(bundles_path, path)
         file = open(path_f, "rb")
         try: data_j = json.load(file)
-        except: continue
+        except Exception: continue
         finally: file.close()
 
         # unpacks the current path in iteration into the base name,
         # locale string and file extension to be used in the registration
         # of the data in the bundles registry
         try: _base, locale, _extension = path.split(".", 2)
-        except: continue
+        except Exception: continue
 
         # retrieves a possible existing map for the current locale in the
         # registry and updates such map with the loaded data, then re-updates
@@ -663,7 +663,7 @@ def start_log(
         # tries to create the file handler for the logger with the
         # resolve path (operation may fail for permissions)
         file_handler = path and file_log and logging.FileHandler(path)
-    except:
+    except Exception:
         # in case there's an error creating the file handler for
         # the logger prints an error message indicating the problem
         sys.stderr.write("Problem starting logging for file '%s'\n" % path)
@@ -887,7 +887,7 @@ def models_c(models = None):
         # from the top level model in case it does not continues
         # the loop as there's nothing to be done
         try: is_valid = issubclass(value, model.Model)
-        except: is_valid = False
+        except Exception: is_valid = False
         if not is_valid: continue
 
         # adds the current value in iteration as a new class

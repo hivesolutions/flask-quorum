@@ -170,7 +170,8 @@ def request_json(request = None, encoding = "utf-8"):
         is_bytes = legacy.is_bytes(data)
         if is_bytes: data = data.decode(encoding)
         data_j = json.loads(data)
-    except: data_j = {}
+    except Exception:
+        data_j = {}
     request.properties["_data_j"] = data_j
 
     # returns the json data object to the caller method so that it
@@ -734,7 +735,7 @@ def set_locale():
     if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
     else: locale_n += ".utf8"
     try: locale.setlocale(locale.LC_ALL, locale_n)
-    except: pass
+    except Exception: pass
 
 def reset_locale():
     locale.setlocale(locale.LC_ALL, "")
@@ -1085,7 +1086,7 @@ def date_time(value, format = "%d/%m/%Y"):
     # in case it fails the proper string value is returned
     # immediately as a fallback procedure
     try: value_f = float(value)
-    except: return value
+    except Exception: return value
 
     # creates the date time structure from the provided float
     # value and then formats the date time according to the
@@ -1097,7 +1098,7 @@ def quote(value, *args, **kwargs):
     """
     Quotes the passed value according to the defined
     standard for url escaping, the value is first encoded
-    into the expected utf-8 encoding as defined by standard.
+    into the expected UTF-8 encoding as defined by standard.
 
     This method should be used instead of a direct call to
     the equivalent call in the URL library.
@@ -1119,7 +1120,7 @@ def unquote(value, *args, **kwargs):
     Unquotes the provided value according to the URL scheme
     the resulting value should be an unicode string representing
     the same value, the intermediary string value from the decoding
-    should be an utf-8 based value.
+    should be an UTF-8 based value.
 
     This method should be used instead of a direct call to
     the equivalent call in the URL library.

@@ -46,7 +46,7 @@ from . import config
 from . import exceptions
 
 try: import redis
-except: redis = None
+except ImportError: redis = None
 
 connection = None
 """ The global connection object that should persist

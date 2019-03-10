@@ -41,7 +41,7 @@ from . import util
 from . import exceptions
 
 try: import pusher
-except: pusher = None
+except ImportError: pusher = None
 
 pusher_c = None
 """ The global pusher connection object to be used along

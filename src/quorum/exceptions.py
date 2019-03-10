@@ -260,7 +260,7 @@ class HTTPDataError(HTTPError):
         if extended:
             data = self.read(error = error)
             try: data = data.decode("utf-8")
-            except: data = legacy.str(data)
+            except Exception: data = legacy.str(data)
             if data: message = message + "\n" + data if message else data
         HTTPError.__init__(self, message)
         self.code = code

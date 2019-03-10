@@ -46,10 +46,10 @@ from . import typesf
 from . import exceptions
 
 try: import pymongo
-except: pymongo = None
+except ImportError: pymongo = None
 
 try: import bson.json_util
-except: bson = None
+except ImportError: bson = None
 
 connection = None
 """ The global connection object that should persist

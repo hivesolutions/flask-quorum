@@ -41,7 +41,7 @@ from . import legacy
 from . import exceptions
 
 try: import xlrd
-except: xlrd = None
+except ImportError: xlrd = None
 
 def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
     # verifies if the xlrd module has been correctly loaded
