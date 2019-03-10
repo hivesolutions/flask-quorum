@@ -43,7 +43,7 @@ class MailTest(quorum.TestCase):
 
     def setUp(self):
         try: quorum.load(name = __name__)
-        except: self.skip()
+        except Exception: self.skip()
 
     def tearDown(self):
         quorum.unload()

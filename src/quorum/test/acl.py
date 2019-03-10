@@ -50,7 +50,7 @@ class ACLTest(quorum.TestCase):
                 secret_key = "secret"
             )
             self.app.config["APPLICATION_ROOT"] = "/"
-        except:
+        except Exception:
             self.skip()
 
     def tearDown(self):

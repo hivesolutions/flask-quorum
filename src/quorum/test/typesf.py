@@ -50,14 +50,14 @@ class TypesfTest(quorum.TestCase):
                 mongo_database = "test",
                 models = mock
             )
-        except:
+        except Exception:
             self.skip()
 
     def tearDown(self):
         try:
             adapter = quorum.get_adapter()
             adapter.drop_db()
-        except: pass
+        except Exception: pass
         finally: quorum.unload()
 
     @quorum.secured

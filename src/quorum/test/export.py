@@ -46,14 +46,14 @@ class ExportTest(quorum.TestCase):
     def setUp(self):
         try:
             quorum.load(name = __name__)
-        except:
+        except Exception:
             self.skip()
 
     def tearDown(self):
         try:
             adapter = quorum.get_adapter()
             adapter.drop_db()
-        except: pass
+        except Exception: pass
         finally: quorum.unload()
 
     @quorum.secured

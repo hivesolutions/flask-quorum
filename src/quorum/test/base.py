@@ -44,7 +44,7 @@ class BaseTest(quorum.TestCase):
     def setUp(self):
         try:
             quorum.load(name = __name__)
-        except:
+        except Exception:
             self.skip()
 
     def tearDown(self):

@@ -45,12 +45,12 @@ class AmazonTest(quorum.TestCase):
         try:
             quorum.load(name = __name__)
             quorum.get_amazon()
-        except:
+        except Exception:
             self.skip()
 
     def tearDown(self):
         try: quorum.clear_amazon_bucket()
-        except: pass
+        except Exception: pass
         finally: quorum.unload()
 
     @quorum.secured

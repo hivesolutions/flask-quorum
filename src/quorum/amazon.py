@@ -41,7 +41,7 @@ from . import util
 from . import exceptions
 
 try: import boto
-except: boto = None
+except ImportError: boto = None
 
 connection = None
 """ The global wide connection to the amazon server
