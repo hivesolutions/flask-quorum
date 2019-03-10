@@ -101,7 +101,7 @@ def route(*args, **kwargs):
                     status = exception.code,
                     mimetype = "application/json"
                 )
-            except BaseException as exception:
+            except Exception as exception:
                 # runs the default handling of the user exception in the flask
                 # infra-structure so that the proper exception callbacks are called
                 # in case they exist and are properly registered

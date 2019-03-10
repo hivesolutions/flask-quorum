@@ -213,7 +213,7 @@ def run_base():
 
 def run_netius():
     try: import netius.servers
-    except BaseException as exception:
+    except Exception as exception:
         raise exceptions.ServerInitError(
             legacy.UNICODE(exception),
             server = "netius"
@@ -253,7 +253,7 @@ def run_netius():
 
 def run_waitress():
     try: import waitress
-    except BaseException as exception:
+    except Exception as exception:
         raise exceptions.ServerInitError(
             legacy.UNICODE(exception),
             server = "waitress"

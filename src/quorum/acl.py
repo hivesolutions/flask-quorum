@@ -280,7 +280,7 @@ def get_tokens_m(set = True):
     try:
         if hasattr(flask, "tokens_p"): tokens_m = flask.tokens_p()
         else: tokens_m = flask.session.get("tokens", {})
-    except BaseException:
+    except Exception:
         return dict()
 
     # verifies if the resulting value is either a map or a sequence,
