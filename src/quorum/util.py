@@ -1065,15 +1065,16 @@ def unset(value, default = "", empty = False, extra = ()):
 
 def date_time(value, format = "%d/%m/%Y"):
     """
-    Formats the provided as a date string according to the
+    Formats the value provided as a date string according to the
     provided date format.
 
     Assumes that the provided value represents a float string
     and that may be used as the based timestamp for conversion.
 
-    :type value: String
+    :type value: String/float
     :param value: The base timestamp value string that is going
-    to be used for the conversion of the date string.
+    to be used for the conversion of the date string, a float
+    may be provided instead of a string.
     :type format: String
     :param format: The format string that is going to be used
     when formatting the date time value.
@@ -1092,7 +1093,9 @@ def date_time(value, format = "%d/%m/%Y"):
     # value and then formats the date time according to the
     # provided format and returns the resulting string
     date_time_s = datetime.datetime.utcfromtimestamp(value_f)
-    return date_time_s.strftime(format).decode("utf-8")
+    date_time_s = date_time_s.strftime(format)
+    is_unicode = legacy.is_unicode(date_time_s)
+    return date_time_s if is_unicode else date_time_s.decode("utf-8")
 
 def quote(value, *args, **kwargs):
     """
