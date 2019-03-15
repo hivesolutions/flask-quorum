@@ -81,7 +81,7 @@ class RedisMemory(object):
         name_s = str(name)
         self.values[name_s] = value
 
-    def setex(self, name, value, expire):
+    def setex(self, name, value, time = None):
         self.set(name, value)
 
     def delete(self, name):
