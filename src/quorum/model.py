@@ -414,7 +414,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         The additional named arguments parameters allows extensibility to set
         extra value in the creation of the wrapped object.
 
-        This operation is specially useful for api based environments where client
+        This operation is specially useful for API based environments where client
         side business logic is meant to be added to the static data.
 
         :type models: List
@@ -763,6 +763,23 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return definition
 
     @classmethod
+    def definition_extended(cls):
+        # in case the definition extended is already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_definition_extended" in cls.__dict__: return cls._definition_extended
+
+        # retrieves the base definition dictionary and duplicated it adding
+        # the element present in the set of extra definition (overridable on
+        # a per model basis, providing extension)
+        definition_extended = dict(cls.definition())
+        definition_extended.update(cls.extra_definition())
+
+        # saves the currently generated definition extended under the current
+        # class and then returns the contents of it to the caller method
+        cls._definition_extended = definition_extended
+        return definition_extended
+
+    @classmethod
     def links(cls):
         # in case the links are already "cached" in the current
         # class (fast retrieval) returns immediately
@@ -961,9 +978,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return views_m.get(name, None)
 
     @classmethod
-    def definition_n(cls, name):
-        definition = cls.definition()
-        return definition.get(name, {})
+    def definition_n(cls, name, default = {}):
+        definition = cls.definition_extended()
+        return definition.get(name, default)
 
     @classmethod
     def register(cls, lazy = False):
@@ -1036,6 +1053,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def order_name(cls):
         return None
+
+    @classmethod
+    def extra_definition(cls):
+        return {}
 
     @classmethod
     def build(cls, model, map = False, rules = True, meta = False):
@@ -1149,7 +1170,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # name and then uses it to retrieve the possible manual
         # description value for the field, returning immediately
         # the value if there's success
-        info = getattr(cls, name) if hasattr(cls, name) else dict()
+        info = cls.definition_n(name)
         description = info.get("description", None)
         if description: return description
 
@@ -1171,7 +1192,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # tries to retrieve the info dictionary for the attribute
         # name and then uses it to retrieve the observations value
         # returning an invalid one in case it's not found
-        info = getattr(cls, name) if hasattr(cls, name) else dict()
+        info = cls.definition_n(name)
         return info.get("observations", None)
 
     @classmethod
@@ -2226,8 +2247,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         return model
 
-    def dumps(self):
-        return json.dumps(self.model)
+    def dumps(self, encode = True):
+        cls = self.__class__
+        encoder = cls._encoder() if encode else None
+        return json.dumps(self.model, cls = encoder)
 
     def unwrap(self, **kwargs):
         default = kwargs.get("default", False)
