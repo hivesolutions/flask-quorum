@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2019 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+import uuid
 import flask
 import smtplib
 
@@ -46,6 +48,7 @@ import email.header
 import email.mime.multipart
 import email.mime.text
 
+from . import httpc
 from . import config
 from . import common
 from . import legacy
@@ -182,6 +185,11 @@ def send_mail(
     # has been provided (expected behavior)
     sender = sender or username
 
+    # tries to run the template resolution process, by using this approach
+    # it's possible to retrieve remote based templates (dynamic loading)
+    plain = _try_resolve(plain)
+    rich = _try_resolve(rich)
+
     # renders the (possible existing) templates in both the plain
     # and rich text object retrieving the final data to be sent
     plain_data = plain and _render(app, plain, **context) or data
@@ -257,6 +265,17 @@ def _format(address, encoding = "utf-8"):
     address_name = address_name.encode()
     address_email = str(address_email)
     return "%s <%s>" % (address_name, address_email)
+
+def _try_resolve(template_name):
+    if not template_name: return template_name
+    if not template_name.startswith(("http://", "https://")): return template_name
+    contents = httpc.get(template_name)
+    file_name = str(uuid.uuid4()) + ".html.tpl"
+    file_path = os.path.join(common.base().templates_path(), file_name)
+    file = open(file_path, "wb")
+    try: file.write(contents)
+    finally: file.close()
+    return file_name
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)
