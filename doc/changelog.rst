@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.5.34
+^^^^^
+
+    * Dynamic template loading for SMTP
+
 0.5.33
 ^^^^^
 
