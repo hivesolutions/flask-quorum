@@ -73,7 +73,7 @@ def send_mail(
     :rst:dir:`SMTP_USER` and :rst:dir:`SMTP_PASSWORD` configurations.
 
     The email message is sent under the ``alternative`` mime
-    type so that both the plain text and the rich text (html)
+    type so that both the plain text and the rich text (HTML)
     parts are sent in the same message.
 
     The ``plain`` and ``rich`` arguments allow the user to process
@@ -200,7 +200,7 @@ def send_mail(
     message["From"] = _format(sender)
     message["To"] = ", ".join(_format(receiver) for receiver in receivers)
 
-    # creates both the plain text and the rich text (html) objects
+    # creates both the plain text and the rich text (HTML) objects
     # from the provided data and then attached them to the message
     # (multipart alternative) that is the base structure
     plain = plain_data and _plain(plain_data, encoding = encoding)
