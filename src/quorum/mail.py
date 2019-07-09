@@ -121,19 +121,19 @@ def send_mail(
     :param encoding: The text encoding name that is going to be used in the\
     mail that is going to be sent, should be used with care.
     :type host: String
-    :param host: The hostname for the connection of the smtp server that\
+    :param host: The hostname for the connection of the SMTP server that\
     is going to be used, this may be wither a domain of an address.
     :type port: int
-    :param port: The tcp port number that is going to be used for the client\
+    :param port: The TCP port number that is going to be used for the client\
     connection with the server.
     :type username: String
     :param username: Username value that is used for the authentication part\
-    of the connection with the smtp server.
+    of the connection with the SMTP server.
     :type password: String
     :param password: Secret password to be used as part of the authentication\
-    process of the created smtp connection.
+    process of the created SMTP connection.
     :type stls: bool
-    :param stls: If the connection with the target smtp server should be made\
+    :param stls: If the connection with the target SMTP server should be made\
     using a secure mechanism of a plain text one.
     :type safe: bool
     :param safe: If the current email message should be used using a safe\
@@ -169,7 +169,7 @@ def send_mail(
     if port_p == None: port_p = 25
 
     # tries to retrieve the various configuration values that are going
-    # to be used for the establishment of the smtp connection, taking
+    # to be used for the establishment of the SMTP connection, taking
     # into account both the provided parameters and the configuration
     # variables currently defined for the environment
     host = host or config.conf("SMTP_HOST", host_p)
@@ -178,7 +178,7 @@ def send_mail(
     password = password or config.conf("SMTP_PASSWORD", password_p)
     stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = bool)
 
-    # sets the sender with the smtp user value in case no values
+    # sets the sender with the SMTP user value in case no values
     # has been provided (expected behavior)
     sender = sender or username
 
@@ -216,7 +216,7 @@ def send_mail(
         contents = contents.replace("\r\n", "\n")
         contents = contents.replace("\n", "\r\n")
 
-    # creates the connection with the smtp server and starts the tls
+    # creates the connection with the SMTP server and starts the tls
     # connection to send the created email message
     server = smtplib.SMTP(host, port = port)
     try:
