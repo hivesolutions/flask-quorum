@@ -270,7 +270,10 @@ def _try_resolve(template_name):
     if not template_name: return template_name
     if not template_name.startswith(("http://", "https://")): return template_name
     contents = httpc.get(template_name)
-    file_name = str(uuid.uuid4()) + ".html.tpl"
+    base_name = os.path.basename(template_name)
+    base_split = base_name.split(".", 1)
+    base_extension = "." + base_split[1] if len(base_split) > 1 else ""
+    file_name = str(uuid.uuid4()) + base_extension
     file_path = os.path.join(common.base().templates_path(), file_name)
     file = open(file_path, "wb")
     try: file.write(contents)
