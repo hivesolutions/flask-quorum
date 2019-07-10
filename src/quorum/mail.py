@@ -275,6 +275,8 @@ def _try_resolve(template_name):
     base_extension = "." + base_split[1] if len(base_split) > 1 else ""
     file_name = str(uuid.uuid4()) + base_extension
     file_path = os.path.join(common.base().templates_path(), file_name)
+    if not os.path.exists(common.base().templates_path()):
+        os.makedirs(common.base().templates_path())
     file = open(file_path, "wb")
     try: file.write(contents)
     finally: file.close()
