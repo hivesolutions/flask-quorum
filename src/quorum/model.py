@@ -250,6 +250,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     structure while it's not persisted in the database.
     """
 
+    _extra_methods = []
+    """ Special sequence of tuples (names and functions) that is
+    used at instance creation time to bind the provided methods
+    to the newly created instance, this is required for the dynamic
+    addition of instance methods to models """
+
     def __init__(self, model = None, **kwargs):
         fill = kwargs.pop("fill", True)
         model = model or {}
@@ -259,6 +265,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         self.__dict__["model"] = model
         self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
+        for name, method in self.__class__._extra_methods:
+            bound_method = types.MethodType(method, self, self.__class__)
+            setattr(self, name, bound_method)
         observer.Observable.__init__(self)
 
     def __str__(self):
