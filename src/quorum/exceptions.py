@@ -160,6 +160,7 @@ class ValidationError(OperationalError):
         OperationalError.__init__(self, "Validation of submitted data failed", 400)
         self.errors = errors
         self.model = model
+        self.set_meta("errors", self.errors)
 
     def errors_s(self, encoding = "utf-8"):
         if not self.errors: return ""
@@ -249,6 +250,7 @@ class ValidationMultipleError(ValidationInternalError):
     def __init__(self, name = None, message = None):
         ValidationInternalError.__init__(self, name, message)
         self.errors = []
+        self.set_meta("errors", self.errors)
 
     def add_error(self, name, message):
         if not self.name: self.name = name
