@@ -56,6 +56,7 @@ class BaseError(RuntimeError):
     def __init__(self, message):
         RuntimeError.__init__(self, message)
         self.message = message
+        self.meta = None
         self._uid = None
 
     @property
@@ -63,6 +64,15 @@ class BaseError(RuntimeError):
         if self._uid: return self._uid
         self._uid = uuid.uuid4()
         return self._uid
+
+    def set_meta(self, name, value):
+        if not self.meta: self.meta = {}
+        self.meta[name] = value
+
+    def del_meta(self, name):
+        if not self.meta: return
+        if not name in self.meta: return
+        del self.meta[name]
 
 class ServerInitError(BaseError):
     """
