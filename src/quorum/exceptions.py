@@ -53,6 +53,11 @@ class BaseError(RuntimeError):
     """ The message value stored to describe the
     current error """
 
+    meta = None
+    """ The meta information associated with the error
+    that should be considered private in context, this
+    should be structured data ready to be serializable """
+
     def __init__(self, message):
         RuntimeError.__init__(self, message)
         self.message = message
@@ -192,9 +197,28 @@ class BaseInternalError(RuntimeError):
     """ The message value stored to describe the
     current error """
 
+    meta = None
+    """ The meta information associated with the error
+    that should be considered private in context, this
+    should be structured data ready to be serializable """
+
     def __init__(self, message):
         RuntimeError.__init__(self, message)
         self.message = message
+        self.meta = None
+
+    def get_meta(self, name, default = None):
+        if not self.meta: return default
+        return self.meta.get(name, default)
+
+    def set_meta(self, name, value):
+        if not self.meta: self.meta = {}
+        self.meta[name] = value
+
+    def del_meta(self, name):
+        if not self.meta: return
+        if not name in self.meta: return
+        del self.meta[name]
 
 class ValidationInternalError(BaseInternalError):
     """
