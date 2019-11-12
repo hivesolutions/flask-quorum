@@ -51,9 +51,16 @@ except ImportError: pymongo = None
 try: import bson.json_util
 except ImportError: bson = None
 
+try: import motor.motor_asyncio
+except ImportError: motor = None
+
 connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
+
+connection_a = None
+""" The global connection reference for the async version
+of the Mongo client """
 
 url = "mongodb://localhost"
 """ The global variable containing the URL to be used
@@ -96,8 +103,14 @@ class MongoEncoder(json.JSONEncoder):
 def get_connection():
     return _get_connection(url)
 
+def get_connection_a():
+    return _get_connection_a(url)
+
 def reset_connection():
     return _reset_connection()
+
+def reset_connection_a():
+    return _reset_connection_a()
 
 def get_db():
     connection = get_connection()
@@ -106,8 +119,22 @@ def get_db():
     db = connection[_database]
     return db
 
+def get_db_a():
+    connection = get_connection_a()
+    result = _pymongo().uri_parser.parse_uri(url)
+    _database = result.get("database", None) or database
+    db = connection[_database]
+    return db
+
 def drop_db():
     db = get_db()
+    names = _list_names(db)
+    for name in names:
+        if name.startswith("system."): continue
+        db.drop_collection(name)
+
+def drop_db_a():
+    db = get_db_a()
     names = _list_names(db)
     for name in names:
         if name.startswith("system."): continue
@@ -195,11 +222,24 @@ def _get_connection(url, connect = False):
     else: connection = _pymongo().Connection(url)
     return connection
 
+def _get_connection_a(url, connect = False):
+    global connection_a
+    if motor == None: raise exceptions.ModuleNotFound("motor")
+    if connection_a: return connection_a
+    connection_a = _motor().AsyncIOMotorClient(url, connect = connect)
+    return connection_a
+
 def _reset_connection():
     global connection
     if not connection: return
     if is_new(): connection.close()
     else: connection.disconnect()
+    connection = None
+
+def _reset_connection_a():
+    global connection_a
+    if not connection_a: return
+    connection_a.close()
     connection = None
 
 def _version_t():
@@ -216,3 +256,11 @@ def _pymongo(verify = True):
         exception = exceptions.OperationalError
     )
     return pymongo
+
+def _motor(verify = True):
+    if verify: util.verify(
+        not motor == None,
+        message = "Motor library not available",
+        exception = exceptions.OperationalError
+    )
+    return motor.motor_asyncio

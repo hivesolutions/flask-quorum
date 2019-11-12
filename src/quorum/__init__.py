@@ -134,9 +134,13 @@ from .amqp import properties as properties_amqp
 from .execution import insert_work as run_back
 from .execution import insert_work as run_background
 from .mongodb import get_connection as get_mongo
+from .mongodb import get_connection_a as get_mongo_a
 from .mongodb import reset_connection as reset_mongo
+from .mongodb import reset_connection_a as reset_mongo_a
 from .mongodb import get_db as get_mongo_db
+from .mongodb import get_db_a as get_mongo_db_a
 from .mongodb import drop_db as drop_mongo_db
+from .mongodb import drop_db_a as drop_mongo_db_a
 from .mongodb import object_id as object_id
 from .mongodb import dumps as dumps_mongo
 from .mongodb import serialize as serialize_mongo

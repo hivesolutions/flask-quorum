@@ -68,13 +68,25 @@ class DataAdapter(object):
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def collection_a(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
     def reset(self):
+        raise exceptions.NotImplementedError()
+
+    def reset_a(self):
         raise exceptions.NotImplementedError()
 
     def get_db(self):
         raise exceptions.NotImplementedError()
 
+    def get_db_a(self):
+        raise exceptions.NotImplementedError()
+
     def drop_db(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def drop_db_a(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
     def object_id(self, value = None):
@@ -121,14 +133,28 @@ class MongoAdapter(DataAdapter):
         collection = db[name]
         return MongoCollection(self, name, collection)
 
+    def collection_a(self, name, *args, **kwargs):
+        db = self.get_db_a()
+        collection = db[name]
+        return MongoCollection(self, name, collection)
+
     def reset(self):
         return mongodb.reset_connection()
+
+    def reset_a(self):
+        return mongodb.reset_connection_a()
 
     def get_db(self):
         return mongodb.get_db()
 
+    def get_db_a(self):
+        return mongodb.get_db_a()
+
     def drop_db(self, *args, **kwargs):
         return mongodb.drop_db()
+
+    def drop_db_a(self, *args, **kwargs):
+        return mongodb.drop_db_a()
 
     def object_id(self, value = None):
         if not value: return self._id()
