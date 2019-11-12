@@ -289,6 +289,13 @@ class UtilTest(quorum.TestCase):
 
     @quorum.secured
     def test_camel_to_underscore(self):
+        result = quorum.camel_to_underscore(None)
+        self.assertEqual(result, None)
+
+        result = quorum.camel_to_underscore("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = quorum.camel_to_underscore("HelloWorld")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello_world")
@@ -303,6 +310,13 @@ class UtilTest(quorum.TestCase):
 
     @quorum.secured
     def test_camel_to_readable(self):
+        result = quorum.camel_to_readable(None)
+        self.assertEqual(result, None)
+
+        result = quorum.camel_to_readable("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = quorum.camel_to_readable("HelloWorld")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
@@ -351,7 +365,79 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(result, "Hello World Hello World")
 
     @quorum.secured
+    def test_underscore_to_camel(self):
+        result = quorum.underscore_to_camel(None)
+        self.assertEqual(result, None)
+
+        result = quorum.underscore_to_camel("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
+        result = quorum.underscore_to_camel("hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = quorum.underscore_to_camel("hello_world", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = quorum.underscore_to_camel("hello_world_hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorldHelloWorld")
+
+        result = quorum.underscore_to_camel("hello_world_hello_world", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorldHelloWorld")
+
+        result = quorum.underscore_to_camel("hello_world_")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = quorum.underscore_to_camel("hello_world_", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = quorum.underscore_to_camel("__hello_world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = quorum.underscore_to_camel("__hello_world__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = quorum.underscore_to_camel("__hello___world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = quorum.underscore_to_camel("__hello___world__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = quorum.underscore_to_camel("__hello___WORLD__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWORLD")
+
+        result = quorum.underscore_to_camel("__hello___WORLD__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWORLD")
+
+        result = quorum.underscore_to_camel("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = quorum.underscore_to_camel("HelloWorld", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+    @quorum.secured
     def test_underscore_to_readable(self):
+        result = quorum.underscore_to_readable(None)
+        self.assertEqual(result, None)
+
+        result = quorum.underscore_to_readable("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = quorum.underscore_to_readable("hello_world")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
@@ -391,6 +477,10 @@ class UtilTest(quorum.TestCase):
         result = quorum.underscore_to_readable("__hello___world__", capitalize = True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
+
+        result = quorum.underscore_to_readable("__hello___world__", capitalize = True, separator = "-")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello-World")
 
     @quorum.secured
     def test_generate_identifier(self):
