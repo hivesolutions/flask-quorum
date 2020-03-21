@@ -55,7 +55,7 @@ class SSLify(object):
 
         :type app: App
         :param app: The application object to be used in the
-        in ssl operation for the forcing of the protocol.
+        in SSL operation for the forcing of the protocol.
         :type age: int
         :param age: The maximum age of the hsts operation.
         :type subdomains: bool
@@ -74,11 +74,11 @@ class SSLify(object):
 
     def init_app(self, app):
         """
-        Configures the configured flask app to enforce ssl.
+        Configures the configured flask app to enforce SSL.
 
         :type app: App
         :param app: The application to be configured to enforce
-        the ssl redirection support.
+        the SSL redirection support.
         """
 
         app.before_request(self.redirect_to_ssl)
