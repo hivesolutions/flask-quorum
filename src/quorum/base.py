@@ -318,7 +318,7 @@ def load(
     should be managed using a server side session with support from redis.
     :type mongo_database: String
     :param mongo_database: The default name of the database to be used when\
-    using the mongo infra-structure.
+    using the MongoDB infra-structure.
     :type logger: String
     :param logger: The name to be used as identification for possible logger\
     files created by the logging sub-module.

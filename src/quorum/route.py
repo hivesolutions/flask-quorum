@@ -137,7 +137,7 @@ def route(*args, **kwargs):
                 )
 
             # retrieves the type for the result that was returned from the
-            # concrete method and in case the result is either a mongo object,
+            # concrete method and in case the result is either a MongoDB object,
             # a dictionary or a sequence it's serialized as JSON, then returns
             # the result to the caller method
             result_t = type(result)

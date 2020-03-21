@@ -59,7 +59,7 @@ for the connection with the service """
 class RedisMemory(object):
     """
     "Local" in memory stub object that simulates
-    the redis interface, useful for debugging.
+    the Redis interface, useful for debugging.
 
     This memory interface may create problems in
     a multiple process environment (non shared memory).
@@ -67,7 +67,7 @@ class RedisMemory(object):
 
     values = None
     """ The map containing the various values to
-    be set in the memory map, simulates the redis
+    be set in the memory map, simulates the Redis
     data store """
 
     def __init__(self):
@@ -91,7 +91,7 @@ class RedisMemory(object):
 class RedisShelve(RedisMemory):
     """
     "Local" in persistent stub object that simulates
-    the redis interface, useful for debugging.
+    the Redis interface, useful for debugging.
 
     This shelve interface requires a writable path
     where its persistent file may be written.

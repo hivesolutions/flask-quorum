@@ -95,7 +95,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
             sid = self.generate_sid()
             return self.session_class(sid = sid)
 
-        # tries to retrieve the session value from redis in
+        # tries to retrieve the session value from Redis in
         # case the values is successfully found loads it using
         # the serializer and returns the session object
         value = self.redis.get(self.prefix + sid)
@@ -104,7 +104,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
             return self.session_class(data, sid = sid)
 
         # returns a new session object with an already existing
-        # session identifier, but not found in data source (redis)
+        # session identifier, but not found in data source (Redis)
         return self.session_class(sid = sid, new = True)
 
     def save_session(self, app, session, response):
@@ -113,7 +113,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         domain = self.get_cookie_domain(app)
 
         # in case the session is no longer value must delete
-        # the reference in the redis object and delete the cookie
+        # the reference in the Redis object and delete the cookie
         # from the current response object
         if not session:
             self.redis.delete(self.prefix + session.sid)
@@ -123,10 +123,10 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
             )
             return
 
-        # retrieves the redis expiration date from the provided
+        # retrieves the Redis expiration date from the provided
         # session object and the expiration value for the cookie
         # and then serializes the dictionary version of the session
-        # so that it may be set as a string value in redis
+        # so that it may be set as a string value in Redis
         redis_expire = self.get_redis_expiration_time(app, session)
         cookie_expire = self.get_expiration_time(app, session)
         value = self.serializer.dumps(dict(session))

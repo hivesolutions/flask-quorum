@@ -72,7 +72,7 @@ database to be used in the connection with the service """
 
 class MongoMap(object):
     """
-    Encapsulates a mongo collection to provide an interface
+    Encapsulates a MongoDB collection to provide an interface
     that is compatible with the "normal" key value access
     offered by the python dictionary (map).
     """
