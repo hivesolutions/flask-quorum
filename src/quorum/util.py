@@ -906,7 +906,7 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
     the provided constrains of length and character ranges.
 
     This function may be used in the generation of random based
-    keys for both passwords and api keys.
+    keys for both passwords and API keys.
 
     :type size: int
     :param size: The size (in number of characters) to be used in
