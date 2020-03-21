@@ -700,7 +700,7 @@ def get_langs():
     # starts the list that is going to be used to store the various
     # languages "recovered" from the accept language header, note that
     # the order of these languages should be from the most relevant to
-    # the least relevant as defined in http specification
+    # the least relevant as defined in HTTP specification
     langs = []
 
     # splits the accept language header into the various components of
@@ -1132,7 +1132,7 @@ def date_time(value, format = "%d/%m/%Y"):
 def quote(value, *args, **kwargs):
     """
     Quotes the passed value according to the defined
-    standard for url escaping, the value is first encoded
+    standard for URL escaping, the value is first encoded
     into the expected UTF-8 encoding as defined by standard.
 
     This method should be used instead of a direct call to
