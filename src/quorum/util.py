@@ -156,7 +156,7 @@ def is_iterable(object):
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default flask request object and then in
-    # case the the json data is already in the request properties
+    # case the the JSON data is already in the request properties
     # it is used (cached value) otherwise continues with the parse
     request = request or flask.request
     try:
@@ -165,7 +165,7 @@ def request_json(request = None, encoding = "utf-8"):
     except RuntimeError: pass
 
     # retrieves the current request data and tries to
-    # "load" it as json data, in case it fails gracefully
+    # "load" it as JSON data, in case it fails gracefully
     # handles the failure setting the value as an empty map
     data = request.data
     try:
@@ -176,12 +176,12 @@ def request_json(request = None, encoding = "utf-8"):
         data_j = {}
     request.properties["_data_j"] = data_j
 
-    # returns the json data object to the caller method so that it
+    # returns the JSON data object to the caller method so that it
     # may be used as the parsed value (post information)
     return data_j
 
 def get_field(name, default = None, cast = None, strip = False):
-    # tries to retrieve the json based representation of the provided
+    # tries to retrieve the JSON based representation of the provided
     # request from all the possible sources, this is required because
     # it's going to be used to try to retrieve a field from it
     data_j = request_json()
@@ -224,7 +224,7 @@ def get_object(
     object = object and copy.copy(object) or {}
 
     # retrieves the current request data and tries to
-    # "load" it as json data, in case it fails gracefully
+    # "load" it as JSON data, in case it fails gracefully
     # handles the failure setting the value as an empty map
     try: data_j = request_json()
     except RuntimeError: data_j = dict()

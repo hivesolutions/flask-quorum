@@ -310,10 +310,10 @@ class JSONError(HTTPError):
 
     data = None
     """ The deserialized version of the response information
-    provided by the json request  """
+    provided by the JSON request  """
 
     def __init__(self, data):
-        HTTPError.__init__(self, "Problem requesting json data")
+        HTTPError.__init__(self, "Problem requesting JSON data")
         self.data = data
 
     def __str__(self):

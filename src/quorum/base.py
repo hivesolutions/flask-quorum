@@ -583,7 +583,7 @@ def load_bundles(app, offset = 2):
     for path in paths:
         # joins the current (base) bundles path with the current path
         # in iteration to create the full path to the file and opens
-        # it trying to read its json based contents
+        # it trying to read its JSON based contents
         path_f = os.path.join(bundles_path, path)
         file = open(path_f, "rb")
         try: data_j = json.load(file)

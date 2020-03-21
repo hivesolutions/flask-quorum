@@ -50,12 +50,12 @@ from . import exceptions
 
 def route(*args, **kwargs):
     # verifies if the request decorator should be of type
-    # json serializer in case it should not returns the old
+    # JSON serializer in case it should not returns the old
     # route decorator (default behavior)
     is_json = kwargs.get("json", False)
     if not is_json: return common.base().APP.old_route(*args, **kwargs)
 
-    # removes the json keyword argument from the list of arguments
+    # removes the JSON keyword argument from the list of arguments
     # (to avoid errors) and then calls the old route method to obtain
     # the "normal" decorator
     del kwargs["json"]
@@ -63,7 +63,7 @@ def route(*args, **kwargs):
 
     # creates the "new" route decorator maker method that should
     # override the old one and create a new decorator that
-    # serializes all the unhandled exceptions as json
+    # serializes all the unhandled exceptions as JSON
     def _route(function):
         def _decorator(*args, **kwargs):
             try: result = function(*args, **kwargs)
@@ -138,7 +138,7 @@ def route(*args, **kwargs):
 
             # retrieves the type for the result that was returned from the
             # concrete method and in case the result is either a mongo object,
-            # a dictionary or a sequence it's serialized as json, then returns
+            # a dictionary or a sequence it's serialized as JSON, then returns
             # the result to the caller method
             result_t = type(result)
             if isinstance(result, model.Model):
