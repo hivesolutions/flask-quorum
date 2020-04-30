@@ -514,7 +514,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls.types(model)
         if fill: cls.fill(model, safe = True)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
-        if eager: model = cls._eager(model, eager)
+        if eager: model = cls._eager(model, eager, map = map)
         if map: model = cls._resolve_all(model, resolve = False)
         return model if map else cls.old(model = model, safe = False)
 
@@ -556,7 +556,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         models = [cls.types(model) for model in models]
         if fill: models = [cls.fill(model, safe = True) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
-        if eager: models = cls._eager(models, eager)
+        if eager: models = cls._eager(models, eager, map = map)
         if map: models = [cls._resolve_all(model, resolve = False) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
@@ -1615,12 +1615,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return cls._singular() + "s"
 
     @classmethod
-    def _eager(cls, model, names):
+    def _eager(cls, model, names, *args, **kwargs):
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
         is_list = isinstance(model, (list, tuple))
-        if is_list: return [cls._eager(_model, names) for _model in model]
+        if is_list: return [cls._eager(_model, names, *args, **kwargs) for _model in model]
 
         # iterates over the complete set of names that are meant to be
         # eager loaded from the model and runs the "resolution" process
@@ -1629,8 +1629,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _model = model
             for part in name.split("."):
                 is_sequence = isinstance(_model, (list, tuple))
-                if is_sequence: _model = [cls._res(value, part) for value in _model]
-                else: _model = cls._res(_model, part)
+                if is_sequence: _model = [cls._res(value, part, *args, **kwargs) for value in _model]
+                else: _model = cls._res(_model, part, *args, **kwargs)
                 if not _model: break
 
         # returns the resulting model to the caller method, most of the
@@ -1638,12 +1638,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def _res(cls, model, part):
+    def _res(cls, model, part, *args, **kwargs):
         if not model: return model
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve(eager_l = True)
+        if is_reference: model[part] = value.resolve(eager_l = True, *args, **kwargs)
         model = model[part]
         return model
 
