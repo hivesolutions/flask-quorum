@@ -80,7 +80,7 @@ representing sorting with the current infra-structure
 number way of representing the same information """
 
 CASTERS = {
-    list : lambda v: [y for y in itertools.chain(*[x.split(",") for x in v])],
+    list : lambda v: [y for y in itertools.chain(*[split_unescape(x, ",").split(",") for x in v])],
     bool : lambda v: v if isinstance(v, bool) else\
         not v in ("", "0", "false", "False")
 }
