@@ -493,6 +493,77 @@ class UtilTest(quorum.TestCase):
             self.assertTrue(char in string.ascii_uppercase)
 
     @quorum.secured
+    def test_escape(self):
+        result = quorum.escape("foo,bar", ",", escape = "$")
+        self.assertEqual(result, "foo$,bar")
+
+        result = quorum.escape("foo$,bar", ",", escape = "$")
+        self.assertEqual(result, "foo$$$,bar")
+
+    @quorum.secured
+    def test_unescape(self):
+        result = quorum.unescape("foo$,bar", escape = "$")
+        self.assertEqual(result, "foo,bar")
+
+        result = quorum.unescape("foo$$,bar", escape = "$")
+        self.assertEqual(result, "foo$,bar")
+
+        result = quorum.unescape("$$foo$,bar$$$$", escape = "$")
+        self.assertEqual(result, "$foo,bar$$")
+
+    @quorum.secured
+    def test_count_unescape(self):
+        result = quorum.count_unescape("foo:bar", ":")
+        self.assertEqual(result, 1)
+
+        result = quorum.count_unescape("foo:bar:hello:world", ":")
+        self.assertEqual(result, 3)
+
+        result = quorum.count_unescape("foo,bar,hello,world", ":")
+        self.assertEqual(result, 0)
+
+        result = quorum.count_unescape("foo:bar\\:hello:world", ":")
+        self.assertEqual(result, 2)
+
+        result = quorum.count_unescape("foo:bar\\:hello\\:world", ":")
+        self.assertEqual(result, 1)
+
+        result = quorum.count_unescape("foo:bar\\:hello\\\\:world", ":")
+        self.assertEqual(result, 2)
+
+        result = quorum.count_unescape("foo\\:bar\\:hello\\:world", ":")
+        self.assertEqual(result, 0)
+
+    @quorum.secured
+    def test_split_unescape(self):
+        result = quorum.split_unescape("foo bar")
+        self.assertEqual(result, ["foo", "bar"])
+
+        result = quorum.split_unescape("foo bar hello world", max = 2)
+        self.assertEqual(result, ["foo", "bar", "hello world"])
+
+        result = quorum.split_unescape("foo,bar", ",")
+        self.assertEqual(result, ["foo", "bar"])
+
+        result = quorum.split_unescape("foo$,bar", ",", escape = "$")
+        self.assertEqual(result, ["foo,bar"])
+
+        result = quorum.split_unescape("foo$$,bar", ",", escape = "$", unescape = True)
+        self.assertEqual(result, ["foo$", "bar"])
+
+        result = quorum.split_unescape("foo$$,bar", ",", escape = "$", unescape = False)
+        self.assertEqual(result, ["foo$$", "bar"])
+
+        result = quorum.split_unescape("foo$", ",", escape = "$", unescape = True)
+        self.assertEqual(result, ["foo$"])
+
+        result = quorum.split_unescape("foo\\\\\\:bar", ":", unescape = True)
+        self.assertEqual(result, ["foo\\:bar"])
+
+        result = quorum.split_unescape("foo\\\\:bar", ":", unescape = True)
+        self.assertEqual(result, ["foo\\", "bar"])
+
+    @quorum.secured
     def test_is_content_type(self):
         result = quorum.is_content_type("text/plain", "text/plain")
         self.assertEqual(result, True)

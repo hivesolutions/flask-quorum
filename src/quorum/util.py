@@ -1173,6 +1173,132 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
+def escape(value, char, escape = "\\"):
+    """
+    Escapes the provided string value according to the requested
+    target character and escape value. Meaning that all the characters
+    are going to be replaced by the escape plus character sequence.
+
+    :type value: String
+    :param value: The string that is going to have the target characters
+    escaped according to the escape character.
+    :type char: String
+    :param char: The character that is going to be "target" of escaping.
+    :type escape: String
+    :param escape: The character to be used for escaping (normally`\`).
+    :rtype: String
+    :return: The final string with the target character properly escaped.
+    """
+
+    return value.replace(escape, escape + escape).replace(char, escape + char)
+
+def unescape(value, escape = "\\"):
+    """
+    Unescapes the provided string value using the provided escape
+    character as the reference for the unescape operation.
+
+    This is considered to be a very expensive operation and so it
+    should be used carefully.
+
+    :type value: String
+    :param value: The string value that is going to be unescape.
+    :rtype: String
+    :return: The final unescaped value.
+    """
+
+    result = []
+    iterator = iter(value)
+    for char in iterator:
+        if char == escape:
+            try:
+                result.append(next(iterator))
+            except StopIteration:
+                result.append(escape)
+        else:
+            result.append(char)
+    return "".join(result)
+
+def count_unescape(value, sub, escape = "\\"):
+    """
+    Runs the sub string count operation on an escaped string
+    so that it takes into account the escaped values avoiding
+    them for the count operation.
+
+    :type value: String
+    :param value: The base string value to have the number of
+    occurrences of a sub string counted.
+    :type sub: String
+    :param sub: The sub string to be evaluated for occurrences,
+    this value should be constrained to strings of single character.
+    :type escape: String
+    :param escape: The "special" escape character that will allow the
+    delimiter to be also present in the choices selection.
+    :rtype: int
+    :return: The final count of occurrences of the sub string
+    taking into account the proper escaping of the string.
+    """
+
+    count = 0
+    iterator = iter(value)
+    for char in iterator:
+        if char == escape:
+            try:
+                next(iterator)
+            except StopIteration:
+                pass
+        elif char == sub:
+            count += 1
+    return count
+
+def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
+    """
+    Splits the provided string around the delimiter character that
+    has been provided and allows proper escaping of it using the
+    provided escape character.
+
+    This is considered to be a very expensive operation when compared
+    to the simple split operation and so it should be used carefully.
+
+    :type value: String
+    :param value: The string value that is going to be split around
+    the proper delimiter value taking into account the escaping.
+    :type delimiter: String
+    :param delimiter: The delimiter character to be used in the split
+    operation.
+    :type max: int
+    :param max: The maximum number of split operations that are going
+    to be performed by this operation.
+    :type escape: String
+    :param escape: The "special" escape character that will allow the
+    delimiter to be also present in the choices selection.
+    :type unescape: bool
+    :param unescape: If the final resulting string should be already
+    unescaped (normalized).
+    :rtype: List
+    :return: The final list containing the multiple string parts separated
+    by the delimiter character and respecting the escape sequences.
+    """
+
+    result = []
+    current = []
+    iterator = iter(value)
+    count = 0
+    for char in iterator:
+        if char == escape:
+            try:
+                if not unescape: current.append(escape)
+                current.append(next(iterator))
+            except StopIteration:
+                if unescape: current.append(escape)
+        elif char == delimiter and not count == max:
+            result.append("".join(current))
+            current = []
+            count += 1
+        else:
+            current.append(char)
+    result.append("".join(current))
+    return result
+
 def is_content_type(data, target):
     """
     Verifies if the any of the provided mime types (target) is
