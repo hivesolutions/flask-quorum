@@ -2120,7 +2120,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def map_v(self, *args, **kwargs):
         resolve = kwargs.get("resolve", True)
-        return self._resolve_all(self.model, resolve = resolve)
+        evaluator = kwargs.get("evaluator", "map_v")
+        return self._resolve_all(
+            self.model,
+            resolve = resolve,
+            evaluator = evaluator
+        )
 
     def build_m(self, model = None, rules = True):
         """
@@ -2380,12 +2385,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         entity = self.get(_id = self._id, raise_e = False)
         return True if entity else False
 
-    def map(self, increment_a = False, resolve = False, all = False):
+    def map(
+        self,
+        increment_a = False,
+        resolve = False,
+        all = False,
+        evaluator = "map_v"
+    ):
         model = self._filter(
             increment_a = increment_a,
             resolve = resolve,
             all = all,
-            evaluator = "map_v"
+            evaluator = evaluator
         )
         return model
 
@@ -2598,7 +2609,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # to be iterables and normal operation applies
         is_iterable = hasattr(value, "__iter__")
         is_iterable = is_iterable and not isinstance(value, ITERABLES) and\
-           not hasattr(value, evaluator)
+           (not hasattr(value, evaluator) or not evaluator)
         if is_iterable: return [
             self._evaluate(name, value, evaluator = evaluator) for\
             value in value
@@ -2617,7 +2628,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # iterates over all the values and retrieves the map value for
         # each of them in case the value contains a map value retrieval
         # method otherwise uses the normal value returning it to the caller
-        method = getattr(value, evaluator) if hasattr(value, evaluator) else None
+        method = getattr(value, evaluator) if evaluator and hasattr(value, evaluator) else None
         value = method(resolve = False) if method else value
         return value
 

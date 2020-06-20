@@ -674,6 +674,8 @@ def reference(target, name = None, dumpall = False):
             return not is_empty
 
         def __getattr__(self, name):
+            is_magic = name.startswith("__") and name.endswith("__")
+            if is_magic: return Reference.__getattr__(name)
             self.resolve()
             exists = hasattr(self._object, name)
             if exists: return getattr(self._object, name)
@@ -749,7 +751,7 @@ def reference(target, name = None, dumpall = False):
             if not value: return self.val()
             return value.map(*args, **kwargs)
 
-        def val(self):
+        def val(self, *args, **kwargs):
             is_empty = self.id in ("", b"", None)
             if is_empty: return None
             return self._type(self.id)
@@ -892,6 +894,9 @@ def references(target, name = None, dumpall = False):
 
         def map_v(self, *args, **kwargs):
             return [object.map_v(*args, **kwargs) for object in self.objects]
+
+        def val(self, *args, **kwargs):
+            return [object.val(*args, **kwargs) for object in self.objects]
 
         def list(self):
             return [object.val() for object in self.objects]
