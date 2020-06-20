@@ -403,6 +403,7 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(isinstance(person["cats"][0]["friend"], quorum.Reference), False)
         self.assertEqual(len(person["cats"]), 1)
         self.assertEqual(person["cats"][0]["name"], "NameCat")
+        self.assertEqual(person["cats"][0]["friend"], 2)
 
         person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
 
