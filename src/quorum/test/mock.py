@@ -121,6 +121,13 @@ class Cat(quorum.Model):
 
     name = quorum.field()
 
+    friend = quorum.field(
+        type = quorum.reference(
+            "Cat",
+            name = "identifier"
+        )
+    )
+
 class Car(quorum.Model):
 
     identifier = quorum.field(

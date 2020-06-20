@@ -351,6 +351,13 @@ class ModelTest(quorum.TestCase):
         cat.name = "NameCat"
         cat.save()
 
+        cat_friend = mock.Cat()
+        cat_friend.name = "NameCatFriend"
+        cat_friend.save()
+
+        cat.friend = cat_friend
+        cat.save()
+
         person.cats = [cat]
         person.save()
 
@@ -376,7 +383,12 @@ class ModelTest(quorum.TestCase):
 
         person = mock.Person.get(identifier = 1, eager = ("cats",))
 
+        self.assertEqual(isinstance(person.cats, quorum.References), True)
+        self.assertEqual(isinstance(person.cats[0].friend, quorum.Reference), True)
         self.assertEqual(person.cats.is_resolved(), True)
+        self.assertEqual(person.cats[0].friend.is_resolved(), False)
+        self.assertEqual(len(person.cats), 1)
+        self.assertEqual(person.cats[0].name, "NameCat")
 
         person = mock.Person.get(
             identifier = 1,
@@ -387,6 +399,35 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(isinstance(person["cats"][0], dict), True)
+        self.assertEqual(isinstance(person["cats"], quorum.References), False)
+        self.assertEqual(isinstance(person["cats"][0]["friend"], quorum.Reference), False)
+        self.assertEqual(len(person["cats"]), 1)
+        self.assertEqual(person["cats"][0]["name"], "NameCat")
+
+        person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
+
+        self.assertEqual(isinstance(person.cats, quorum.References), True)
+        self.assertEqual(isinstance(person.cats[0].friend, quorum.Reference), True)
+        self.assertEqual(person.cats.is_resolved(), True)
+        self.assertEqual(person.cats[0].friend.is_resolved(), True)
+        self.assertEqual(len(person.cats), 1)
+        self.assertEqual(person.cats[0].name, "NameCat")
+        self.assertEqual(person.cats[0].friend.name, "NameCatFriend")
+
+        person = mock.Person.get(
+            identifier = 1,
+            map = True,
+            eager = ("cats.friend",)
+        )
+
+        self.assertEqual(isinstance(person, dict), True)
+        self.assertEqual(isinstance(person["cats"], list), True)
+        self.assertEqual(isinstance(person["cats"][0], dict), True)
+        self.assertEqual(isinstance(person["cats"][0]["friend"], dict), True)
+        self.assertEqual(isinstance(person["cats"], quorum.References), False)
+        self.assertEqual(isinstance(person["cats"][0]["friend"], quorum.Reference), False)
+        self.assertEqual(person["cats"][0]["name"], "NameCat")
+        self.assertEqual(person["cats"][0]["friend"]["name"], "NameCatFriend")
 
         person = mock.Person.get(identifier = 1)
 
