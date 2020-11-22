@@ -24,7 +24,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
   - pip install -r requirements.txt
   - pip install -r extra.txt
-  - pip install coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then pip install coveralls; fi
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.bemisc.com
   - ADAPTER=tiny HTTPBIN=httpbin.bemisc.com
