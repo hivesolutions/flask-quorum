@@ -681,6 +681,32 @@ class UtilTest(quorum.TestCase):
             lambda: quorum.verify_not_equal(1, 1, exception = quorum.OperationalError)
         )
 
+    @quorum.secured
+    def test_verify_type(self):
+        result = quorum.verify_type("hello", str)
+        self.assertEqual(result, None)
+
+        result = quorum.verify_type(1, int)
+        self.assertEqual(result, None)
+
+        result = quorum.verify_type(None, int)
+        self.assertEqual(result, None)
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_type(1, str))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify_type(1, str, exception = quorum.OperationalError)
+        )
+
+        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_type(None, str, null = False))
+
+        self.assertRaises(
+            quorum.OperationalError,
+            lambda: quorum.verify_type(None, str, null = False, exception = quorum.OperationalError)
+        )
+
+    @quorum.secured
     def test_verify_many(self):
         result = quorum.verify_many((1 == 1, 2 == 2, 3 == 3))
         self.assertEqual(result, None)

@@ -117,7 +117,7 @@ from .util import is_iterable, request_json, get_field, get_object, is_mobile, i
     anotate_secure, run_thread, camel_to_underscore, camel_to_readable, underscore_to_camel, underscore_to_readable,\
     generate_identifier, to_locale, nl_to_br, nl_to_br_jinja, sp_to_nbsp, sp_to_nbsp_jinja, unset, date_time,\
     quote, unquote, escape, unescape, count_unescape, split_unescape, is_content_type, parse_content_type,\
-    verify, verify_equal, verify_not_equal, verify_many, execute, deprecated, JSONEncoder
+    verify, verify_equal, verify_not_equal, verify_type, verify_many, execute, deprecated, JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
     not_empty, not_false, is_in, is_upper, is_lower, is_simple, is_email, is_url, is_regex, field_eq,\
     field_gt, field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past,\
