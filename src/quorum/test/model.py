@@ -137,6 +137,37 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(result, 0)
 
     @quorum.secured
+    def test_advance(self):
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 1)
+
+        person.advance("age")
+        self.assertEqual(person.age, 2)
+
+        person = person.reload()
+        self.assertEqual(person.age, 2)
+
+        person.advance("age", delta = 2)
+        self.assertEqual(person.age, 4)
+
+        person = person.reload()
+        self.assertEqual(person.age, 4)
+
+        person.advance("age", delta = -2)
+        self.assertEqual(person.age, 2)
+
+        person = person.reload()
+        self.assertEqual(person.age, 2)
+
+    @quorum.secured
     def test_validation(self):
         person = mock.Person()
 
