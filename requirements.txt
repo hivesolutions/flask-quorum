@@ -1,5 +1,5 @@
 flask
 pymongo
-tinydb
 redis
 pika
+tinydb<4
