@@ -2,4 +2,4 @@ flask
 pymongo
 redis
 pika
-tinydb
+tinydb<4.5
