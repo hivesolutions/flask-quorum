@@ -75,7 +75,7 @@ def template_resolve(template):
 
     # retrieves both the complete locale set under the current request and
     # the language base value for the same locale (to be used as fallback)
-    locale = flask.request.locale if hasattr(flask.request, "locale") else None
+    locale = flask.request.locale if hasattr(flask.request, "locale") else None  #@UndefinedVariable
     language = locale.split("_", 1)[0] if locale else None
 
     # sets the fallback name as the "original" template path, because
