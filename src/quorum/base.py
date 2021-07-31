@@ -57,6 +57,7 @@ from . import amqp
 from . import util
 from . import data
 from . import mail
+from . import info
 from . import route
 from . import model
 from . import legacy
@@ -127,6 +128,19 @@ ESCAPE_EXTENSIONS = (
 for which the autoescape mode will be enabled  by
 default as expected by the end developer """
 
+PLATFORM = "%s %d.%d.%d.%s %s" % (
+    sys.subversion[0] if hasattr(sys, "subversion") else "CPython",
+    sys.version_info[0],
+    sys.version_info[1],
+    sys.version_info[2],
+    sys.version_info[3],
+    sys.platform
+)
+""" Extra system information containing some of the details
+of the technical platform that is running the system, this
+string should be exposed carefully to avoid extra information
+from being exposed to outside agents """
+
 class Quorum(flask.Flask):
     """
     The top level application class that inherits from the
@@ -162,6 +176,15 @@ def call_run():
 
 def run(server = None, fallback = "base"):
     if not APP: raise exceptions.BaseError("Application not set or runnable")
+
+    APP.logger.info(
+        "Booting %s %s (flask %s) (%s) ..." % (
+            info.NAME,
+            info.VERSION,
+            flask.__version__,
+            PLATFORM
+        )
+    )
 
     server = config.conf("SERVER", server) or "base"
     runner = globals().get("run_" + server, None)
