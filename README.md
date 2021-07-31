@@ -20,7 +20,7 @@ if __name__ == "__main__":
     quorum.run()
 ```
 
-Creation of background callabbles, that will execute every one second in a separate thread
+Creation of background callables, that will execute every one second in a separate thread
 
 ```python
 @quorum.background(timeout = 1.0)
@@ -30,7 +30,9 @@ def hello_recursive():
 
 ## Building
 
-    sphinx-build -b html doc doc/_build
+```bash
+sphinx-build -b html doc doc/_build
+```
 
 ## Documentation
 
