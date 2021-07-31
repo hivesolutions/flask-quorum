@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.6.2
+^^^^^
+
+    * Made client side sessions more stable, by patching some global session related configurations
+
 0.6.1
 ^^^^^
 
