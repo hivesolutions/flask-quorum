@@ -112,7 +112,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         # be able to correctly modify it
         domain = self.get_cookie_domain(app)
 
-        # in case the session is no longer value must delete
+        # in case the session is no longer valid must delete
         # the reference in the Redis object and delete the cookie
         # from the current response object
         if not session:
