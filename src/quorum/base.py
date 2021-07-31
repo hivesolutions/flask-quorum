@@ -422,12 +422,12 @@ def load(
     config.confs("PREFERRED_URL_SCHEME", url_scheme)
 
     # retrieves some internal configuration value related with
-    # the way that the session is going to be handled
+    # the way that the sessions are going to be handled
     session_cookie_path = config.conf("SESSION_COOKIE_PATH", "/")
     session_cookie_secure = config.conf("SESSION_COOKIE_SECURE", False, cast = bool)
     session_refresh_request = config.conf("SESSION_REFRESH_EACH_REQUEST", False, cast = bool)
 
-    # sets a series of session related values according to quorum
+    # re-sets a series of session related values according to quorum
     # predefined structure, this effectively enables sessions on
     # the client side to be handled in a predictable manner
     config.confs("SESSION_COOKIE_PATH", session_cookie_path)
