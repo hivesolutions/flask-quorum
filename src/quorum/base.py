@@ -421,6 +421,19 @@ def load(
     config.confs("APPLICATION_ROOT", application_root)
     config.confs("PREFERRED_URL_SCHEME", url_scheme)
 
+    # retrieves some internal configuration value related with
+    # the way that the session is going to be handled
+    session_cookie_path = config.conf("SESSION_COOKIE_PATH", "/")
+    session_cookie_secure = config.conf("SESSION_COOKIE_SECURE", False, cast = bool)
+    session_refresh_request = config.conf("SESSION_REFRESH_EACH_REQUEST", False, cast = bool)
+
+    # sets a series of session related values according to quorum
+    # predefined structure, this effectively enables sessions on
+    # the client side to be handled in a predictable manner
+    config.confs("SESSION_COOKIE_PATH", session_cookie_path)
+    config.confs("SESSION_COOKIE_SECURE", session_cookie_secure)
+    config.confs("SESSION_REFRESH_EACH_REQUEST", session_refresh_request)
+
     # creates the proper values according to the currently provided
     # ones so that they match the ones that are expected
     name = name + "-" + instance if instance else name

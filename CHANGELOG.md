@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Made client side sessions more stable, by patching some global session related configurations
 
 ## [0.6.1] - 2021-07-31
 

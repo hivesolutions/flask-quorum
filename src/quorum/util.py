@@ -239,13 +239,13 @@ def get_object(
     # retrieves the reference to the form objects currently
     # present in the request, note that in case a runtime
     # error occurs (eg: out of context) fails gracefully
-    try: form_s = flask.request.form_s
+    try: form_s = flask.request.form_s #@UndefinedVariable
     except RuntimeError: form_s = dict()
 
     # retrieves the reference to the arguments objects currently
     # present in the request, note that in case a runtime
     # error occurs (eg: out of context) fails gracefully
-    try: args_s = flask.request.args_s
+    try: args_s = flask.request.args_s #@UndefinedVariable
     except RuntimeError: args_s = dict()
 
     # uses all the values referencing data in the request to try
@@ -726,7 +726,7 @@ def set_locale():
     # normalizes the current locale string by converting the
     # last part of the locale string to an uppercase representation
     # and then re-joining the various components of it
-    values = flask.request.locale.split("_", 1)
+    values = flask.request.locale.split("_", 1) #@UndefinedVariable
     if len(values) > 1: values[1] = values[1].upper()
     locale_n = "_".join(values)
     locale_n = str(locale_n)
@@ -965,7 +965,7 @@ def to_locale(value, locale = None, default = None, fallback = True):
         ) for value in value
     ])
     has_context = common.base().has_context()
-    locale = locale or (flask.request.locale if has_context else None)
+    locale = locale or (flask.request.locale if has_context else None) #@UndefinedVariable
     if locale:
         bundle = common.base().get_bundle(locale) or {}
         result = bundle.get(value, None)
