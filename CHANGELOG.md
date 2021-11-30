@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* PyMongo version number split operation
 
 ## [0.6.2] - 2021-07-31
 
