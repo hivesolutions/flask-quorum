@@ -2300,9 +2300,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
-        pre_save and self.pre_save()
-        pre_create and is_new and self.pre_create()
-        pre_update and not is_new and self.pre_update()
+        if pre_save: self.pre_save()
+        if pre_create and is_new: self.pre_create()
+        if pre_update and not is_new: self.pre_update()
 
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
@@ -2329,9 +2329,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
-        post_save and self.post_save()
-        post_create and is_new and self.post_create()
-        post_update and not is_new and self.post_update()
+        if post_save: self.post_save()
+        if post_create and is_new: self.post_create()
+        if post_update and not is_new: self.post_update()
 
         # returns the instance that has just been used for the save
         # operation, this may be used for chaining operations
@@ -2344,7 +2344,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        pre_delete and self.pre_delete()
+        if pre_delete: self.pre_delete()
 
         # retrieves the reference to the store object to be able to
         # execute the removal command for the current model
@@ -2357,7 +2357,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        post_delete and self.post_delete()
+        if post_delete: self.post_delete()
 
     def approve(self, model = None, type = None):
         # retrieves the class associated with the instance
@@ -2485,7 +2485,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     ):
         # calls the event handler for the validation process this
         # should setup the operations for a correct validation
-        pre_validate and self.pre_validate()
+        if pre_validate: self.pre_validate()
 
         # starts the model reference with the current model in
         # case none is defined
@@ -2540,7 +2540,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the event handler for the validation process this
         # should finish the operations from a correct validation
-        post_validate and self.post_validate()
+        if post_validate: self.post_validate()
 
     def _filter(
         self,
