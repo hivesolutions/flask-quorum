@@ -2278,7 +2278,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         post_validate = True,
         post_save = True,
         post_create = True,
-        post_update = True
+        post_update = True,
+        before_callbacks = [],
+        after_callbacks = []
     ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
@@ -2323,11 +2325,22 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # model instance and remove the main identifier from it
         if not is_new: _model = copy.copy(model); del _model["_id"]
 
+        # calls the complete set of callbacks that should be called
+        # before the concrete data store save operation
+        for callback in before_callbacks: callback(self, model)
+
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        if is_new: self._id = store.insert(model); self.apply(model, safe_a = False)
-        else: store.update({"_id" : model["_id"]}, {"$set" : _model})
+        if is_new:
+            store.insert(model)
+            self.apply(model, safe_a = False)
+        else:
+            store.update({"_id" : model["_id"]}, {"$set" : _model})
+
+        # calls the complete set of callbacks that should be called
+        # after the concrete data store save operation
+        for callback in after_callbacks: callback(self, model)
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
@@ -2339,7 +2352,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # operation, this may be used for chaining operations
         return self
 
-    def delete(self, verify = True, pre_delete = True, post_delete = True):
+    def delete(
+        self,
+        verify = True,
+        pre_delete = True,
+        post_delete = True,
+        before_callbacks = [],
+        after_callbacks = []
+    ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
         if verify: self.assert_is_concrete()
@@ -2347,6 +2367,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
         if pre_delete: self.pre_delete()
+
+        # calls the complete set of callbacks that should be called
+        # before the concrete data store delete operation
+        for callback in before_callbacks: callback(self)
 
         # retrieves the reference to the store object to be able to
         # execute the removal command for the current model
@@ -2356,6 +2380,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # calls the underlying delete handler that may be used to extend
         # the default delete functionality
         self._delete()
+
+        # calls the complete set of callbacks that should be called
+        # after the concrete data store delete operation
+        for callback in after_callbacks: callback(self)
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
