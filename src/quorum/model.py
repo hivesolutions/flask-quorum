@@ -1648,8 +1648,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         """
         Working at a model map/dictionary level tries to resolve the
         relations described by the sequence of `.` separated names paths.
+
         Should be able to handle both instance and map associated eager
         loading relations.
+
         :type model: Dictionary
         :param model: The model map to be used as reference for the eager
         loading of relations.
