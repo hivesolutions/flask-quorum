@@ -294,6 +294,10 @@ class MongoCollection(Collection):
         self.log("count", *args, **kwargs)
         return mongodb._count(self._base, *args, **kwargs)
 
+    def count_documents(self, *args, **kwargs):
+        self.log("count_documents", *args, **kwargs)
+        return mongodb._count_documents(self._base, *args, **kwargs)
+
     def ensure_index(self, *args, **kwargs):
         self.log("ensure_index", *args, **kwargs)
         direction = kwargs.pop("direction", True)
