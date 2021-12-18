@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.6.4
+^^^^^
+
+    * Fixed support for `count_documents` in `PyMongo>=4`
+
 0.6.3
 ^^^^^
 

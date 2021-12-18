@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [0.6.4] - 2021-12-18
+
+### Fixed
+
 * Support for `count_documents` in `PyMongo>=4`
 
 ## [0.6.3] - 2021-12-01
