@@ -97,6 +97,20 @@ def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
     return items
 
 def xlsx_raw(cell_s):
+    """
+    Sanitizes the string value for the cell, taking into
+    consideration integers and strings as different data types,
+    the returning value is always a string.
+
+    :type cell_s: Cell
+    :param cell_S: The cell base value, that is going to be
+    tested for data type and from which a sanitized string
+    value should be returned.
+    :rtype: String
+    :return: The sanitized string value from the cell value
+    ready to be used.
+    """
+
     is_str = cell_s.ctype == xlrd.XL_CELL_TEXT
     if is_str: return cell_s.value
     try: is_int = cell_s.value == int(cell_s.value)
