@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [0.7.0] - 2022-02-04
+
+### Fixed
+
 * Safer check for integer value in Excel
 
 ## [0.6.4] - 2021-12-18

@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.7.0
+^^^^^
+
+    * Safer check for integer value in Excel
+
 0.6.4
 ^^^^^
 
