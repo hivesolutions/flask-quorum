@@ -99,6 +99,7 @@ def xlsx_to_map(file_path, keys = (), types = (), ignore_header = True):
 def xlsx_raw(cell_s):
     is_str = cell_s.ctype == xlrd.XL_CELL_TEXT
     if is_str: return cell_s.value
-    is_int = cell_s.value == int(cell_s.value)
+    try: is_int = cell_s.value == int(cell_s.value)
+    except ValueError: is_int = False
     if is_int: return legacy.UNICODE(int(cell_s.value))
     return legacy.UNICODE(cell_s.value)
