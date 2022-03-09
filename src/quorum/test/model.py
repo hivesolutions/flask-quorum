@@ -119,6 +119,27 @@ class ModelTest(quorum.TestCase):
         self.assertEqual(result, 1)
 
     @quorum.secured
+    def test_count_find(self):
+        adapter = quorum.get_adapter()
+        if not adapter.name in ("mongo",):
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("Adapter is not supported")
+
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count(**dict(find_d = ["name:eq:Name"]))
+        self.assertEqual(result, 1)
+
+        result = mock.Person.count(**dict(find_d = ["name:eq:OtherName"]))
+        self.assertEqual(result, 0)
+
+    @quorum.secured
     def test_delete(self):
         result = mock.Person.count()
         self.assertEqual(result, 0)
