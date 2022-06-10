@@ -48,7 +48,14 @@ class HTTPCTest(quorum.TestCase):
         self.httpbin = quorum.conf("HTTPBIN", "httpbin.org")
 
     @quorum.secured
-    def test_parse_url(self):
+    def test_basic_auth(self):
+        result = quorum.httpc.basic_auth("username", "password")
+
+        self.assertEqual(result, "Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
+        self.assertEqual(quorum.legacy.is_string(result), True)
+
+    @quorum.secured
+    def test__parse_url(self):
         url, scheme, host, authorization, params = quorum.httpc._parse_url("http://hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")

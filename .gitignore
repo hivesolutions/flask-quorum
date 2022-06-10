@@ -1,5 +1,10 @@
+*.env
 *.pyc
 *.egg
+
+.DS_Store
+
+/.vscode/settings.json
 
 /dist
 /build

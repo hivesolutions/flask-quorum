@@ -287,6 +287,51 @@ def delete_json(
         if retries == 0:
             raise exceptions.HTTPError("Data retrieval not possible")
 
+def patch_json(
+    url,
+    headers = None,
+    handle = None,
+    silent = None,
+    redirect = None,
+    timeout = None,
+    auth_callback = None,
+    **kwargs
+):
+    # starts the variable holding the number of
+    # retrieves to be used
+    retries = 5
+
+    while True:
+        try:
+            return _patch_json(
+                url,
+                headers = headers,
+                handle = handle,
+                silent = silent,
+                redirect = redirect,
+                timeout = timeout,
+                **kwargs
+            )
+        except legacy.HTTPError as error:
+            if error.code in AUTH_ERRORS and auth_callback:
+                _try_auth(auth_callback, kwargs)
+            else:
+                data_r = error.read()
+                data_r = legacy.str(data_r, encoding = "utf-8")
+                data_s = json.loads(data_r)
+                raise exceptions.JSONError(data_s)
+
+        # decrements the number of retries and checks if the
+        # number of retries has reached the limit
+        retries -= 1
+        if retries == 0:
+            raise exceptions.HTTPError("Data retrieval not possible")
+
+def basic_auth(username, password = None):
+    if not password: password = username
+    authorization = _authorization(username, password)
+    return "Basic %s" % authorization
+
 def _try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
     if headers == None: headers = dict()
@@ -387,6 +432,26 @@ def _delete_json(
 ):
     return _method_empty(
         "DELETE",
+        url,
+        headers = headers,
+        handle = handle,
+        silent = silent,
+        redirect = redirect,
+        timeout = timeout,
+        **kwargs
+    )
+
+def _patch_json(
+    url,
+    headers = None,
+    handle = None,
+    silent = None,
+    redirect = None,
+    timeout = None,
+    **kwargs
+):
+    return _method_empty(
+        "PATCH",
         url,
         headers = headers,
         handle = handle,

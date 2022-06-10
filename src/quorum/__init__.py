@@ -95,7 +95,8 @@ from .execution import ExecutionThread, background, insert_work, interval_work,\
     seconds_work, minutes_work, hourly_work, daily_work, weekly_work, monthly_work,\
     seconds_eval, minutes_eval, hourly_eval, daily_eval, weekly_eval, monthly_eval
 from .formats import xlsx_to_map
-from .httpc import file_g, get_f, get, get_json, post_json, put_json, delete_json, HTTPResponse
+from .httpc import file_g, get_f, get, get_json, post_json, put_json, delete_json, patch_json,\
+    basic_auth, HTTPResponse
 from .info import NAME, VERSION, AUTHOR, EMAIL, DESCRIPTION, LICENSE, KEYWORDS, URL,\
     COPYRIGHT
 from .jsonf import load_json
