@@ -54,6 +54,13 @@ class HTTPCTest(quorum.TestCase):
         self.assertEqual(result, "Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
         self.assertEqual(quorum.legacy.is_string(result), True)
 
+        result_single = quorum.httpc.basic_auth("username")
+        result_multiple = quorum.httpc.basic_auth("username", "username")
+
+        self.assertEqual(result_single, "Basic dXNlcm5hbWU6dXNlcm5hbWU=")
+        self.assertEqual(quorum.legacy.is_string(result), True)
+        self.assertEqual(result_single, result_multiple)
+
     @quorum.secured
     def test__parse_url(self):
         url, scheme, host, authorization, params = quorum.httpc._parse_url("http://hive.pt/")
