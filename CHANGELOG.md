@@ -9,16 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [0.8.0] - 2023-01-06
+
+### Added
+
 * Support for the `basic_auth()` method
 * Support for the `date.py` module and the `format_delta` function
 
 ### Changed
 
 * Renamed repository to `flask-quorum`
-
-### Fixed
-
-*
 
 ## [0.7.0] - 2022-02-04
 

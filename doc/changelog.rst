@@ -6,6 +6,13 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.0
+^^^^^
+
+    * Support for the `basic_auth()` method
+    * Support for the `date.py` module and the `format_delta` function
+    * Renamed repository to `flask-quorum`
+
 0.7.0
 ^^^^^
 
