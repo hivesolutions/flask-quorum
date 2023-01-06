@@ -524,6 +524,10 @@ def load(
     )
     app._locale_d = locales[0]
 
+    # takes a snapshot of the current timestamp as it's
+    # considered to be the start time of the application
+    app.start_time = time.time()
+
     # sets a series of conditional based attributes in both
     # the associated modules and the base app object (as expected)
     if redis_url: redisdb.url = redis_url

@@ -42,6 +42,7 @@ from . import config
 from . import crypt
 from . import daemon
 from . import data
+from . import date
 from . import defines
 from . import errors
 from . import exceptions
@@ -80,11 +81,13 @@ from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare
     load_paths, load_bundles, start_log, extra_logging, get_app, get_adapter, get_log,\
     get_level, get_handlers, get_handler, get_bundle, is_devel, finalize, before_request,\
     after_request, context_processor, start_execution, stop_execution, setup_models,\
-    models_c, resolve, templates_path, bundles_path, base_path, has_context, ensure_context, onrun
+    models_c, resolve, templates_path, bundles_path, base_path, has_context, ensure_context,\
+    onrun
 from .config import conf, conf_prefix, conf_suffix, confs, confr, confd, confctx
 from .crypt import Cipher, RC4, Spritz
 from .daemon import Daemon
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
+from .date import format_delta
 from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, BROWSER_INFO, OS_INFO,\
     WINDOWS_LOCALE
 from .errors import errors_json
