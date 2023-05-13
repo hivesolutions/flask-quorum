@@ -972,13 +972,7 @@ def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
 
 def has_context():
-    if hasattr(flask, "has_app_context"):
-        return flask.has_app_context()
-
-    if not hasattr(flask, "_app_ctx_stack"): return False
-    if not hasattr(flask._app_ctx_stack, "top"): return False
-    if not flask._app_ctx_stack.top: return False
-    return True
+    return flask.has_app_context()
 
 def ensure_context(function):
     """
@@ -1001,27 +995,11 @@ def ensure_context(function):
         _ctx = has_context()
         _app_ctx = APP.app_context() if APP else None
         _ensure = True if not _ctx and _app_ctx else False
-        try:
-            if _ensure:
-                # verifies if the old version of app context
-                # stack management is the one that is currently
-                # in use and uses the appropriate push method
-                if hasattr(flask, "_app_ctx_stack") and\
-                    hasattr(flask._app_ctx_stack, "push"):
-                    flask._app_ctx_stack.push(_app_ctx)
-                elif _app_ctx:
-                    _app_ctx.push()
+        if _ensure:
+            with _app_ctx:
+                result = function(*args, **kwargs)
+        else:
             result = function(*args, **kwargs)
-        finally:
-            if _ensure:
-                # verifies if the old version of app context
-                # stack management is the one that is currently
-                # in use and uses the appropriate pop method
-                if hasattr(flask, "_app_ctx_stack") and\
-                    hasattr(flask._app_ctx_stack, "pop"):
-                    flask._app_ctx_stack.pop()
-                elif _app_ctx:
-                    _app_ctx.pop()
         return result
 
     return interceptor
