@@ -972,12 +972,18 @@ def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
 
 def has_context():
-    return True if flask._app_ctx_stack.top else False
+    if hasattr(flask, "has_app_context"):
+        return flask.has_app_context()
+
+    if not hasattr(flask, "_app_ctx_stack"): return False
+    if not hasattr(flask._app_ctx_stack, "top"): return False
+    if not flask._app_ctx_stack.top: return False
+    return True
 
 def ensure_context(function):
     """
     Decorator that makes sure that the underlying execution
-    method/function is run inside a valid app context.
+    method/function is run inside a valid flask app context.
 
     In case there's currently no app context defined it uses
     the global Application reference to create a new one.
@@ -996,10 +1002,26 @@ def ensure_context(function):
         _app_ctx = APP.app_context() if APP else None
         _ensure = True if not _ctx and _app_ctx else False
         try:
-            if _ensure: flask._app_ctx_stack.push(_app_ctx)
+            if _ensure:
+                # verifies if the old version of app context
+                # stack management is the one that is currently
+                # in use and uses the appropriate push method
+                if hasattr(flask, "_app_ctx_stack") and\
+                    hasattr(flask._app_ctx_stack, "push"):
+                    flask._app_ctx_stack.push(_app_ctx)
+                elif _app_ctx:
+                    _app_ctx.push()
             result = function(*args, **kwargs)
         finally:
-            if _ensure: flask._app_ctx_stack.pop()
+            if _ensure:
+                # verifies if the old version of app context
+                # stack management is the one that is currently
+                # in use and uses the appropriate pop method
+                if hasattr(flask, "_app_ctx_stack") and\
+                    hasattr(flask._app_ctx_stack, "pop"):
+                    flask._app_ctx_stack.pop()
+                elif _app_ctx:
+                    _app_ctx.pop()
         return result
 
     return interceptor
