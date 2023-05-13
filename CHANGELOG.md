@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Incompatibilities with Flask 2.3+ - [#1](https://github.com/hivesolutions/flask-quorum/issues/1)
 
 ## [0.8.0] - 2023-01-06
 
