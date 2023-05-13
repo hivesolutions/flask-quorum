@@ -972,12 +972,12 @@ def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
 
 def has_context():
-    return True if flask._app_ctx_stack.top else False
+    return flask.has_app_context()
 
 def ensure_context(function):
     """
     Decorator that makes sure that the underlying execution
-    method/function is run inside a valid app context.
+    method/function is run inside a valid flask app context.
 
     In case there's currently no app context defined it uses
     the global Application reference to create a new one.
@@ -995,11 +995,11 @@ def ensure_context(function):
         _ctx = has_context()
         _app_ctx = APP.app_context() if APP else None
         _ensure = True if not _ctx and _app_ctx else False
-        try:
-            if _ensure: flask._app_ctx_stack.push(_app_ctx)
+        if _ensure:
+            with _app_ctx:
+                result = function(*args, **kwargs)
+        else:
             result = function(*args, **kwargs)
-        finally:
-            if _ensure: flask._app_ctx_stack.pop()
         return result
 
     return interceptor
