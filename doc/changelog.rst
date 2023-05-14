@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.1
+^^^^^
+
+    * Fixed Incompatibilities with Flask 2.3+
+
 0.8.0
 ^^^^^
 
