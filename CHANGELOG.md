@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support for multiple items in the `sort` field
+* Support for `id` as a fallback secondary sorter
 
 ### Changed
 
