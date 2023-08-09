@@ -6,6 +6,13 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.2
+^^^^^
+
+    * Support for multiple items in the `sort` field
+    * Support for `id` as a fallback secondary sorter
+    * Changed structure of the ReadTheDocs configuration
+
 0.8.1
 ^^^^^
 
