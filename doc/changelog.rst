@@ -57,54 +57,54 @@ Current Versions
     * Fixed critical issues with deep nested relations
 
 0.5.36
-^^^^^
+^^^^^^
 
     * Fixed issue with pypy
 
 0.5.35
-^^^^^
+^^^^^^
 
     * Added compatibility with TinyDB 4
 
 0.5.34
-^^^^^
+^^^^^^
 
     * Dynamic template loading for SMTP
 
 0.5.33
-^^^^^
+^^^^^^
 
     * Small improvements
 
 0.5.32
-^^^^^
+^^^^^^
 
     * Improved pyMongo integration
     * Support for context in configuration
     * Better `verify` functions
 
 0.5.31
-^^^^^
+^^^^^^
 
     * Support for the default field in the to_locale method
 
 0.5.30
-^^^^^
+^^^^^^
 
     * Small set of fixes
 
 0.5.29
-^^^^^
+^^^^^^
 
     * New |unset filter
 
 0.5.28
-^^^^^
+^^^^^^
 
     * Bug fixes
 
 0.5.27
-^^^^^
+^^^^^^
 
     * Improved quality of the HTTP client
     * Generators as input for HTTP requests
@@ -112,89 +112,89 @@ Current Versions
     * Bug fixes
 
 0.5.26
-^^^^^
+^^^^^^
 
     * Support for secure headers
     * Bug fixes
 
 0.5.25
-^^^^^
+^^^^^^
 
     * Support for clusters in Pusher
 
 0.5.24
-^^^^^
+^^^^^^
 
     * Fixed some bugs related with data structures
 
 0.5.23
-^^^^^
+^^^^^^
 
     * Fixed some bugs
 
 0.5.22
-^^^^^
+^^^^^^
 
     * Fixed some bugs, related with HTTP client
 
 0.5.21
-^^^^^
+^^^^^^
 
     * Fixed some bugs
 
 0.5.20
-^^^^^
+^^^^^^
 
     * Fixed some bugs
     * Support for better OrderedDict structure
 
 0.5.19
-^^^^^
+^^^^^^
 
     * Fixed problem with the SERVER_NAME config value generation
 
 0.5.18
-^^^^^
+^^^^^^
 
     * Fixed issue with default port and URL generation
 
 0.5.17
-^^^^^
+^^^^^^
 
     * Support for BASE_URL and _external URL generation
 
 0.5.16
-^^^^^
+^^^^^^
 
     * Small context ensure fixes
 
 0.5.15
-^^^^^
+^^^^^^
 
     * Simplified ensure_context decorator
 
 0.5.14
-^^^^^
+^^^^^^
 
     * New support for minute and hour based work
 
 0.5.13
-^^^^^
+^^^^^^
 
     * New ensure_context() function
 
 0.5.12
-^^^^^
+^^^^^^
 
     * Fixed AMQP issues
 
 0.5.11
-^^^^^
+^^^^^^
 
     * Small legacy fixes
 
 0.5.10
-^^^^^
+^^^^^^
 
     * Small fixes in form loading
 
@@ -250,33 +250,33 @@ Current Versions
     * Added support for more indexes in Mongo
 
 0.4.15
-^^^^^
+^^^^^^
 
     * Small set of fixes
 
 0.4.14
-^^^^^
+^^^^^^
 
     * Small set of fixes in RabbitMQ to AMQP migration
 
 0.4.13
-^^^^^
+^^^^^^
 
     * Renamed RabbitMQ to AMQP
 
 0.4.12
-^^^^^
+^^^^^^
 
     * Removed extra print statements
 
 0.4.11
-^^^^^
+^^^^^^
 
     * New model structure
     * Fixed issues with locales
 
 0.4.10
-^^^^^
+^^^^^^
 
     * New configuration infra-structure
 
@@ -332,69 +332,69 @@ Current Versions
     * Small set of issue fixes
 
 0.3.22
-^^^^^
+^^^^^^
 
     * Fixed major issue
 
 0.3.21
-^^^^^
+^^^^^^
 
     * Major changes in data layer
 
 0.3.20
-^^^^^
+^^^^^^
 
     * Fixed memory leak
 
 0.3.19
-^^^^^
+^^^^^^
 
     * Fixed issue in xls conversion
 
 0.3.18
-^^^^^
+^^^^^^
 
     * Better xls conversion
     * Minor bug fixes
 
 0.3.17
-^^^^^
+^^^^^^
 
     * Better persistence model
     * Minor bug fixes
 
 0.3.16
-^^^^^
+^^^^^^
 
     * New map like access support for models
 
 0.3.15
-^^^^^
+^^^^^^
 
     * Fixed issue with filtering
 
 0.3.14
-^^^^^
+^^^^^^
 
     * New support for travis
 
 0.3.13
-^^^^^
+^^^^^^
 
     * Fixed bug related with http client
 
 0.3.12
-^^^^^
+^^^^^^
 
     * Fixed bug related with email sending
 
 0.3.11
-^^^^^
+^^^^^^
 
     * Bug fix related with async based redirection
 
 0.3.10
-^^^^^
+^^^^^^
 
     * Compatibility fixes
 
