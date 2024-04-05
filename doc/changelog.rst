@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.3
+^^^^^
+
+    * Made code compliant with `black` 
+
 0.8.2
 ^^^^^
 
