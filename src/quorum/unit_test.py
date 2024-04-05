@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -39,13 +30,17 @@ __license__ = "Apache License, Version 2.0"
 
 import unittest
 
+
 def secured(function):
 
     def decorator(self, *args, **kwargs):
-        if self._skip: self._skipped.append(function.__name__); return
+        if self._skip:
+            self._skipped.append(function.__name__)
+            return
         return function(self, *args, **kwargs)
 
     return decorator
+
 
 class TestCase(unittest.TestCase):
 
@@ -53,8 +48,8 @@ class TestCase(unittest.TestCase):
 
     _skipped = []
 
-    def __init__(self, methodName = "runTest"):
-        unittest.TestCase.__init__(self, methodName = methodName)
+    def __init__(self, methodName="runTest"):
+        unittest.TestCase.__init__(self, methodName=methodName)
 
         self._skip = False
         self._skipped = []

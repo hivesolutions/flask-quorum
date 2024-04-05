@@ -19,15 +19,6 @@
 # You should have received a copy of the Apache License along with
 # Hive Flask Quorum. If not, see <http://www.apache.org/licenses/>.
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -74,58 +65,286 @@ from . import validation
 
 from . import info as _info
 
-from .acl import check_basic_auth, check_login, check_user, check_token, check_tokens, ensure_basic_auth,\
-    ensure_login, ensure_user, ensure_session, ensure, ensure_auth, get_tokens_m, to_tokens_m
-from .base import APP, RUN_CALLED, RUN_F, Quorum, monkey, call_run, run, prepare_app,\
-    run_base, run_waitress, run_netius, load, unload, load_all, load_app_config,\
-    load_paths, load_bundles, start_log, extra_logging, get_app, get_adapter, get_log,\
-    get_level, get_handlers, get_handler, get_bundle, is_devel, finalize, before_request,\
-    after_request, context_processor, start_execution, stop_execution, setup_models,\
-    models_c, resolve, templates_path, bundles_path, base_path, has_context, ensure_context,\
-    onrun
+from .acl import (
+    check_basic_auth,
+    check_login,
+    check_user,
+    check_token,
+    check_tokens,
+    ensure_basic_auth,
+    ensure_login,
+    ensure_user,
+    ensure_session,
+    ensure,
+    ensure_auth,
+    get_tokens_m,
+    to_tokens_m,
+)
+from .base import (
+    APP,
+    RUN_CALLED,
+    RUN_F,
+    Quorum,
+    monkey,
+    call_run,
+    run,
+    prepare_app,
+    run_base,
+    run_waitress,
+    run_netius,
+    load,
+    unload,
+    load_all,
+    load_app_config,
+    load_paths,
+    load_bundles,
+    start_log,
+    extra_logging,
+    get_app,
+    get_adapter,
+    get_log,
+    get_level,
+    get_handlers,
+    get_handler,
+    get_bundle,
+    is_devel,
+    finalize,
+    before_request,
+    after_request,
+    context_processor,
+    start_execution,
+    stop_execution,
+    setup_models,
+    models_c,
+    resolve,
+    templates_path,
+    bundles_path,
+    base_path,
+    has_context,
+    ensure_context,
+    onrun,
+)
 from .config import conf, conf_prefix, conf_suffix, confs, confr, confd, confctx
 from .crypt import Cipher, RC4, Spritz
 from .daemon import Daemon
-from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
+from .data import (
+    DataAdapter,
+    MongoAdapter,
+    TinyAdapter,
+    Collection,
+    MongoCollection,
+    TinyCollection,
+)
 from .date import format_delta
-from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, BROWSER_INFO, OS_INFO,\
-    WINDOWS_LOCALE
+from .defines import (
+    ITERABLES,
+    MOBILE_REGEX,
+    TABLET_REGEX,
+    MOBILE_PREFIX_REGEX,
+    BROWSER_INFO,
+    OS_INFO,
+    WINDOWS_LOCALE,
+)
 from .errors import errors_json
-from .exceptions import BaseError, ServerInitError, ModuleNotFound, OperationalError, AssertionError,\
-    NotFoundError, ValidationError, NotImplementedError, BaseInternalError, ValidationInternalError,\
-    ValidationMultipleError, HTTPError, HTTPDataError, JSONError
-from .execution import ExecutionThread, background, insert_work, interval_work,\
-    seconds_work, minutes_work, hourly_work, daily_work, weekly_work, monthly_work,\
-    seconds_eval, minutes_eval, hourly_eval, daily_eval, weekly_eval, monthly_eval
+from .exceptions import (
+    BaseError,
+    ServerInitError,
+    ModuleNotFound,
+    OperationalError,
+    AssertionError,
+    NotFoundError,
+    ValidationError,
+    NotImplementedError,
+    BaseInternalError,
+    ValidationInternalError,
+    ValidationMultipleError,
+    HTTPError,
+    HTTPDataError,
+    JSONError,
+)
+from .execution import (
+    ExecutionThread,
+    background,
+    insert_work,
+    interval_work,
+    seconds_work,
+    minutes_work,
+    hourly_work,
+    daily_work,
+    weekly_work,
+    monthly_work,
+    seconds_eval,
+    minutes_eval,
+    hourly_eval,
+    daily_eval,
+    weekly_eval,
+    monthly_eval,
+)
 from .formats import xlsx_to_map
-from .httpc import file_g, get_f, get, get_json, post_json, put_json, delete_json, patch_json,\
-    basic_auth, HTTPResponse
-from .info import NAME, VERSION, AUTHOR, EMAIL, DESCRIPTION, LICENSE, KEYWORDS, URL,\
-    COPYRIGHT
+from .httpc import (
+    file_g,
+    get_f,
+    get,
+    get_json,
+    post_json,
+    put_json,
+    delete_json,
+    patch_json,
+    basic_auth,
+    HTTPResponse,
+)
+from .info import (
+    NAME,
+    VERSION,
+    AUTHOR,
+    EMAIL,
+    DESCRIPTION,
+    LICENSE,
+    KEYWORDS,
+    URL,
+    COPYRIGHT,
+)
 from .jsonf import load_json
-from .log import MemoryHandler, BaseFormatter, ThreadFormatter, rotating_handler, smtp_handler,\
-    in_signature, has_exception, debug, info, warning, error, critical
+from .log import (
+    MemoryHandler,
+    BaseFormatter,
+    ThreadFormatter,
+    rotating_handler,
+    smtp_handler,
+    in_signature,
+    has_exception,
+    debug,
+    info,
+    warning,
+    error,
+    critical,
+)
 from .mail import send_mail, send_mail_a
 from .meta import Ordered
-from .model import Model, LocalModel, Field, link, operation, view, field, type_d, is_unset
+from .model import (
+    Model,
+    LocalModel,
+    Field,
+    link,
+    operation,
+    view,
+    field,
+    type_d,
+    is_unset,
+)
 from .mongodb import MongoMap, MongoEncoder
 from .observer import Observable
 from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy
 from .template import render_template, template_resolve
-from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
-    reference, References, references, Encrypted, encrypted, secure
+from .typesf import (
+    AbstractType,
+    Type,
+    File,
+    Files,
+    ImageFile,
+    ImageFiles,
+    image,
+    images,
+    Reference,
+    reference,
+    References,
+    references,
+    Encrypted,
+    encrypted,
+    secure,
+)
 from .unit_test import secured, TestCase
-from .util import to_limit, to_find, to_sort, is_iterable, request_json, get_field, get_object, is_mobile, is_tablet,\
-    is_browser, is_bot, browser_info, resolve_alias, page_types, find_types, norm_object, set_object,\
-    leafs, load_form, load_locale, get_locale, get_langs, set_locale, reset_locale, anotate_async,\
-    anotate_secure, run_thread, camel_to_underscore, camel_to_readable, underscore_to_camel, underscore_to_readable,\
-    generate_identifier, to_locale, nl_to_br, nl_to_br_jinja, sp_to_nbsp, sp_to_nbsp_jinja, unset, date_time,\
-    quote, unquote, escape, unescape, count_unescape, split_unescape, is_content_type, parse_content_type,\
-    verify, verify_equal, verify_not_equal, verify_type, verify_many, execute, deprecated, JSONEncoder
-from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
-    not_empty, not_false, is_in, is_upper, is_lower, is_simple, is_email, is_url, is_regex, field_eq,\
-    field_gt, field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past,\
-    not_duplicate, all_different, no_self
+from .util import (
+    to_limit,
+    to_find,
+    to_sort,
+    is_iterable,
+    request_json,
+    get_field,
+    get_object,
+    is_mobile,
+    is_tablet,
+    is_browser,
+    is_bot,
+    browser_info,
+    resolve_alias,
+    page_types,
+    find_types,
+    norm_object,
+    set_object,
+    leafs,
+    load_form,
+    load_locale,
+    get_locale,
+    get_langs,
+    set_locale,
+    reset_locale,
+    anotate_async,
+    anotate_secure,
+    run_thread,
+    camel_to_underscore,
+    camel_to_readable,
+    underscore_to_camel,
+    underscore_to_readable,
+    generate_identifier,
+    to_locale,
+    nl_to_br,
+    nl_to_br_jinja,
+    sp_to_nbsp,
+    sp_to_nbsp_jinja,
+    unset,
+    date_time,
+    quote,
+    unquote,
+    escape,
+    unescape,
+    count_unescape,
+    split_unescape,
+    is_content_type,
+    parse_content_type,
+    verify,
+    verify_equal,
+    verify_not_equal,
+    verify_type,
+    verify_many,
+    execute,
+    deprecated,
+    JSONEncoder,
+)
+from .validation import (
+    validate,
+    validate_b,
+    validate_e,
+    safe,
+    eq,
+    gt,
+    gte,
+    lt,
+    lte,
+    not_null,
+    not_empty,
+    not_false,
+    is_in,
+    is_upper,
+    is_lower,
+    is_simple,
+    is_email,
+    is_url,
+    is_regex,
+    field_eq,
+    field_gt,
+    field_gte,
+    field_lt,
+    field_lte,
+    string_gt,
+    string_lt,
+    string_eq,
+    equals,
+    not_past,
+    not_duplicate,
+    all_different,
+    no_self,
+)
 
 from .amazon import get_connection as get_amazon
 from .amazon import get_bucket as get_amazon_bucket

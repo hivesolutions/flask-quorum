@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -51,27 +42,20 @@ sys.path.insert(0, QUORUM_DIR)
 import info
 
 setuptools.setup(
-    name = info.NAME,
-    version = info.VERSION,
-    author = info.AUTHOR,
-    author_email = info.EMAIL,
-    description = info.DESCRIPTION,
-    license = info.LICENSE,
-    keywords = info.KEYWORDS,
-    url = info.URL,
-    zip_safe = True,
-    packages = [
-        "quorum",
-        "quorum.test"
-    ],
-    test_suite = "quorum.test",
-    package_dir = {
-        "" : os.path.normpath("src")
-    },
-    install_requires = [
-        "flask"
-    ],
-    classifiers = [
+    name=info.NAME,
+    version=info.VERSION,
+    author=info.AUTHOR,
+    author_email=info.EMAIL,
+    description=info.DESCRIPTION,
+    license=info.LICENSE,
+    keywords=info.KEYWORDS,
+    url=info.URL,
+    zip_safe=True,
+    packages=["quorum", "quorum.test"],
+    test_suite="quorum.test",
+    package_dir={"": os.path.normpath("src")},
+    install_requires=["flask"],
+    classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
         "License :: OSI Approved :: Apache Software License",
@@ -86,8 +70,10 @@ setuptools.setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.7",
     ],
-    long_description = open(os.path.join(os.path.dirname(__file__), "README.md"), "rb").read().decode("utf-8"),
-    long_description_content_type = "text/markdown"
+    long_description=open(os.path.join(os.path.dirname(__file__), "README.md"), "rb")
+    .read()
+    .decode("utf-8"),
+    long_description_content_type="text/markdown",
 )

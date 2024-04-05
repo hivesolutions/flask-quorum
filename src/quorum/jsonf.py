@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,11 +32,14 @@ import json
 
 from . import base
 
+
 def load_json(*args, **kwargs):
     path = base.base_path(*args, **kwargs)
     file = open(path, "rb")
-    try: data = file.read()
-    finally: file.close()
+    try:
+        data = file.read()
+    finally:
+        file.close()
     data = data.decode("utf-8")
     data = json.loads(data)
     return data

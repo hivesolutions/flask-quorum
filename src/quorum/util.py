@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -70,20 +61,21 @@ upper case letter regex that will provide a way of
 putting the underscore in the middle of the transition """
 
 SORT_MAP = {
-    "1" : 1,
-    "-1" : -1,
-    "ascending" : 1,
-    "descending" : -1,
+    "1": 1,
+    "-1": -1,
+    "ascending": 1,
+    "descending": -1,
 }
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
 number way of representing the same information """
 
 CASTERS = {
-    list : lambda v: [y for y in itertools.chain(*[split_unescape(x, ",").split(",") for x in v])],
-    bool : lambda v: v if isinstance(v, bool) else\
-        not v in ("", "0", "false", "False"),
-    dict : lambda v: json.loads(v) if legacy.is_string(v) else dict(v)
+    list: lambda v: [
+        y for y in itertools.chain(*[split_unescape(x, ",").split(",") for x in v])
+    ],
+    bool: lambda v: v if isinstance(v, bool) else not v in ("", "0", "false", "False"),
+    dict: lambda v: json.loads(v) if legacy.is_string(v) else dict(v),
 }
 """ The map associating the various data types with a proper custom
 caster to be used for special data types (more complex) under some
@@ -91,74 +83,83 @@ of the simple casting operations """
 
 defines = defines
 
+
 def to_limit(limit_s):
     limit = int(limit_s)
-    if limit < 0: return 0
+    if limit < 0:
+        return 0
     return limit
 
+
 def to_find(find_s):
-    if not find_s: return []
+    if not find_s:
+        return []
     find_t = type(find_s)
-    if find_t == list: return find_s
+    if find_t == list:
+        return find_s
     return [find_s]
+
 
 def to_sort(sort_s):
     sort_l = []
     sorts = sort_s.split(",")
     for sort_i in sorts:
         values = sort_i.split(":", 1)
-        if len(values) == 1: values.append("descending")
+        if len(values) == 1:
+            values.append("descending")
         name, direction = values
-        if name == "default": return None
+        if name == "default":
+            return None
         values[1] = SORT_MAP.get(direction, 1)
         sort_l.append(tuple(values))
     return sort_l
 
+
 ALIAS = {
-    "context" : "find_d",
-    "filters" : "find_d",
-    "filters[]" : "find_d",
-    "filter_def" : "find_d",
-    "filter_string" : "find_s",
-    "filter_name" : "find_n",
-    "filter_operator" : "find_o",
-    "insensitive" : "find_i",
-    "order" : "sort",
-    "offset" : "skip",
-    "start_record" : "skip",
-    "number_records" : "limit"
+    "context": "find_d",
+    "filters": "find_d",
+    "filters[]": "find_d",
+    "filter_def": "find_d",
+    "filter_string": "find_s",
+    "filter_name": "find_n",
+    "filter_operator": "find_o",
+    "insensitive": "find_i",
+    "order": "sort",
+    "offset": "skip",
+    "start_record": "skip",
+    "number_records": "limit",
 }
 """ The map containing the various attribute alias
 between the normalized manned and the quorum manner """
 
 FIND_TYPES = dict(
-    skip = int,
-    limit = to_limit,
-    find_s = legacy.UNICODE,
-    find_d = to_find,
-    find_i = bool,
-    find_t = legacy.UNICODE,
-    find_n = legacy.UNICODE,
-    find_o = legacy.UNICODE,
-    sort = to_sort,
-    meta = bool,
-    fields = list
+    skip=int,
+    limit=to_limit,
+    find_s=legacy.UNICODE,
+    find_d=to_find,
+    find_i=bool,
+    find_t=legacy.UNICODE,
+    find_n=legacy.UNICODE,
+    find_o=legacy.UNICODE,
+    sort=to_sort,
+    meta=bool,
+    fields=list,
 )
 """ The map associating the various find fields with
 their respective types, note that in case a special
 conversion operation is required the associated value
 may represent a conversion function instead """
 
-FIND_DEFAULTS = dict(
-    limit = 10
-)
+FIND_DEFAULTS = dict(limit=10)
 """ The map that defines the various default values
 for a series of find related attributes """
+
 
 def is_iterable(object):
     return isinstance(object, defines.ITERABLES)
 
-def request_json(request = None, encoding = "utf-8"):
+
+def request_json(request=None, encoding="utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default flask request object and then in
     # case the the JSON data is already in the request properties
@@ -167,7 +168,8 @@ def request_json(request = None, encoding = "utf-8"):
     try:
         if "_data_j" in request.properties:
             return request.properties["_data_j"]
-    except RuntimeError: pass
+    except RuntimeError:
+        pass
 
     # retrieves the current request data and tries to
     # "load" it as JSON data, in case it fails gracefully
@@ -175,7 +177,8 @@ def request_json(request = None, encoding = "utf-8"):
     data = request.data
     try:
         is_bytes = legacy.is_bytes(data)
-        if is_bytes: data = data.decode(encoding)
+        if is_bytes:
+            data = data.decode(encoding)
         data_j = json.loads(data)
     except Exception:
         data_j = {}
@@ -185,7 +188,8 @@ def request_json(request = None, encoding = "utf-8"):
     # may be used as the parsed value (post information)
     return data_j
 
-def get_field(name, default = None, cast = None, strip = False):
+
+def get_field(name, default=None, cast=None, strip=False):
     # tries to retrieve the JSON based representation of the provided
     # request from all the possible sources, this is required because
     # it's going to be used to try to retrieve a field from it
@@ -201,28 +205,25 @@ def get_field(name, default = None, cast = None, strip = False):
 
     # in case the strip flag is enabled an "extra" strip operation is applied
     # to the retrieved value (as requested), avoiding extra spaces
-    if strip: value = value.strip()
+    if strip:
+        value = value.strip()
 
     # in case a cast operation is defined, tries to retrieve a possible
     # indirect/custom caster for the current cast operation
-    if cast: cast = CASTERS.get(cast, cast)
+    if cast:
+        cast = CASTERS.get(cast, cast)
 
     # in case the cast type value is set and the value is not invalid tries
     # to cast the value into the requested cast type
-    if cast and not value in (None, ""): value = cast(value)
+    if cast and not value in (None, ""):
+        value = cast(value)
 
     # returns the final value to the caller method to be used, note that the
     # caller method should be aware of the sources used in the field retrieval
     return value
 
-def get_object(
-    object = None,
-    alias = False,
-    page = False,
-    find = False,
-    norm = True,
-    **kwargs
-):
+
+def get_object(object=None, alias=False, page=False, find=False, norm=True, **kwargs):
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
     # otherwise used an empty map (form validation)
@@ -231,53 +232,71 @@ def get_object(
     # retrieves the current request data and tries to
     # "load" it as JSON data, in case it fails gracefully
     # handles the failure setting the value as an empty map
-    try: data_j = request_json()
-    except RuntimeError: data_j = dict()
+    try:
+        data_j = request_json()
+    except RuntimeError:
+        data_j = dict()
 
     # retrieves the reference to the file objects currently
     # present in the request, note that in case a runtime
     # error occurs (eg: out of context) fails gracefully
-    try: files = flask.request.files
-    except RuntimeError: files = dict()
+    try:
+        files = flask.request.files
+    except RuntimeError:
+        files = dict()
 
     # retrieves the reference to the form objects currently
     # present in the request, note that in case a runtime
     # error occurs (eg: out of context) fails gracefully
-    try: form_s = flask.request.form_s #@UndefinedVariable
-    except RuntimeError: form_s = dict()
+    try:
+        form_s = flask.request.form_s  # @UndefinedVariable
+    except RuntimeError:
+        form_s = dict()
 
     # retrieves the reference to the arguments objects currently
     # present in the request, note that in case a runtime
     # error occurs (eg: out of context) fails gracefully
-    try: args_s = flask.request.args_s #@UndefinedVariable
-    except RuntimeError: args_s = dict()
+    try:
+        args_s = flask.request.args_s  # @UndefinedVariable
+    except RuntimeError:
+        args_s = dict()
 
     # uses all the values referencing data in the request to try
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
-    for name, value in data_j.items(): object[name] = value
-    for name, value in files.items(): object[name] = value
-    for name, value in form_s.items(): object[name] = value
-    for name, value in args_s.items(): object[name] = value
+    for name, value in data_j.items():
+        object[name] = value
+    for name, value in files.items():
+        object[name] = value
+    for name, value in form_s.items():
+        object[name] = value
+    for name, value in args_s.items():
+        object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
     # based attributes using the currently defined mapping map
-    if alias: resolve_alias(object)
-    if page: page_types(object)
-    if find: find_types(object)
-    if find: find_defaults(object, kwargs)
+    if alias:
+        resolve_alias(object)
+    if page:
+        page_types(object)
+    if find:
+        find_types(object)
+    if find:
+        find_defaults(object, kwargs)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
     # as defined in the specification (this allows multiple references)
-    if norm: norm_object(object)
+    if norm:
+        norm_object(object)
 
     # returns the constructed object to the caller method this object
     # should be a structured representation of the data in the request
     return object
 
-def is_mobile(user_agent = None):
+
+def is_mobile(user_agent=None):
     """
     Verifies if the current user agent string represents a
     mobile agent, for that a series of regular expressions
@@ -292,15 +311,19 @@ def is_mobile(user_agent = None):
     mobile browser or a regular (desktop) one.
     """
 
-    user_agent = flask.request.headers.get("User-Agent", "")\
-        if user_agent == None else user_agent
+    user_agent = (
+        flask.request.headers.get("User-Agent", "")
+        if user_agent == None
+        else user_agent
+    )
     prefix = user_agent[:4]
     mobile = defines.MOBILE_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
     is_mobile = True if mobile or mobile_prefix else False
     return is_mobile
 
-def is_tablet(user_agent = None):
+
+def is_tablet(user_agent=None):
     """
     Verifies if the current user agent string represents a
     tablet agent, for that a series of regular expressions
@@ -315,15 +338,19 @@ def is_tablet(user_agent = None):
     tablet browser or a regular (desktop) one.
     """
 
-    user_agent = flask.request.headers.get("User-Agent", "")\
-        if user_agent == None else user_agent
+    user_agent = (
+        flask.request.headers.get("User-Agent", "")
+        if user_agent == None
+        else user_agent
+    )
     prefix = user_agent[:4]
     tablet = defines.TABLET_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
     is_tablet = True if tablet or mobile_prefix else False
     return is_tablet
 
-def is_browser(user_agent = None):
+
+def is_browser(user_agent=None):
     """
     Verifies if the provided user agent string represents a
     browser (interactive) agent, for that a series of verifications
@@ -337,15 +364,21 @@ def is_browser(user_agent = None):
     interactive browser or not.
     """
 
-    user_agent = flask.request.headers.get("User-Agent", "")\
-        if user_agent == None else user_agent
-    info = browser_info(user_agent = user_agent)
-    if not info: return False
+    user_agent = (
+        flask.request.headers.get("User-Agent", "")
+        if user_agent == None
+        else user_agent
+    )
+    info = browser_info(user_agent=user_agent)
+    if not info:
+        return False
     interactive = info.get("interactive", False)
-    if not interactive: return False
+    if not interactive:
+        return False
     return True
 
-def is_bot(user_agent = None):
+
+def is_bot(user_agent=None):
     """
     Verifies if the provided user agent string represents a
     bot (automated) agent, for that a series of verifications
@@ -359,15 +392,21 @@ def is_bot(user_agent = None):
     automated bot or not.
     """
 
-    user_agent = flask.request.headers.get("User-Agent", "")\
-        if user_agent == None else user_agent
-    info = browser_info(user_agent = user_agent)
-    if not info: return False
+    user_agent = (
+        flask.request.headers.get("User-Agent", "")
+        if user_agent == None
+        else user_agent
+    )
+    info = browser_info(user_agent=user_agent)
+    if not info:
+        return False
     bot = info.get("bot", False)
-    if not bot: return False
+    if not bot:
+        return False
     return True
 
-def browser_info(user_agent = None):
+
+def browser_info(user_agent=None):
     """
     Retrieves a dictionary containing information about the browser
     and the operative system associated with the provided user agent.
@@ -382,8 +421,11 @@ def browser_info(user_agent = None):
     the provided user agent.
     """
 
-    user_agent = flask.request.headers.get("User-Agent", "")\
-        if user_agent == None else user_agent
+    user_agent = (
+        flask.request.headers.get("User-Agent", "")
+        if user_agent == None
+        else user_agent
+    )
 
     info = dict()
 
@@ -394,23 +436,29 @@ def browser_info(user_agent = None):
         interactive = browser_i.get("interactive", True)
         bot = browser_i.get("bot", False)
 
-        if not sub_string in user_agent: continue
-        if not version_search in user_agent: continue
+        if not sub_string in user_agent:
+            continue
+        if not version_search in user_agent:
+            continue
 
         version_i = user_agent.index(version_search) + len(version_search)
         version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
-        try: version_f = float(".".join(version.split(".")[:2]))
-        except ValueError: version_f = 0.0
-        try: version_i = int(version_f)
-        except ValueError: version_f = 0
+        try:
+            version_f = float(".".join(version.split(".")[:2]))
+        except ValueError:
+            version_f = 0.0
+        try:
+            version_i = int(version_f)
+        except ValueError:
+            version_f = 0
 
         info.update(
-            name = identity,
-            version = version,
-            version_f = version_f,
-            version_i = version_i,
-            interactive = interactive,
-            bot = bot
+            name=identity,
+            version=version,
+            version_f=version_f,
+            version_i=version_i,
+            interactive=interactive,
+            bot=bot,
         )
         break
 
@@ -418,21 +466,25 @@ def browser_info(user_agent = None):
         identity = os_i["identity"]
         sub_string = os_i.get("sub_string", identity)
 
-        if not sub_string in user_agent: continue
+        if not sub_string in user_agent:
+            continue
 
-        info.update(os = identity)
+        info.update(os=identity)
         break
 
     return info if info else None
 
+
 def resolve_alias(object):
     for name, value in legacy.eager(object.items()):
-        if not name in ALIAS: continue
+        if not name in ALIAS:
+            continue
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
 
-def page_types(object, size = 50):
+
+def page_types(object, size=50):
     page = object.get("page", 1)
     size = object.get("size", size)
     sorter = object.get("sorter", None)
@@ -442,7 +494,9 @@ def page_types(object, size = 50):
     offset = page - 1
     object["skip"] = offset * size
     object["limit"] = size
-    if sorter: object["sort"] = "%s:%s" % (sorter, direction)
+    if sorter:
+        object["sort"] = "%s:%s" % (sorter, direction)
+
 
 def find_types(object):
     # iterates over all the name and values of the object
@@ -465,18 +519,25 @@ def find_types(object):
         # in case the value resulting from the conversion
         # is invalid the name is removed from the find object
         # because it's not considered to be valid
-        if value == None: del object[name]
-        else: object[name] = value
+        if value == None:
+            del object[name]
+        else:
+            object[name] = value
+
 
 def find_defaults(object, kwargs):
     for name, value in legacy.iteritems(kwargs):
-        if name in object: continue
-        if not name in FIND_TYPES: continue
+        if name in object:
+            continue
+        if not name in FIND_TYPES:
+            continue
         object[name] = value
 
     for name, value in legacy.iteritems(FIND_DEFAULTS):
-        if name in object: continue
+        if name in object:
+            continue
         object[name] = value
+
 
 def norm_object(object):
     # iterates over all the key value association in the
@@ -486,7 +547,8 @@ def norm_object(object):
         # verifies if the current name references a sequence
         # and if that's not the case continues the loop trying
         # to find any other sequence based value
-        if not name.endswith("[]"): continue
+        if not name.endswith("[]"):
+            continue
 
         # removes the current reference to the name as the value
         # is not in the valid structure and then normalizes the
@@ -497,7 +559,9 @@ def norm_object(object):
         # in case the current value is not valid (empty) the object
         # is set with an empty list for the current iteration as this
         # is considered to be the default value
-        if not value: object[name] = []; continue
+        if not value:
+            object[name] = []
+            continue
 
         # retrieves the normalized and linearized list of leafs
         # for the current value and ten verifies the size of each
@@ -523,6 +587,7 @@ def norm_object(object):
                 _object = list[index]
                 _name_l = _name.split(".")
                 set_object(_object, _name_l, _value[index])
+
 
 def set_object(object, name_l, value):
     """
@@ -554,7 +619,8 @@ def set_object(object, name_l, value):
     # in case the length of the current names list has reached
     # one this is the final iteration and so the value is set
     # at the current naming point
-    if len(name_l) == 1: object[name] = value
+    if len(name_l) == 1:
+        object[name] = value
 
     # otherwise this is a "normal" step and so a new map must
     # be created/retrieved and the iteration step should be
@@ -564,6 +630,7 @@ def set_object(object, name_l, value):
         map = object.get(name, {})
         object[name] = map
         set_object(map, name_l[1:], value)
+
 
 def leafs(object):
     """
@@ -610,12 +677,14 @@ def leafs(object):
         # (properly validated for sequence presence)
         else:
             value_t = type(value)
-            if not value_t == list: value = [value]
+            if not value_t == list:
+                value = [value]
             leafs_l.append((name, value))
 
     # returns the list of leaf nodes that was "just" created
     # to the caller method so that it may be used there
     return leafs_l
+
 
 def load_form(form):
     # creates the map that is going to hold the "structured"
@@ -633,8 +702,9 @@ def load_form(form):
         # in case the sequence is larger than one element sets it,
         # otherwise retrieves and sets the value as the first element
         value = form.getlist(name)
-        value = value[0] if isinstance(value, (list, tuple)) and\
-            len(value) == 1 else value
+        value = (
+            value[0] if isinstance(value, (list, tuple)) and len(value) == 1 else value
+        )
 
         # splits the complete name into its various components
         # and retrieves both the final (last) element and the
@@ -662,45 +732,54 @@ def load_form(form):
     # linear version of the attribute names
     return form_s
 
-def load_locale(available, fallback = "en_us"):
+
+def load_locale(available, fallback="en_us"):
     # tries to gather the best locale value using the currently
     # available strategies and in case the retrieved local is part
     # of the valid locales for the app returns the locale, otherwise
     # returns the fallback value instead
-    locale = get_locale(fallback = fallback)
+    locale = get_locale(fallback=fallback)
     language = locale.split("_", 1)[0]
-    if locale in available: return locale
-    if language in available: return locale
+    if locale in available:
+        return locale
+    if language in available:
+        return locale
     return fallback
 
-def get_locale(fallback = "en_us"):
+
+def get_locale(fallback="en_us"):
     # tries to retrieve the locale value from the provided URL
     # parameters (this is the highest priority) and in case it
     # exists returns this locale immediately
     locale = flask.request.args.get("locale", None)
-    if locale: return locale
+    if locale:
+        return locale
 
     # uses the currently loaded session to try to gather the locale
     # value from it and in case it's valid and exists returns it
     locale = flask.session.get("locale", None)
-    if locale: return locale
+    if locale:
+        return locale
 
     # gathers the complete set of language values set in the accept
     # language header and in case there's at least one value returned
     # returns the first of these values as the locale
     langs = get_langs()
-    if langs: return langs[0]
+    if langs:
+        return langs[0]
 
     # in case this code entry is reached all the strategies for locale
     # retrieval have failed and so the fallback value is returned
     return fallback
+
 
 def get_langs():
     # gathers the value of the accept language header and in case
     # it's not defined returns immediately as no language can be
     # determined using the currently provided headers
     accept_language = flask.request.headers.get("Accept-Language", None)
-    if not accept_language: return ()
+    if not accept_language:
+        return ()
 
     # starts the list that is going to be used to store the various
     # languages "recovered" from the accept language header, note that
@@ -715,8 +794,10 @@ def get_langs():
     for part in parts:
         values = part.split(";", 1)
         value_l = len(values)
-        if value_l == 1: lang, = values
-        else: lang, _priority = values
+        if value_l == 1:
+            (lang,) = values
+        else:
+            lang, _priority = values
         lang = lang.replace("-", "_")
         lang = lang.lower()
         langs.append(lang)
@@ -726,12 +807,14 @@ def get_langs():
     # the header was not parsed correctly or there's no contents in it
     return langs
 
+
 def set_locale():
     # normalizes the current locale string by converting the
     # last part of the locale string to an uppercase representation
     # and then re-joining the various components of it
-    values = flask.request.locale.split("_", 1) #@UndefinedVariable
-    if len(values) > 1: values[1] = values[1].upper()
+    values = flask.request.locale.split("_", 1)  # @UndefinedVariable
+    if len(values) > 1:
+        values[1] = values[1].upper()
     locale_n = "_".join(values)
     locale_n = str(locale_n)
 
@@ -739,26 +822,35 @@ def set_locale():
     # extra locale conversion operation must be performed, after
     # than the proper setting of the os locale is done with the
     # fallback for exception being silent (non critical)
-    if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
-    else: locale_n += ".utf8"
-    try: locale.setlocale(locale.LC_ALL, locale_n)
-    except Exception: pass
+    if os.name == "nt":
+        locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
+    else:
+        locale_n += ".utf8"
+    try:
+        locale.setlocale(locale.LC_ALL, locale_n)
+    except Exception:
+        pass
+
 
 def reset_locale():
     locale.setlocale(locale.LC_ALL, "")
+
 
 def anotate_async(response):
     # verifies if the current response contains the location header
     # meaning that a redirection will occur, and if that's not the
     # case this function returns immediately to avoid problems
-    if not "Location" in response.headers: return
+    if not "Location" in response.headers:
+        return
 
     # checks if the current request is "marked" as asynchronous, for
     # such cases a special redirection process is applies to avoid the
     # typical problems with automated redirection using "ajax"
     is_async = True if flask.request.headers.get("X-Async") else False
     is_async = True if get_field("async") else is_async
-    if is_async: response.status_code = 280
+    if is_async:
+        response.status_code = 280
+
 
 def anotate_secure(response):
     # retrieves the reference to the master application object to be used
@@ -767,7 +859,8 @@ def anotate_secure(response):
 
     # verifies if the secure headers flag is set in the current application
     # and if that's not the case returns the control flow immediately
-    if not app.secure_headers: return
+    if not app.secure_headers:
+        return
 
     # sets the multiple secure header values taking into account if they
     # are defined or not in the current application context
@@ -786,14 +879,12 @@ def anotate_secure(response):
     if app.content_options:
         response.headers["X-Content-Type-Options"] = app.content_options
 
-def run_thread(function, *args, **kwargs):
-    return threading.Thread(
-        target = function,
-        args = args,
-        kwargs = kwargs
-    ).start()
 
-def camel_to_underscore(camel, separator = "_", lower = True):
+def run_thread(function, *args, **kwargs):
+    return threading.Thread(target=function, args=args, kwargs=kwargs).start()
+
+
+def camel_to_underscore(camel, separator="_", lower=True):
     """
     Converts the provided camel cased based value into
     a normalized underscore based string.
@@ -818,13 +909,16 @@ def camel_to_underscore(camel, separator = "_", lower = True):
     conversion of the provided camel cased one.
     """
 
-    if not camel: return camel
+    if not camel:
+        return camel
     value = FIRST_CAP_REGEX.sub(r"\1" + separator + r"\2", camel)
     value = ALL_CAP_REGEX.sub(r"\1" + separator + r"\2", value)
-    if lower: value = value.lower()
+    if lower:
+        value = value.lower()
     return value
 
-def camel_to_readable(camel, lower = False, capitalize = False):
+
+def camel_to_readable(camel, lower=False, capitalize=False):
     """
     Converts the given camel cased oriented string value
     into a readable one meaning that the returned value
@@ -847,11 +941,13 @@ def camel_to_readable(camel, lower = False, capitalize = False):
     used to display a value to an end user.
     """
 
-    if not camel: return camel
-    underscore = camel_to_underscore(camel, lower = lower)
-    return underscore_to_readable(underscore, capitalize = capitalize)
+    if not camel:
+        return camel
+    underscore = camel_to_underscore(camel, lower=lower)
+    return underscore_to_readable(underscore, capitalize=capitalize)
 
-def underscore_to_camel(underscore, lower = False):
+
+def underscore_to_camel(underscore, lower=False):
     """
     Converts the provided underscore cased based value into
     a normalized camel cased string.
@@ -870,12 +966,15 @@ def underscore_to_camel(underscore, lower = False):
     conversion of the provided underscore cased one.
     """
 
-    if not underscore: return underscore
-    camel = underscore_to_readable(underscore, capitalize = True, separator = "")
-    if not lower: return camel
+    if not underscore:
+        return underscore
+    camel = underscore_to_readable(underscore, capitalize=True, separator="")
+    if not lower:
+        return camel
     return camel[0].lower() + camel[1:]
 
-def underscore_to_readable(underscore, capitalize = False, separator = " "):
+
+def underscore_to_readable(underscore, capitalize=False, separator=" "):
     """
     Converts the given underscore oriented string value
     into a readable one meaning that the returned value
@@ -898,14 +997,18 @@ def underscore_to_readable(underscore, capitalize = False, separator = " "):
     used to display a value to an end user.
     """
 
-    if not underscore: return underscore
+    if not underscore:
+        return underscore
     parts = underscore.split("_")
     parts = [part for part in parts if part]
-    if capitalize: parts = [part[0].upper() + part[1:] for part in parts]
-    else: parts[0] = parts[0][0].upper() + parts[0][1:]
+    if capitalize:
+        parts = [part[0].upper() + part[1:] for part in parts]
+    else:
+        parts[0] = parts[0][0].upper() + parts[0][1:]
     return separator.join(parts)
 
-def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digits):
+
+def generate_identifier(size=16, chars=string.ascii_uppercase + string.digits):
     """
     Generates a random identifier (may be used as password) with
     the provided constrains of length and character ranges.
@@ -926,7 +1029,8 @@ def generate_identifier(size = 16, chars = string.ascii_uppercase + string.digit
 
     return "".join(random.choice(chars) for _index in range(size))
 
-def to_locale(value, locale = None, default = None, fallback = True):
+
+def to_locale(value, locale=None, default=None, fallback=True):
     """
     Utility function used to localize the provided value according
     to the currently loaded set of bundles, the bundles are loaded
@@ -960,32 +1064,32 @@ def to_locale(value, locale = None, default = None, fallback = True):
 
     value_t = type(value)
     is_sequence = value_t in (list, tuple)
-    if is_sequence: return _serialize([
-        to_locale(
-            value,
-            locale = locale,
-            default = default,
-            fallback = fallback
-        ) for value in value
-    ])
+    if is_sequence:
+        return _serialize(
+            [
+                to_locale(value, locale=locale, default=default, fallback=fallback)
+                for value in value
+            ]
+        )
     has_context = common.base().has_context()
-    locale = locale or (flask.request.locale if has_context else None) #@UndefinedVariable
+    locale = locale or (
+        flask.request.locale if has_context else None
+    )  # @UndefinedVariable
     if locale:
         bundle = common.base().get_bundle(locale) or {}
         result = bundle.get(value, None)
-        if not result == None: return result
+        if not result == None:
+            return result
         language = locale.split("_", 1)[0]
         bundle = common.base().get_bundle(language) or {}
         result = bundle.get(value, None)
-        if not result == None: return result
+        if not result == None:
+            return result
     app = common.base().APP
-    if fallback and app: return to_locale(
-        value,
-        locale = app._locale_d,
-        default = default,
-        fallback = False
-    )
+    if fallback and app:
+        return to_locale(value, locale=app._locale_d, default=default, fallback=False)
     return value if default == None else default
+
 
 def nl_to_br(value):
     """
@@ -1005,6 +1109,7 @@ def nl_to_br(value):
 
     return value.replace("\n", "<br/>\n")
 
+
 def nl_to_br_jinja(eval_ctx, value):
     """
     Optimized version of the function that replaces newline
@@ -1023,10 +1128,13 @@ def nl_to_br_jinja(eval_ctx, value):
     with line breaking HTML tags.
     """
 
-    if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
+    if eval_ctx.autoescape:
+        value = legacy.UNICODE(jinja2.escape(value))
     value = nl_to_br(value)
-    if eval_ctx.autoescape: value = jinja2.Markup(value)
+    if eval_ctx.autoescape:
+        value = jinja2.Markup(value)
     return value
+
 
 def sp_to_nbsp(value):
     """
@@ -1046,6 +1154,7 @@ def sp_to_nbsp(value):
 
     return value.replace(" ", "&nbsp;")
 
+
 def sp_to_nbsp_jinja(eval_ctx, value):
     """
     Optimized version of the function that replaces space
@@ -1064,12 +1173,15 @@ def sp_to_nbsp_jinja(eval_ctx, value):
     with non breaking space characters for HTML.
     """
 
-    if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
+    if eval_ctx.autoescape:
+        value = legacy.UNICODE(jinja2.escape(value))
     value = sp_to_nbsp(value)
-    if eval_ctx.autoescape: value = jinja2.Markup(value)
+    if eval_ctx.autoescape:
+        value = jinja2.Markup(value)
     return value
 
-def unset(value, default = "", empty = False, extra = ()):
+
+def unset(value, default="", empty=False, extra=()):
     """
     Verifies if the provided value is not unset (by default) testing
     it against the unset and None values.
@@ -1093,14 +1205,20 @@ def unset(value, default = "", empty = False, extra = ()):
     :return: The processed string value according to the unset validation.
     """
 
-    if empty and extra: extra = tuple(list(extra) + [""])
-    elif empty and not extra: extra = ("",)
-    if isinstance(value, jinja2.Undefined): return default
-    if value in (None,): return default
-    if value in extra: return default
+    if empty and extra:
+        extra = tuple(list(extra) + [""])
+    elif empty and not extra:
+        extra = ("",)
+    if isinstance(value, jinja2.Undefined):
+        return default
+    if value in (None,):
+        return default
+    if value in extra:
+        return default
     return value
 
-def date_time(value, format = "%d/%m/%Y"):
+
+def date_time(value, format="%d/%m/%Y"):
     """
     Formats the value provided as a date string according to the
     provided date format.
@@ -1123,8 +1241,10 @@ def date_time(value, format = "%d/%m/%Y"):
     # tries to convert the provided string value into a float
     # in case it fails the proper string value is returned
     # immediately as a fallback procedure
-    try: value_f = float(value)
-    except Exception: return value
+    try:
+        value_f = float(value)
+    except Exception:
+        return value
 
     # creates the date time structure from the provided float
     # value and then formats the date time according to the
@@ -1133,6 +1253,7 @@ def date_time(value, format = "%d/%m/%Y"):
     date_time_s = date_time_s.strftime(format)
     is_unicode = legacy.is_unicode(date_time_s)
     return date_time_s if is_unicode else date_time_s.decode("utf-8")
+
 
 def quote(value, *args, **kwargs):
     """
@@ -1152,8 +1273,10 @@ def quote(value, *args, **kwargs):
     """
 
     is_unicode = isinstance(value, legacy.UNICODE)
-    if is_unicode: value = value.encode("utf-8")
+    if is_unicode:
+        value = value.encode("utf-8")
     return legacy.quote(value, *args, **kwargs)
+
 
 def unquote(value, *args, **kwargs):
     """
@@ -1175,10 +1298,12 @@ def unquote(value, *args, **kwargs):
 
     value = legacy.unquote(value, *args, **kwargs)
     is_bytes = type(value) == legacy.BYTES
-    if is_bytes: value = value.decode("utf-8")
+    if is_bytes:
+        value = value.decode("utf-8")
     return value
 
-def escape(value, char, escape = "\\"):
+
+def escape(value, char, escape="\\"):
     """
     Escapes the provided string value according to the requested
     target character and escape value. Meaning that all the characters
@@ -1197,7 +1322,8 @@ def escape(value, char, escape = "\\"):
 
     return value.replace(escape, escape + escape).replace(char, escape + char)
 
-def unescape(value, escape = "\\"):
+
+def unescape(value, escape="\\"):
     """
     Unescapes the provided string value using the provided escape
     character as the reference for the unescape operation.
@@ -1223,7 +1349,8 @@ def unescape(value, escape = "\\"):
             result.append(char)
     return "".join(result)
 
-def count_unescape(value, sub, escape = "\\"):
+
+def count_unescape(value, sub, escape="\\"):
     """
     Runs the sub string count operation on an escaped string
     so that it takes into account the escaped values avoiding
@@ -1255,7 +1382,8 @@ def count_unescape(value, sub, escape = "\\"):
             count += 1
     return count
 
-def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
+
+def split_unescape(value, delimiter=" ", max=-1, escape="\\", unescape=True):
     """
     Splits the provided string around the delimiter character that
     has been provided and allows proper escaping of it using the
@@ -1291,10 +1419,12 @@ def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = T
     for char in iterator:
         if char == escape:
             try:
-                if not unescape: current.append(escape)
+                if not unescape:
+                    current.append(escape)
                 current.append(next(iterator))
             except StopIteration:
-                if unescape: current.append(escape)
+                if unescape:
+                    current.append(escape)
         elif char == delimiter and not count == max:
             result.append("".join(current))
             current = []
@@ -1303,6 +1433,7 @@ def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = T
             current.append(char)
     result.append("".join(current))
     return result
+
 
 def is_content_type(data, target):
     """
@@ -1320,14 +1451,18 @@ def is_content_type(data, target):
     for the content type.
     """
 
-    if not isinstance(target, (list, tuple)): target = (target,)
+    if not isinstance(target, (list, tuple)):
+        target = (target,)
     mime, _extra = parse_content_type(data)
     for item in target:
         type, _sub_type = item.split("/")
         wildcard = type + "/*"
-        if item in mime: return True
-        if wildcard in mime: return True
+        if item in mime:
+            return True
+        if wildcard in mime:
+            return True
     return False
+
 
 def parse_content_type(data):
     """
@@ -1351,7 +1486,8 @@ def parse_content_type(data):
 
     # in case no valid type has been sent returns the values
     # immediately to avoid further problems
-    if not data: return types, extra_m
+    if not data:
+        return types, extra_m
 
     # extracts the mime and the extra parts from the data string
     # they are the basis of the processing method
@@ -1363,7 +1499,8 @@ def parse_content_type(data):
 
     # runs a series of verifications on the base mime value and in
     # case it's not valid returns the default values immediately
-    if not "/" in mime: return types, extra_m
+    if not "/" in mime:
+        return types, extra_m
 
     # strips the complete set of valid extra values, note
     # that these values are going to be processed as key
@@ -1384,7 +1521,8 @@ def parse_content_type(data):
     # goes through all of the extra key to value items
     # and converts them into proper dictionary values
     for extra_item in extra:
-        if not "=" in extra_item: continue
+        if not "=" in extra_item:
+            continue
         extra_item = extra_item.strip()
         key, value = extra_item.split("=")
         extra_m[key] = value
@@ -1393,78 +1531,66 @@ def parse_content_type(data):
     # mime types for the content and the extra key to value items
     return types, extra_m
 
-def verify(condition, message = None, code = None, exception = None, **kwargs):
-    if condition: return
+
+def verify(condition, message=None, code=None, exception=None, **kwargs):
+    if condition:
+        return
     exception = exception or exceptions.AssertionError
     kwargs = dict(kwargs)
-    if not code == None: kwargs["code"] = code
-    raise exception(
-        message or "Assertion of data failed",
-        **kwargs
-    )
+    if not code == None:
+        kwargs["code"] = code
+    raise exception(message or "Assertion of data failed", **kwargs)
 
-def verify_equal(first, second, message = None, code = None, exception = None, **kwargs):
+
+def verify_equal(first, second, message=None, code=None, exception=None, **kwargs):
     message = message or "Expected %s got %s" % (repr(second), repr(first))
     return verify(
-        first == second,
-        message = message,
-        code = code,
-        exception = exception,
-        **kwargs
+        first == second, message=message, code=code, exception=exception, **kwargs
     )
 
-def verify_not_equal(first, second, message = None, code = None, exception = None, **kwargs):
+
+def verify_not_equal(first, second, message=None, code=None, exception=None, **kwargs):
     message = message or "Expected %s not equal to %s" % (repr(first), repr(second))
     return verify(
-        not first == second,
-        message = message,
-        code = code,
-        exception = exception,
-        **kwargs
+        not first == second, message=message, code=code, exception=exception, **kwargs
     )
 
-def verify_type(value, types, null = True, message = None, code = None, exception = None, **kwargs):
+
+def verify_type(
+    value, types, null=True, message=None, code=None, exception=None, **kwargs
+):
     message = message or "Expected %s to have type %s" % (repr(value), repr(types))
     return verify(
         (null and value == None) or isinstance(value, types),
-        message = message,
-        code = code,
-        exception = exception,
+        message=message,
+        code=code,
+        exception=exception,
         **kwargs
     )
 
-def verify_many(sequence, message = None, code = None, exception = None, **kwargs):
-    for condition in sequence:
-        verify(
-            condition,
-            message = message,
-            code = code,
-            exception = exception,
-            **kwargs
-        )
 
-def execute(args, command = None, path = None, shell = True, encoding = None):
-    if not encoding: encoding = sys.getfilesystemencoding()
-    if command: args = command.split(" ")
+def verify_many(sequence, message=None, code=None, exception=None, **kwargs):
+    for condition in sequence:
+        verify(condition, message=message, code=code, exception=exception, **kwargs)
+
+
+def execute(args, command=None, path=None, shell=True, encoding=None):
+    if not encoding:
+        encoding = sys.getfilesystemencoding()
+    if command:
+        args = command.split(" ")
     process = subprocess.Popen(
-        args,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE,
-        shell = shell,
-        cwd = path
+        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell, cwd=path
     )
     code = process.wait()
     stdout = process.stdout.read()
     stderr = process.stderr.read()
     stdout = stdout.decode(encoding)
     stderr = stderr.decode(encoding)
-    return dict(
-        stdout = stdout,
-        stderr = stderr,
-        code = code
-    )
+    return dict(stdout=stdout, stderr=stderr, code=code)
 
-def deprecated(message = "Function %s is now deprecated"):
+
+def deprecated(message="Function %s is now deprecated"):
     """
     Decorator that marks a certain function or method as
     deprecated so that whenever such function is called
@@ -1486,11 +1612,7 @@ def deprecated(message = "Function %s is now deprecated"):
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)
-            warnings.warn(
-                message % name,
-                category = DeprecationWarning,
-                stacklevel = 2
-            )
+            warnings.warn(message % name, category=DeprecationWarning, stacklevel=2)
             warnings.simplefilter("default", DeprecationWarning)
             return function(*args, **kwargs)
 
@@ -1498,9 +1620,12 @@ def deprecated(message = "Function %s is now deprecated"):
 
     return decorator
 
+
 def _serialize(value):
-    if value in legacy.STRINGS: return value
+    if value in legacy.STRINGS:
+        return value
     return json.dumps(value)
+
 
 class JSONEncoder(json.JSONEncoder):
 
@@ -1509,6 +1634,8 @@ class JSONEncoder(json.JSONEncoder):
         json.JSONEncoder.__init__(self, *args, **kwargs)
 
     def default(self, obj, **kwargs):
-        if hasattr(obj, "json_v"): return obj.json_v()
-        if self.permissive: return str(obj)
+        if hasattr(obj, "json_v"):
+            return obj.json_v()
+        if self.permissive:
+            return str(obj)
         return json.JSONEncoder.default(self, obj, **kwargs)

@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -38,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import quorum
+
 
 class OrderedDictTest(quorum.TestCase):
 
@@ -69,7 +61,7 @@ class OrderedDictTest(quorum.TestCase):
 
     @quorum.secured
     def test_build(self):
-        base = dict(first = 1, second = 2, third = 3)
+        base = dict(first=1, second=2, third=3)
 
         struct = quorum.OrderedDict(base)
 
@@ -180,6 +172,7 @@ class OrderedDictTest(quorum.TestCase):
         self.assertEqual(repr(struct), "[['first', 1], ['second', 2], ['third', 3]]")
         self.assertEqual(str(struct), "[['first', 1], ['second', 2], ['third', 3]]")
 
+
 class LazyDictTest(quorum.TestCase):
 
     @quorum.secured
@@ -188,29 +181,30 @@ class LazyDictTest(quorum.TestCase):
 
         struct["first"] = quorum.LazyValue(lambda: 2)
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.LazyValue), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), quorum.LazyValue), True
+        )
         self.assertEqual(struct["first"], 2)
 
     @quorum.secured
     def test_resolve(self):
         struct = quorum.LazyDict(
-            first = quorum.LazyValue(lambda: 1),
-            second = quorum.LazyValue(lambda: 2)
+            first=quorum.LazyValue(lambda: 1), second=quorum.LazyValue(lambda: 2)
         )
 
-        resolved = struct.resolve(force = True)
+        resolved = struct.resolve(force=True)
 
         self.assertNotEqual(type(struct) == dict, True)
-        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertNotEqual(struct, dict(first=1, second=2))
         self.assertEqual(type(resolved) == dict, True)
-        self.assertEqual(resolved, dict(first = 1, second = 2))
+        self.assertEqual(resolved, dict(first=1, second=2))
 
         resolved = struct.to_dict()
 
         self.assertNotEqual(type(struct) == dict, True)
-        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertNotEqual(struct, dict(first=1, second=2))
         self.assertEqual(type(resolved) == dict, True)
-        self.assertEqual(resolved, dict(first = 1, second = 2))
+        self.assertEqual(resolved, dict(first=1, second=2))
 
     @quorum.secured
     def test_naming(self):
@@ -218,7 +212,9 @@ class LazyDictTest(quorum.TestCase):
 
         struct["first"] = quorum.lazy(lambda: 2)
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.lazy), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), quorum.lazy), True
+        )
         self.assertEqual(struct["first"], 2)
 
     @quorum.secured
@@ -228,7 +224,9 @@ class LazyDictTest(quorum.TestCase):
         struct["first"] = quorum.lazy(lambda: 1)
         struct["second"] = 2
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), quorum.lazy), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), quorum.lazy), True
+        )
         self.assertEqual(struct["first"], 1)
         self.assertEqual(isinstance(struct.__getitem__("second", True), int), True)
         self.assertEqual(struct["second"], 2)

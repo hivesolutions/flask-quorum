@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -39,11 +30,12 @@ __license__ = "Apache License, Version 2.0"
 
 import quorum
 
+
 class BaseTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(name = __name__)
+            quorum.load(name=__name__)
         except Exception:
             self.skip()
 
@@ -54,59 +46,59 @@ class BaseTest(quorum.TestCase):
     def test_locale(self):
         app = quorum.get_app()
         app.locales = ("en_us", "pt_pt", "es_es")
-        app.bundles["en_us"] = dict(hello = "Hello")
-        app.bundles["pt_pt"] = dict(hello = "Olá")
-        app.bundles["fr"] = dict(hello = "Bonjour")
+        app.bundles["en_us"] = dict(hello="Hello")
+        app.bundles["pt_pt"] = dict(hello="Olá")
+        app.bundles["fr"] = dict(hello="Bonjour")
 
-        result = quorum.to_locale("hello", locale = "en-us")
+        result = quorum.to_locale("hello", locale="en-us")
         self.assertEqual(result, "Hello")
 
-        result = quorum.to_locale("hello", locale = "pt_pt")
+        result = quorum.to_locale("hello", locale="pt_pt")
         self.assertEqual(result, "Olá")
 
-        result = quorum.to_locale("hello", locale = "pt-pt")
+        result = quorum.to_locale("hello", locale="pt-pt")
         self.assertNotEqual(result, "Olá")
         self.assertEqual(result, "Hello")
 
-        result = quorum.to_locale("hello", locale = "fr_fr")
+        result = quorum.to_locale("hello", locale="fr_fr")
         self.assertEqual(result, "Bonjour")
 
-        result = quorum.to_locale("hello", locale = "fr")
+        result = quorum.to_locale("hello", locale="fr")
         self.assertEqual(result, "Bonjour")
 
-        result = quorum.to_locale("hello", locale = "es_es")
+        result = quorum.to_locale("hello", locale="es_es")
         self.assertNotEqual(result, "Hola")
         self.assertEqual(result, "Hello")
 
-        app.bundles["es_es"] = dict(hello = "Hola")
+        app.bundles["es_es"] = dict(hello="Hola")
 
-        result = quorum.to_locale("hello", locale = "es_es")
+        result = quorum.to_locale("hello", locale="es_es")
         self.assertEqual(result, "Hola")
 
-        result = quorum.to_locale("hello", locale = "en")
+        result = quorum.to_locale("hello", locale="en")
         self.assertEqual(result, "Hello")
 
-        result = quorum.to_locale("hello", locale = "pt")
+        result = quorum.to_locale("hello", locale="pt")
         self.assertEqual(result, "Olá")
 
-        result = quorum.to_locale("hello", locale = "es")
+        result = quorum.to_locale("hello", locale="es")
         self.assertEqual(result, "Hola")
 
-        result = quorum.to_locale("bye", locale = "en_us")
+        result = quorum.to_locale("bye", locale="en_us")
         self.assertEqual(result, "bye")
 
-        result = quorum.to_locale("bye", locale = "cn")
+        result = quorum.to_locale("bye", locale="cn")
         self.assertEqual(result, "bye")
 
-        app.bundles["en_us"].update(bye = "Bye")
+        app.bundles["en_us"].update(bye="Bye")
 
-        result = quorum.to_locale("bye", locale = "en_us")
+        result = quorum.to_locale("bye", locale="en_us")
         self.assertEqual(result, "Bye")
 
-        result = quorum.to_locale("bye", locale = "pt_pt")
+        result = quorum.to_locale("bye", locale="pt_pt")
         self.assertEqual(result, "Bye")
 
-        result = quorum.to_locale("bye", locale = "pt_pt", fallback = False)
+        result = quorum.to_locale("bye", locale="pt_pt", fallback=False)
         self.assertEqual(result, "bye")
 
     @quorum.secured

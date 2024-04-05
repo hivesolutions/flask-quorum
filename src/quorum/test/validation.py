@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,49 +32,40 @@ import datetime
 
 import quorum
 
+
 class ValidationTest(quorum.TestCase):
 
     @quorum.secured
     def test_eq_number(self):
         methods = [quorum.eq("age", 2)]
 
-        object = dict(age = 2)
+        object = dict(age=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2.0)
+        object = dict(age=2.0)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 3)
+        object = dict(age=3)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = "2")
+        object = dict(age="2")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = 2.01)
+        object = dict(age=2.01)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -91,51 +73,39 @@ class ValidationTest(quorum.TestCase):
     def test_eq_string(self):
         methods = [quorum.eq("name", "John Doe")]
 
-        object = dict(name = "John Doe")
+        object = dict(name="John Doe")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = "john doe")
+        object = dict(name="john doe")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(name = "JohnDoe")
+        object = dict(name="JohnDoe")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(name = 2)
+        object = dict(name=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(name = 2.0)
+        object = dict(name=2.0)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(name = True)
+        object = dict(name=True)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -143,44 +113,36 @@ class ValidationTest(quorum.TestCase):
     def test_gt(self):
         methods = [quorum.gt("age", 2)]
 
-        object = dict(age = 3)
+        object = dict(age=3)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2.01)
+        object = dict(age=2.01)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2)
+        object = dict(age=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = "2")
+        object = dict(age="2")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
-        if quorum.legacy.PYTHON_3: self.assertFalse(result)
-        else: self.assertTrue(result)
+        if quorum.legacy.PYTHON_3:
+            self.assertFalse(result)
+        else:
+            self.assertTrue(result)
 
-        object = dict(age = 1.99)
+        object = dict(age=1.99)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -188,52 +150,42 @@ class ValidationTest(quorum.TestCase):
     def test_gte(self):
         methods = [quorum.gte("age", 2)]
 
-        object = dict(age = 3)
+        object = dict(age=3)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2)
+        object = dict(age=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2.01)
+        object = dict(age=2.01)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2.00)
+        object = dict(age=2.00)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = "2")
+        object = dict(age="2")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
-        if quorum.legacy.PYTHON_3: self.assertFalse(result)
-        else: self.assertTrue(result)
+        if quorum.legacy.PYTHON_3:
+            self.assertFalse(result)
+        else:
+            self.assertTrue(result)
 
-        object = dict(age = 1.99)
+        object = dict(age=1.99)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -241,43 +193,33 @@ class ValidationTest(quorum.TestCase):
     def test_lt(self):
         methods = [quorum.lt("age", 2)]
 
-        object = dict(age = 1)
+        object = dict(age=1)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 1.99)
+        object = dict(age=1.99)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2)
+        object = dict(age=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = "2")
+        object = dict(age="2")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = 2.01)
+        object = dict(age=2.01)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -285,51 +227,39 @@ class ValidationTest(quorum.TestCase):
     def test_lte(self):
         methods = [quorum.lte("age", 2)]
 
-        object = dict(age = 1)
+        object = dict(age=1)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2)
+        object = dict(age=2)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 1.99)
+        object = dict(age=1.99)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = 2.00)
+        object = dict(age=2.00)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(age = "2")
+        object = dict(age="2")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(age = 2.01)
+        object = dict(age=2.01)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -337,51 +267,39 @@ class ValidationTest(quorum.TestCase):
     def test_not_null(self):
         methods = [quorum.not_null("name")]
 
-        object = dict(name = "John Doe")
+        object = dict(name="John Doe")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = 1)
+        object = dict(name=1)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = 1.0)
+        object = dict(name=1.0)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = False)
+        object = dict(name=False)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = "")
+        object = dict(name="")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = None)
+        object = dict(name=None)
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -389,35 +307,27 @@ class ValidationTest(quorum.TestCase):
     def test_not_empty(self):
         methods = [quorum.not_empty("name")]
 
-        object = dict(name = "John Doe")
+        object = dict(name="John Doe")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = [1, 2, 3])
+        object = dict(name=[1, 2, 3])
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(name = "")
+        object = dict(name="")
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
-        object = dict(name = [])
+        object = dict(name=[])
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)
 
@@ -425,18 +335,14 @@ class ValidationTest(quorum.TestCase):
     def test_not_past(self):
         methods = [quorum.not_past("time")]
 
-        object = dict(time = datetime.datetime(2200, 1, 1))
+        object = dict(time=datetime.datetime(2200, 1, 1))
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertTrue(result)
 
-        object = dict(time = datetime.datetime(2001, 1, 1))
+        object = dict(time=datetime.datetime(2001, 1, 1))
         result = quorum.validation.validate_b(
-            methods = methods,
-            object = object,
-            build = False
+            methods=methods, object=object, build=False
         )
         self.assertFalse(result)

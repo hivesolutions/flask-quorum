@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -64,12 +55,12 @@ multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
 
-LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast = bool) else ""
+LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast=bool) else ""
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
 
-LOGGIGN_SYSLOG = "1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d \
-[quorumSDID@0 tid=\"%%(thread)d\"] %%(json)s"
+LOGGIGN_SYSLOG = '1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d \
+[quorumSDID@0 tid="%%(thread)d"] %%(json)s'
 """ The format to be used for the message sent using the syslog
 logger, should contain extra structured data """
 
@@ -84,33 +75,28 @@ SILENT = logging.CRITICAL + 1
 or an handler, this is used as an utility for debugging
 purposes more that a real feature for production systems """
 
-LEVELS = (
-    "DEBUG",
-    "INFO",
-    "WARNING",
-    "ERROR",
-    "CRITICAL"
-)
+LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 """ The sequence of levels from the least sever to the
 most sever this sequence may be used to find all the
 levels that are considered more sever that a level """
 
 LEVEL_ALIAS = {
-    "DEBU" : "DEBUG",
-    "WARN" : "WARNING",
-    "INF" : "INFO",
-    "ERR" : "ERROR",
-    "CRIT" : "CRITICAL"
+    "DEBU": "DEBUG",
+    "WARN": "WARNING",
+    "INF": "INFO",
+    "ERR": "ERROR",
+    "CRIT": "CRITICAL",
 }
 """ Map defining a series of alias that may be used latter
 for proper debug level resolution """
 
-SYSLOG_PORTS = dict(tcp = 601, udp = 514)
+SYSLOG_PORTS = dict(tcp=601, udp=514)
 """ Dictionary that maps the multiple transport protocol
 used by syslog with the appropriate default ports """
 
 LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
+
 
 class MemoryHandler(logging.Handler):
     """
@@ -119,8 +105,8 @@ class MemoryHandler(logging.Handler):
     long as the execution session is the same.
     """
 
-    def __init__(self, level = logging.NOTSET, max_length = MAX_LENGTH):
-        logging.Handler.__init__(self, level = level)
+    def __init__(self, level=logging.NOTSET, max_length=MAX_LENGTH):
+        logging.Handler.__init__(self, level=level)
         self.max_length = max_length
         self.messages = collections.deque()
         self.messages_l = dict()
@@ -136,12 +122,14 @@ class MemoryHandler(logging.Handler):
     def get_messages_l(self, level):
         # in case the level is not found in the list of levels
         # it's not considered valid and so an empty list is returned
-        try: index = LEVELS.index(level)
-        except Exception: return collections.deque()
+        try:
+            index = LEVELS.index(level)
+        except Exception:
+            return collections.deque()
 
         # retrieves the complete set of levels that are considered
         # equal or more severe than the requested one
-        levels = LEVELS[:index + 1]
+        levels = LEVELS[: index + 1]
 
         # creates the list that will hold the various message
         # lists associated with the current severity level
@@ -152,7 +140,8 @@ class MemoryHandler(logging.Handler):
         # list to the list of message lists
         for level in levels:
             _messages_l = self.messages_l.get(level, None)
-            if _messages_l == None: _messages_l = collections.deque()
+            if _messages_l == None:
+                _messages_l = collections.deque()
             self.messages_l[level] = _messages_l
             messages_l.append(_messages_l)
 
@@ -178,7 +167,8 @@ class MemoryHandler(logging.Handler):
         # the one defined as maximum must pop message from queue
         self.messages.appendleft(message)
         messages_s = len(self.messages)
-        if messages_s > self.max_length: self.messages.pop()
+        if messages_s > self.max_length:
+            self.messages.pop()
 
         # iterates over all the messages list included in the retrieve
         # messages list to add the logging message to each of them
@@ -188,42 +178,42 @@ class MemoryHandler(logging.Handler):
             # specified also for the more general queue
             _messages_l.appendleft(message)
             messages_s = len(_messages_l)
-            if messages_s > self.max_length: _messages_l.pop()
+            if messages_s > self.max_length:
+                _messages_l.pop()
 
     def clear(self):
         self.messages = collections.deque()
         self.messages_l = dict()
 
-    def get_latest(self, count = None, level = None):
+    def get_latest(self, count=None, level=None):
         count = count or 100
         is_level = level and not legacy.is_string(level)
-        if is_level: level = logging.getLevelName(level)
+        if is_level:
+            level = logging.getLevelName(level)
         level = level.upper() if level else level
         level = LEVEL_ALIAS.get(level, level)
         messages = self.messages_l.get(level, []) if level else self.messages
         slice = itertools.islice(messages, 0, count)
         return list(slice)
 
-    def flush_to_file(
-        self,
-        path,
-        count = None,
-        level = None,
-        reverse = True,
-        clear = True
-    ):
-        messages = self.get_latest(level = level, count = count or 65536)
-        if not messages: return
-        if reverse: messages.reverse()
+    def flush_to_file(self, path, count=None, level=None, reverse=True, clear=True):
+        messages = self.get_latest(level=level, count=count or 65536)
+        if not messages:
+            return
+        if reverse:
+            messages.reverse()
         is_path = isinstance(path, legacy.STRINGS)
         file = open(path, "wb") if is_path else path
         try:
             for message in messages:
-                message = legacy.bytes(message, "utf-8", force = True)
+                message = legacy.bytes(message, "utf-8", force=True)
                 file.write(message + b"\n")
         finally:
-            if is_path: file.close()
-        if clear: self.clear()
+            if is_path:
+                file.close()
+        if clear:
+            self.clear()
+
 
 class BaseFormatter(logging.Formatter):
     """
@@ -240,19 +230,20 @@ class BaseFormatter(logging.Formatter):
 
     @classmethod
     def _wrap_record(cls, record):
-        if hasattr(record, "_wrapped"): return
+        if hasattr(record, "_wrapped"):
+            return
         record.hostname = socket.gethostname()
         record.json = json.dumps(
             dict(
-                message = str(record.msg),
-                hostname = record.hostname,
-                lineno = record.lineno,
-                module = record.module,
-                callable = record.funcName,
-                level = record.levelname,
-                thread = record.thread,
-                process = record.process,
-                logger = record.name
+                message=str(record.msg),
+                hostname=record.hostname,
+                lineno=record.lineno,
+                module=record.module,
+                callable=record.funcName,
+                level=record.levelname,
+                thread=record.thread,
+                process=record.process,
+                logger=record.name,
             )
         )
         record._wrapped = True
@@ -260,11 +251,13 @@ class BaseFormatter(logging.Formatter):
     def format(self, record):
         # runs the wrapping operation on the record so that more
         # information becomes available in it (as expected)
-        if self._wrap: self.__class__._wrap_record(record)
+        if self._wrap:
+            self.__class__._wrap_record(record)
 
         # runs the basic format operation on the record so that
         # it gets properly formatted into a plain string
         return logging.Formatter.format(self, record)
+
 
 class ThreadFormatter(BaseFormatter):
     """
@@ -281,14 +274,16 @@ class ThreadFormatter(BaseFormatter):
     def format(self, record):
         # runs the wrapping operation on the record so that more
         # information becomes available in it (as expected)
-        if self._wrap: self.__class__._wrap_record(record)
+        if self._wrap:
+            self.__class__._wrap_record(record)
 
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
-        if not is_main: return self._tidfmt.format(record)
+        if not is_main:
+            return self._tidfmt.format(record)
         return self._basefmt.format(record)
 
     def set_base(self, value, *args, **kwargs):
@@ -297,90 +292,105 @@ class ThreadFormatter(BaseFormatter):
     def set_tid(self, value, *args, **kwargs):
         self._tidfmt = BaseFormatter(value, *args, **kwargs)
 
+
 def rotating_handler(
-    path = "quorum.log",
-    max_bytes = 1048576,
-    max_log = 5,
-    encoding = None,
-    delay = False
+    path="quorum.log", max_bytes=1048576, max_log=5, encoding=None, delay=False
 ):
     return logging.handlers.RotatingFileHandler(
-        path,
-        maxBytes = max_bytes,
-        backupCount = max_log,
-        encoding = encoding,
-        delay = delay
+        path, maxBytes=max_bytes, backupCount=max_log, encoding=encoding, delay=delay
     )
 
+
 def smtp_handler(
-    host = "localhost",
-    port = 25,
-    sender = "no-reply@quorum.com",
-    receivers = [],
-    subject = "Quorum logging",
-    username = None,
-    password = None,
-    stls = False
+    host="localhost",
+    port=25,
+    sender="no-reply@quorum.com",
+    receivers=[],
+    subject="Quorum logging",
+    username=None,
+    password=None,
+    stls=False,
 ):
     address = (host, port)
-    if username and password: credentials = (username, password)
-    else: credentials = None
+    if username and password:
+        credentials = (username, password)
+    else:
+        credentials = None
     has_secure = in_signature(logging.handlers.SMTPHandler.__init__, "secure")
-    if has_secure: kwargs = dict(secure = () if stls else None)
-    else: kwargs = dict()
+    if has_secure:
+        kwargs = dict(secure=() if stls else None)
+    else:
+        kwargs = dict()
     return logging.handlers.SMTPHandler(
-        address,
-        sender,
-        receivers,
-        subject,
-        credentials = credentials,
-        **kwargs
+        address, sender, receivers, subject, credentials=credentials, **kwargs
     )
+
 
 def in_signature(callable, name):
     has_full = hasattr(inspect, "getfullargspec")
-    if has_full: spec = inspect.getfullargspec(callable)
-    else: spec = inspect.getargspec(callable)
+    if has_full:
+        spec = inspect.getfullargspec(callable)
+    else:
+        spec = inspect.getargspec(callable)
     args, _varargs, kwargs = spec[:3]
     return (args and name in args) or (kwargs and "secure" in kwargs)
+
 
 def has_exception():
     info = sys.exc_info()
     return not info == (None, None, None)
 
-def debug(message, log_trace = False, *args, **kwargs):
+
+def debug(message, log_trace=False, *args, **kwargs):
     logger = common.base().get_log()
-    if not logger: return
+    if not logger:
+        return
     logger.debug(message, *args, **kwargs)
 
-def info(message, log_trace = False, *args, **kwargs):
+
+def info(message, log_trace=False, *args, **kwargs):
     logger = common.base().get_log()
-    if not logger: return
+    if not logger:
+        return
     logger.info(message, *args, **kwargs)
-    if not log_trace or not has_exception(): return
+    if not log_trace or not has_exception():
+        return
     lines = traceback.format_exc().splitlines()
-    for line in lines: logger.debug(line, *args, **kwargs)
+    for line in lines:
+        logger.debug(line, *args, **kwargs)
 
-def warning(message, log_trace = False, *args, **kwargs):
+
+def warning(message, log_trace=False, *args, **kwargs):
     logger = common.base().get_log()
-    if not logger: return
+    if not logger:
+        return
     logger.warning(message, *args, **kwargs)
-    if not log_trace or not has_exception(): return
+    if not log_trace or not has_exception():
+        return
     lines = traceback.format_exc().splitlines()
-    for line in lines: logger.info(line, *args, **kwargs)
+    for line in lines:
+        logger.info(line, *args, **kwargs)
 
-def error(message, log_trace = False, *args, **kwargs):
+
+def error(message, log_trace=False, *args, **kwargs):
     logger = common.base().get_log()
-    if not logger: return
+    if not logger:
+        return
     logger.error(message, *args, **kwargs)
-    if not log_trace or not has_exception(): return
+    if not log_trace or not has_exception():
+        return
     lines = traceback.format_exc().splitlines()
-    for line in lines: logger.warning(line, *args, **kwargs)
+    for line in lines:
+        logger.warning(line, *args, **kwargs)
 
-def critical(message, log_trace = False, *args, **kwargs):
+
+def critical(message, log_trace=False, *args, **kwargs):
     logger = common.base().get_log()
-    if not logger: return
+    if not logger:
+        return
     logger.critical(message, *args, **kwargs)
-    if not log_trace or not has_exception(): return
+    if not log_trace or not has_exception():
+        return
     lines = traceback.format_exc().splitlines()
-    for line in lines: logger.error(line, *args, **kwargs)
+    for line in lines:
+        logger.error(line, *args, **kwargs)

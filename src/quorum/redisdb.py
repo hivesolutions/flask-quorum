@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -45,8 +36,10 @@ from . import util
 from . import config
 from . import exceptions
 
-try: import redis
-except ImportError: redis = None
+try:
+    import redis
+except ImportError:
+    redis = None
 
 connection = None
 """ The global connection object that should persist
@@ -55,6 +48,7 @@ the connection relation with the database service """
 url = None
 """ The global variable containing the URL to be used
 for the connection with the service """
+
 
 class RedisMemory(object):
     """
@@ -81,12 +75,14 @@ class RedisMemory(object):
         name_s = str(name)
         self.values[name_s] = value
 
-    def setex(self, name, value, time = None):
+    def setex(self, name, value, time=None):
         self.set(name, value)
 
     def delete(self, name):
-        if not name in self.values: return
+        if not name in self.values:
+            return
         del self.values[name]
+
 
 class RedisShelve(RedisMemory):
     """
@@ -97,7 +93,7 @@ class RedisShelve(RedisMemory):
     where its persistent file may be written.
     """
 
-    def __init__(self, path = "redis.shelve"):
+    def __init__(self, path="redis.shelve"):
         RedisMemory.__init__(self)
         self.db_path = path
         self.open_db()
@@ -105,7 +101,7 @@ class RedisShelve(RedisMemory):
     def close(self):
         self.values.close()
 
-    def set(self, name, value, secure = None):
+    def set(self, name, value, secure=None):
         RedisMemory.set(self, name, value)
         if secure == None:
             secure = self.db_secure()
@@ -117,17 +113,14 @@ class RedisShelve(RedisMemory):
 
     def delete(self, name):
         name_s = str(name)
-        if not name_s in self.values: return
+        if not name_s in self.values:
+            return
         del self.values[name_s]
 
     def open_db(self):
         base_path = config.conf("SESSION_FILE_PATH", "")
         file_path = os.path.join(base_path, self.db_path)
-        self.values = shelve.open(
-            file_path,
-            protocol = 2,
-            writeback = True
-        )
+        self.values = shelve.open(file_path, protocol=2, writeback=True)
 
     def db_type(self):
         shelve_cls = type(self.values.dict)
@@ -137,22 +130,29 @@ class RedisShelve(RedisMemory):
     def db_secure(self):
         return self.db_type() == "dbm"
 
+
 def get_connection():
     return _get_connection(url)
+
 
 def dumps(*args):
     return json.dumps(*args)
 
+
 def _get_connection(url):
     global connection
-    if redis == None: raise exceptions.ModuleNotFound("redis")
-    if not connection: connection = url and _redis().from_url(url) or RedisShelve()
+    if redis == None:
+        raise exceptions.ModuleNotFound("redis")
+    if not connection:
+        connection = url and _redis().from_url(url) or RedisShelve()
     return connection
 
-def _redis(verify = True):
-    if verify: util.verify(
-        not redis == None,
-        message = "RedisPy library not available",
-        exception = exceptions.OperationalError
-    )
+
+def _redis(verify=True):
+    if verify:
+        util.verify(
+            not redis == None,
+            message="RedisPy library not available",
+            exception=exceptions.OperationalError,
+        )
     return redis

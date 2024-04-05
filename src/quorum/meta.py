@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -38,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 from . import legacy
+
 
 class Ordered(type):
     """
@@ -48,9 +40,12 @@ class Ordered(type):
 
     def __new__(cls, name, bases, attrs):
         new_cls = super(Ordered, cls).__new__(cls, name, bases, attrs)
-        new_cls._ordered = [(name, attrs.pop(name)) for name, value in\
-            legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
-        new_cls._ordered.sort(key = lambda item: item[1].creation_counter)
+        new_cls._ordered = [
+            (name, attrs.pop(name))
+            for name, value in legacy.eager(attrs.items())
+            if hasattr(value, "creation_counter")
+        ]
+        new_cls._ordered.sort(key=lambda item: item[1].creation_counter)
         new_cls._ordered = [name for name, value in new_cls._ordered]
         return new_cls
 
@@ -58,7 +53,7 @@ class Ordered(type):
         super(Ordered, cls).__init__(name, bases, attrs)
 
     def __cmp__(self, value):
-        return cmp(self.__name__, value.__name__) #@UndefinedVariable
+        return cmp(self.__name__, value.__name__)  # @UndefinedVariable
 
     def __lt__(self, value):
         return self.__name__.__lt__(value.__name__)

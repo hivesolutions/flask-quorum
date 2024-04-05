@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,11 +32,12 @@ import json
 
 import quorum
 
+
 class ExportTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(name = __name__)
+            quorum.load(name=__name__)
         except Exception:
             self.skip()
 
@@ -53,26 +45,25 @@ class ExportTest(quorum.TestCase):
         try:
             adapter = quorum.get_adapter()
             adapter.drop_db()
-        except Exception: pass
-        finally: quorum.unload()
+        except Exception:
+            pass
+        finally:
+            quorum.unload()
 
     @quorum.secured
     def test_import_single(self):
         structure = {
-            "person:id" : dict(_id = "person:id", seq = 11),
-            "account:id" : dict(_id = "account:id", seq = 33)
+            "person:id": dict(_id="person:id", seq=11),
+            "account:id": dict(_id="account:id", seq=33),
         }
         data = json.dumps(structure)
         data = quorum.legacy.bytes(data)
 
         adapter = quorum.get_adapter()
-        manager = quorum.export.ExportManager(
-            adapter,
-            multiple = quorum.resolve()
-        )
+        manager = quorum.export.ExportManager(adapter, multiple=quorum.resolve())
 
         collection = adapter.collection("counter")
-        manager._import_single(collection, data, key = "_id")
+        manager._import_single(collection, data, key="_id")
 
         values = collection.find()
         values = [value for value in values]
@@ -80,7 +71,7 @@ class ExportTest(quorum.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(dict(_id = "person:id"))
+        value = collection.find_one(dict(_id="person:id"))
 
         self.assertEqual(value["seq"], 11)
 
@@ -90,27 +81,22 @@ class ExportTest(quorum.TestCase):
             (
                 "person:id",
                 quorum.legacy.bytes(
-                    json.dumps(dict(_id = "person:id", seq = 11)),
-                    encoding = "utf-8"
-                )
+                    json.dumps(dict(_id="person:id", seq=11)), encoding="utf-8"
+                ),
             ),
             (
                 "account:id",
                 quorum.legacy.bytes(
-                    json.dumps(dict(_id = "account:id", seq = 33)),
-                    encoding = "utf-8"
-                )
-            )
+                    json.dumps(dict(_id="account:id", seq=33)), encoding="utf-8"
+                ),
+            ),
         ]
 
         adapter = quorum.get_adapter()
-        manager = quorum.export.ExportManager(
-            adapter,
-            multiple = quorum.resolve()
-        )
+        manager = quorum.export.ExportManager(adapter, multiple=quorum.resolve())
 
         collection = adapter.collection("counter")
-        manager._import_multiple(collection, data, key = "_id")
+        manager._import_multiple(collection, data, key="_id")
 
         values = collection.find()
         values = [value for value in values]
@@ -118,6 +104,6 @@ class ExportTest(quorum.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(dict(_id = "person:id"))
+        value = collection.find_one(dict(_id="person:id"))
 
         self.assertEqual(value["seq"], 11)

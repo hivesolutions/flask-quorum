@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -42,108 +33,109 @@ import datetime
 
 import quorum
 
+
 class ExecutionTest(quorum.TestCase):
 
     @quorum.secured
     def test_seconds_eval(self):
-        now = datetime.datetime(year = 2014, month = 1, day = 1, second = 0)
-        result = quorum.seconds_eval(1, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 1, second = 1)
+        now = datetime.datetime(year=2014, month=1, day=1, second=0)
+        result = quorum.seconds_eval(1, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=1, second=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 1, second = 59)
-        result = quorum.seconds_eval(1, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 1, minute = 1, second = 0)
+        now = datetime.datetime(year=2014, month=1, day=1, second=59)
+        result = quorum.seconds_eval(1, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=1, minute=1, second=0)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
     @quorum.secured
     def test_daily_eval(self):
-        now = datetime.datetime(year = 2014, month = 1, day = 1)
-        result = quorum.daily_eval(0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 2)
+        now = datetime.datetime(year=2014, month=1, day=1)
+        result = quorum.daily_eval(0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=2)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2013, month = 12, day = 31)
-        result = quorum.daily_eval(0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 1)
+        now = datetime.datetime(year=2013, month=12, day=31)
+        result = quorum.daily_eval(0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2013, month = 12, day = 31, hour = 1)
-        result = quorum.daily_eval(0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 1)
+        now = datetime.datetime(year=2013, month=12, day=31, hour=1)
+        result = quorum.daily_eval(0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2013, month = 12, day = 31, hour = 1)
-        result = quorum.daily_eval(3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 1, hour = 1)
+        now = datetime.datetime(year=2013, month=12, day=31, hour=1)
+        result = quorum.daily_eval(3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=1, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
     @quorum.secured
     def test_weekly_eval(self):
-        now = datetime.datetime(year = 2014, month = 1, day = 1)
-        result = quorum.weekly_eval(4, 0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 3)
+        now = datetime.datetime(year=2014, month=1, day=1)
+        result = quorum.weekly_eval(4, 0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=3)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 6)
-        result = quorum.weekly_eval(4, 0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 10)
+        now = datetime.datetime(year=2014, month=1, day=6)
+        result = quorum.weekly_eval(4, 0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=10)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 10, hour = 1)
-        result = quorum.weekly_eval(4, 3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 10, hour = 1)
+        now = datetime.datetime(year=2014, month=1, day=10, hour=1)
+        result = quorum.weekly_eval(4, 3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=10, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 10, hour = 3)
-        result = quorum.weekly_eval(4, 3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 17, hour = 1)
+        now = datetime.datetime(year=2014, month=1, day=10, hour=3)
+        result = quorum.weekly_eval(4, 3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=17, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 11, hour = 3)
-        result = quorum.weekly_eval(4, 3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 17, hour = 1)
+        now = datetime.datetime(year=2014, month=1, day=11, hour=3)
+        result = quorum.weekly_eval(4, 3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=17, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
     @quorum.secured
     def test_monthly_eval(self):
-        now = datetime.datetime(year = 2014, month = 1, day = 1)
-        result = quorum.monthly_eval(6, 0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 6)
+        now = datetime.datetime(year=2014, month=1, day=1)
+        result = quorum.monthly_eval(6, 0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=6)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 6)
-        result = quorum.monthly_eval(6, 0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 6)
+        now = datetime.datetime(year=2014, month=1, day=6)
+        result = quorum.monthly_eval(6, 0, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=6)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 6, hour = 1)
-        result = quorum.monthly_eval(6, 0, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 2, day = 6)
+        now = datetime.datetime(year=2014, month=1, day=6, hour=1)
+        result = quorum.monthly_eval(6, 0, now=now)
+        expected_d = datetime.datetime(year=2014, month=2, day=6)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 6, hour = 1)
-        result = quorum.monthly_eval(6, 3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 1, day = 6, hour = 1)
+        now = datetime.datetime(year=2014, month=1, day=6, hour=1)
+        result = quorum.monthly_eval(6, 3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=1, day=6, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-        now = datetime.datetime(year = 2014, month = 1, day = 6, hour = 2)
-        result = quorum.monthly_eval(6, 3600, now = now)
-        expected_d = datetime.datetime(year = 2014, month = 2, day = 6, hour = 1)
+        now = datetime.datetime(year=2014, month=1, day=6, hour=2)
+        result = quorum.monthly_eval(6, 3600, now=now)
+        expected_d = datetime.datetime(year=2014, month=2, day=6, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)

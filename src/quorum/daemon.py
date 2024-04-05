@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -42,6 +33,7 @@ import sys
 import time
 import atexit
 import signal
+
 
 class Daemon(object):
     """
@@ -66,7 +58,9 @@ class Daemon(object):
     """ The file path to the file to be used
     as the standard error of the created process """
 
-    def __init__(self, pid_file, stdin = "/dev/null", stdout = "/dev/null", stderr = "/dev/null"):
+    def __init__(
+        self, pid_file, stdin="/dev/null", stdout="/dev/null", stderr="/dev/null"
+    ):
         """
         Constructor of the class.
 
@@ -88,7 +82,7 @@ class Daemon(object):
         self.stdout = stdout
         self.stderr = stderr
 
-    def daemonize(self, register = True):
+    def daemonize(self, register=True):
         """
         Do the UNIX double-fork magic, check Stevens "Advanced
         Programming in the UNIX Environment" for details (ISBN
@@ -104,8 +98,9 @@ class Daemon(object):
         """
 
         try:
-            pid = os.fork() #@UndefinedVariable
-            if pid > 0: sys.exit(0)
+            pid = os.fork()  # @UndefinedVariable
+            if pid > 0:
+                sys.exit(0)
         except OSError as error:
             sys.stderr.write(
                 "first fork failed: %d (%s)\n" % (error.errno, error.strerror)
@@ -115,14 +110,15 @@ class Daemon(object):
         # decouples the current process from parent environment
         # should create a new group of execution
         os.chdir("/")
-        os.setsid() #@UndefinedVariable
+        os.setsid()  # @UndefinedVariable
         os.umask(0)
 
         try:
             # runs the second for and then exits from
             # the "second" parent process
-            pid = os.fork() #@UndefinedVariable
-            if pid > 0: sys.exit(0)
+            pid = os.fork()  # @UndefinedVariable
+            if pid > 0:
+                sys.exit(0)
         except OSError as error:
             sys.stderr.write(
                 "second fork failed: %d (%s)\n" % (error.errno, error.strerror)
@@ -146,7 +142,7 @@ class Daemon(object):
         pid = str(os.getpid())
         open(self.pidfile, "wb+").write("%s\n" % pid)
 
-    def start(self, register = True):
+    def start(self, register=True):
         try:
             # checks for a pidfile to check if the daemon
             # already runs, in such case retrieves the pid
@@ -168,7 +164,7 @@ class Daemon(object):
 
         # daemonizes the current process and then starts
         # the daemon structures (runs the process)
-        self.daemonize(register = register)
+        self.daemonize(register=register)
         self.run()
 
     def stop(self):
@@ -190,7 +186,7 @@ class Daemon(object):
 
         try:
             while True:
-                os.kill(pid, signal.SIGTERM) #@UndefinedVariable
+                os.kill(pid, signal.SIGTERM)  # @UndefinedVariable
                 time.sleep(0.1)
         except OSError as error:
             error = str(error)

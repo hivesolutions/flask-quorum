@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -40,8 +31,10 @@ __license__ = "Apache License, Version 2.0"
 from . import util
 from . import exceptions
 
-try: import pusher
-except ImportError: pusher = None
+try:
+    import pusher
+except ImportError:
+    pusher = None
 
 pusher_c = None
 """ The global pusher connection object to be used along
@@ -65,24 +58,27 @@ cluster = None
 """ The cluster (datacenter) that should be used in the client
 connection that is going to be established """
 
+
 def get_pusher():
     global pusher_c
-    if pusher_c: return pusher_c
-    if pusher == None: raise exceptions.ModuleNotFound("pusher")
+    if pusher_c:
+        return pusher_c
+    if pusher == None:
+        raise exceptions.ModuleNotFound("pusher")
     kwargs = dict()
-    if cluster: kwargs["cluster"] = cluster
+    if cluster:
+        kwargs["cluster"] = cluster
     pusher_c = _pusher().Pusher(
-        app_id = str(app_id),
-        key = str(key),
-        secret = str(secret),
-        **kwargs
+        app_id=str(app_id), key=str(key), secret=str(secret), **kwargs
     )
     return pusher_c
 
-def _pusher(verify = True):
-    if verify: util.verify(
-        not pusher == None,
-        message = "Pusher library not available",
-        exception = exceptions.OperationalError
-    )
+
+def _pusher(verify=True):
+    if verify:
+        util.verify(
+            not pusher == None,
+            message="Pusher library not available",
+            exception=exceptions.OperationalError,
+        )
     return pusher

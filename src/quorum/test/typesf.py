@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,15 +32,12 @@ import quorum
 
 from . import mock
 
+
 class TypesfTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(
-                name = __name__,
-                mongo_database = "test",
-                models = mock
-            )
+            quorum.load(name=__name__, mongo_database="test", models=mock)
         except Exception:
             self.skip()
 
@@ -57,8 +45,10 @@ class TypesfTest(quorum.TestCase):
         try:
             adapter = quorum.get_adapter()
             adapter.drop_db()
-        except Exception: pass
-        finally: quorum.unload()
+        except Exception:
+            pass
+        finally:
+            quorum.unload()
 
     @quorum.secured
     def test_reference(self):
@@ -124,9 +114,9 @@ class TypesfTest(quorum.TestCase):
         person.name = "Name"
         person.cats = mock.Person.cats["type"]([1, 2, 3])
 
-        self.assertEqual(mock.Cat(identifier = 1) in person.cats, True)
-        self.assertEqual(mock.Cat(identifier = 3) in person.cats, True)
-        self.assertNotEqual(mock.Cat(identifier = 4) in person.cats, True)
+        self.assertEqual(mock.Cat(identifier=1) in person.cats, True)
+        self.assertEqual(mock.Cat(identifier=3) in person.cats, True)
+        self.assertNotEqual(mock.Cat(identifier=4) in person.cats, True)
         self.assertNotEqual(person.cats, None)
         self.assertNotEqual(person.cats, [])
         self.assertNotEqual(person.cats, "cars")
@@ -135,7 +125,7 @@ class TypesfTest(quorum.TestCase):
 
     @quorum.secured
     def test_file(self):
-        file_m = dict(name = "hello", data = b"SGVsbG8gV29ybGQ=")
+        file_m = dict(name="hello", data=b"SGVsbG8gV29ybGQ=")
         file = quorum.File(file_m)
 
         self.assertEqual(type(file.file_name), str)
@@ -157,7 +147,7 @@ class TypesfTest(quorum.TestCase):
 
     @quorum.secured
     def test_encrypted(self):
-        encrypted = quorum.encrypted(key = b"hello key")
+        encrypted = quorum.encrypted(key=b"hello key")
         result = encrypted("hello world")
 
         self.assertEqual(str(result), "hello world")
@@ -170,7 +160,7 @@ class TypesfTest(quorum.TestCase):
         self.assertEqual(result.value, "hello world")
         self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
 
-        encrypted = quorum.encrypted(key = None)
+        encrypted = quorum.encrypted(key=None)
         result = encrypted("hello world")
 
         self.assertEqual(str(result), "hello world")
@@ -206,7 +196,7 @@ class TypesfTest(quorum.TestCase):
         person.brother = brother
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         result = person.json_v()
 

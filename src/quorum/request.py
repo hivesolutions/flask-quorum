@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -39,9 +30,10 @@ __license__ = "Apache License, Version 2.0"
 
 import flask
 
+
 class Request(flask.Request):
 
-    def __init__(self, environ, populate_request = True, shallow = False):
+    def __init__(self, environ, populate_request=True, shallow=False):
         flask.Request.__init__(self, environ, populate_request, shallow)
 
         self.properties = {}

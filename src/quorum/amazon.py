@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -40,8 +31,10 @@ __license__ = "Apache License, Version 2.0"
 from . import util
 from . import exceptions
 
-try: import boto
-except ImportError: boto = None
+try:
+    import boto
+except ImportError:
+    boto = None
 
 connection = None
 """ The global wide connection to the amazon server
@@ -64,24 +57,32 @@ bucket_name = None
 """ The name of the bucket to be used to create and retrieve
 keys from the amazon services """
 
+
 def get_connection():
     global connection
-    if boto == None: raise exceptions.ModuleNotFound("boto")
-    if connection: return connection
+    if boto == None:
+        raise exceptions.ModuleNotFound("boto")
+    if connection:
+        return connection
     connection = _boto().connect_s3(id, secret)
     return connection
+
 
 def get_bucket():
     global bucket
     connection = get_connection()
-    if bucket: return bucket
+    if bucket:
+        return bucket
     bucket = connection.get_bucket(bucket_name)
     return bucket
+
 
 def clear_bucket():
     bucket = get_bucket()
     keys = bucket.get_all_keys()
-    for key in keys: key.delete()
+    for key in keys:
+        key.delete()
+
 
 def get_key(name):
     bucket = get_bucket()
@@ -89,20 +90,24 @@ def get_key(name):
     key.key = name
     return key
 
+
 def exists_key(name):
     bucket = get_bucket()
     key = _boto().s3.key.Key(bucket)
     key.key = name
     return key.exists()
 
+
 def delete_key(name):
     bucket = get_bucket()
     bucket.delete_key(name)
 
-def _boto(verify = True):
-    if verify: util.verify(
-        not boto == None,
-        message = "Boto library not available",
-        exception = exceptions.OperationalError
-    )
+
+def _boto(verify=True):
+    if verify:
+        util.verify(
+            not boto == None,
+            message="Boto library not available",
+            exception=exceptions.OperationalError,
+        )
     return boto

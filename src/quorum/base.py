@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -116,14 +107,7 @@ CONTENT_OPTIONS = "nosniff"
 the sniffing of content type values, ensuring that the browser sticks to
 value of content type provided by the server """
 
-ESCAPE_EXTENSIONS = (
-    ".xml",
-    ".html",
-    ".xhtml",
-    ".xml.tpl",
-    ".html.tpl",
-    ".xhtml.tpl"
-)
+ESCAPE_EXTENSIONS = (".xml", ".html", ".xhtml", ".xml.tpl", ".html.tpl", ".xhtml.tpl")
 """ The sequence containing the various extensions
 for which the autoescape mode will be enabled  by
 default as expected by the end developer """
@@ -134,12 +118,13 @@ PLATFORM = "%s %d.%d.%d.%s %s" % (
     sys.version_info[1],
     sys.version_info[2],
     sys.version_info[3],
-    sys.platform
+    sys.platform,
 )
 """ Extra system information containing some of the details
 of the technical platform that is running the system, this
 string should be exposed carefully to avoid extra information
 from being exposed to outside agents """
+
 
 class Quorum(flask.Flask):
     """
@@ -150,9 +135,12 @@ class Quorum(flask.Flask):
     """
 
     def select_jinja_autoescape(self, filename):
-        if filename == None: return False
-        if filename.endswith(ESCAPE_EXTENSIONS): return True
+        if filename == None:
+            return False
+        if filename.endswith(ESCAPE_EXTENSIONS):
+            return True
         return flask.Flask.select_jinja_autoescape(self, filename)
+
 
 def monkey():
     """
@@ -168,39 +156,42 @@ def monkey():
     flask.render_template = template.render_template
     json._default_encoder = util.JSONEncoder()
 
+
 def call_run():
     global RUN_CALLED
-    if RUN_CALLED: return
-    for _fname, f in RUN_F.items(): f()
+    if RUN_CALLED:
+        return
+    for _fname, f in RUN_F.items():
+        f()
     RUN_CALLED = True
 
-def run(server = None, fallback = "base"):
-    if not APP: raise exceptions.BaseError("Application not set or runnable")
+
+def run(server=None, fallback="base"):
+    if not APP:
+        raise exceptions.BaseError("Application not set or runnable")
 
     APP.logger.info(
-        "Booting %s %s (flask %s) (%s) ..." % (
-            info.NAME,
-            info.VERSION,
-            flask.__version__,
-            PLATFORM
-        )
+        "Booting %s %s (flask %s) (%s) ..."
+        % (info.NAME, info.VERSION, flask.__version__, PLATFORM)
     )
 
     server = config.conf("SERVER", server) or "base"
     runner = globals().get("run_" + server, None)
     runner_f = globals().get("run_" + fallback, None)
-    if not runner: raise exceptions.BaseError("Server '%s' not found" % server)
+    if not runner:
+        raise exceptions.BaseError("Server '%s' not found" % server)
 
     call_run()
 
-    try: runner()
+    try:
+        runner()
     except exceptions.ServerInitError as error:
         APP.logger.warning(
-            "Server '%s' failed to start (%s) falling back to '%s'" % (
-                server, legacy.UNICODE(error), fallback
-            )
+            "Server '%s' failed to start (%s) falling back to '%s'"
+            % (server, legacy.UNICODE(error), fallback)
         )
         runner_f and runner_f()
+
 
 def prepare_app():
     """
@@ -218,34 +209,31 @@ def prepare_app():
     """
 
     app = APP
-    if app.debug: app = werkzeug.debug.DebuggedApplication(app, True)
+    if app.debug:
+        app = werkzeug.debug.DebuggedApplication(app, True)
     return app
 
+
 def run_base():
-    debug = config.conf("DEBUG", False, cast = bool)
-    reloader = config.conf("RELOADER", False, cast = bool)
+    debug = config.conf("DEBUG", False, cast=bool)
+    reloader = config.conf("RELOADER", False, cast=bool)
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
     APP.run(
-        use_debugger = debug,
-        debug = debug,
-        use_reloader = reloader,
-        host = host,
-        port = port
+        use_debugger=debug, debug=debug, use_reloader=reloader, host=host, port=port
     )
 
+
 def run_netius():
-    try: import netius.servers
+    try:
+        import netius.servers
     except Exception as exception:
-        raise exceptions.ServerInitError(
-            legacy.UNICODE(exception),
-            server = "netius"
-        )
+        raise exceptions.ServerInitError(legacy.UNICODE(exception), server="netius")
 
     kwargs = dict()
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
-    ipv6 = config.conf("IPV6", False, cast = bool)
+    ipv6 = config.conf("IPV6", False, cast=bool)
     ssl = int(config.conf("SSL", 0)) and True or False
     key_file = config.conf("KEY_FILE", None)
     cer_file = config.conf("CER_FILE", None)
@@ -266,21 +254,15 @@ def run_netius():
     # the proper network configuration
     server = netius.servers.WSGIServer(app, **kwargs)
     server.serve(
-        host = host,
-        port = port,
-        ipv6 = ipv6,
-        ssl = ssl,
-        key_file = key_file,
-        cer_file = cer_file
+        host=host, port=port, ipv6=ipv6, ssl=ssl, key_file=key_file, cer_file=cer_file
     )
 
+
 def run_waitress():
-    try: import waitress
+    try:
+        import waitress
     except Exception as exception:
-        raise exceptions.ServerInitError(
-            legacy.UNICODE(exception),
-            server = "waitress"
-        )
+        raise exceptions.ServerInitError(legacy.UNICODE(exception), server="waitress")
 
     host = config.conf("HOST", "127.0.0.1")
     port = int(config.conf("PORT", 5000))
@@ -292,23 +274,20 @@ def run_waitress():
     # starts the serving process for the waitress server with
     # the proper network configuration values, note that no ssl
     # support is currently available for waitress
-    waitress.serve(
-        app,
-        host = host,
-        port = port
-    )
+    waitress.serve(app, host=host, port=port)
+
 
 def load(
-    app = None,
-    name = None,
-    locales = ("en_us",),
-    secret_key = None,
-    execution = True,
-    redis_session = False,
-    mongo_database = None,
-    logger = None,
-    models = None,
-    safe = False,
+    app=None,
+    name=None,
+    locales=("en_us",),
+    secret_key=None,
+    execution=True,
+    redis_session=False,
+    mongo_database=None,
+    logger=None,
+    models=None,
+    safe=False,
     **kwargs
 ):
     """
@@ -359,7 +338,8 @@ def load(
     """
 
     global APP
-    if APP: return APP
+    if APP:
+        return APP
 
     # runs the initial loading of the configuration from all
     # the currently available sources (eg: file, environment, etc.)
@@ -368,8 +348,8 @@ def load(
     # retrieves the value of all the configuration considered
     # to be base and that are going to be used in the loading
     # of the current application (with default values)
-    debug = config.conf("DEBUG", False, cast = bool)
-    reloader = config.conf("RELOADER", False, cast = bool)
+    debug = config.conf("DEBUG", False, cast=bool)
+    reloader = config.conf("RELOADER", False, cast=bool)
     level_s = config.conf("LEVEL", "WARNING")
     adapter_s = config.conf("ADAPTER", "mongo")
     name = config.conf("NAME", name)
@@ -400,8 +380,10 @@ def load(
     base_url = config.conf("BASE_URL", None)
     if base_url:
         base_parse = legacy.urlparse(base_url)
-        if base_parse.port: server_name = "%s:%d" % (base_parse.hostname, base_parse.port)
-        else: server_name = "%s" % base_parse.hostname
+        if base_parse.port:
+            server_name = "%s:%d" % (base_parse.hostname, base_parse.port)
+        else:
+            server_name = "%s" % base_parse.hostname
         url_scheme = base_parse.scheme
         application_root = base_parse.path
     else:
@@ -424,8 +406,10 @@ def load(
     # retrieves some internal configuration value related with
     # the way that the sessions are going to be handled
     session_cookie_path = config.conf("SESSION_COOKIE_PATH", "/")
-    session_cookie_secure = config.conf("SESSION_COOKIE_SECURE", False, cast = bool)
-    session_refresh_request = config.conf("SESSION_REFRESH_EACH_REQUEST", False, cast = bool)
+    session_cookie_secure = config.conf("SESSION_COOKIE_SECURE", False, cast=bool)
+    session_refresh_request = config.conf(
+        "SESSION_REFRESH_EACH_REQUEST", False, cast=bool
+    )
 
     # re-sets a series of session related values according to quorum
     # predefined structure, this effectively enables sessions on
@@ -463,7 +447,7 @@ def load(
     # requested logger and provided "verbosity" level
     load_app_config(app, kwargs)
     load_app_config(app, config.confd())
-    start_log(app, name = logger, level = level)
+    start_log(app, name=logger, level=level)
 
     # loads the various paths associated with the application into the
     # current environment to reduce the amount of issues related with
@@ -479,7 +463,8 @@ def load(
     # then tries to retrieve the associated class for proper instantiation
     # in case the class is not found the default value is set instead
     adapter_s = adapter_s.capitalize() + "Adapter"
-    if not hasattr(data, adapter_s): adapter_s = "MongoAdapter"
+    if not hasattr(data, adapter_s):
+        adapter_s = "MongoAdapter"
     app.adapter = getattr(data, adapter_s)()
 
     # sets the various eval context filters as such by setting their eval
@@ -519,9 +504,7 @@ def load(
     app.secret_key = secret_key
     app.old_route = app.route
     app.route = route.route
-    app.jinja_options = dict(
-        finalize = finalize
-    )
+    app.jinja_options = dict(finalize=finalize)
     app._locale_d = locales[0]
 
     # takes a snapshot of the current timestamp as it's
@@ -530,31 +513,51 @@ def load(
 
     # sets a series of conditional based attributes in both
     # the associated modules and the base app object (as expected)
-    if redis_url: redisdb.url = redis_url
-    if mongo_url: mongodb.url = mongo_url
-    if amqp_url: amqp.url = amqp_url
-    if amazon_id: amazon.id = amazon_id
-    if amazon_secret: amazon.secret = amazon_secret
-    if amazon_bucket: amazon.bucket_name = amazon_bucket
-    if pusher_app_id: pusherc.app_id = pusher_app_id
-    if pusher_key: pusherc.key = pusher_key
-    if pusher_secret: pusherc.secret = pusher_secret
-    if pusher_cluster: pusherc.cluster = pusher_cluster
-    if smtp_host: mail.SMTP_HOST = smtp_host
-    if smtp_user: mail.SMTP_USER = smtp_user
-    if smtp_password: mail.SMTP_PASSWORD = smtp_password
-    if execution: start_execution()
-    if redis_session: app.session_interface = session.RedisSessionInterface(url = redis_url)
-    if mongo_database: mongodb.database = mongo_database + suffix
-    if models: setup_models(models)
-    if force_ssl: extras.SSLify(app)
+    if redis_url:
+        redisdb.url = redis_url
+    if mongo_url:
+        mongodb.url = mongo_url
+    if amqp_url:
+        amqp.url = amqp_url
+    if amazon_id:
+        amazon.id = amazon_id
+    if amazon_secret:
+        amazon.secret = amazon_secret
+    if amazon_bucket:
+        amazon.bucket_name = amazon_bucket
+    if pusher_app_id:
+        pusherc.app_id = pusher_app_id
+    if pusher_key:
+        pusherc.key = pusher_key
+    if pusher_secret:
+        pusherc.secret = pusher_secret
+    if pusher_cluster:
+        pusherc.cluster = pusher_cluster
+    if smtp_host:
+        mail.SMTP_HOST = smtp_host
+    if smtp_user:
+        mail.SMTP_USER = smtp_user
+    if smtp_password:
+        mail.SMTP_PASSWORD = smtp_password
+    if execution:
+        start_execution()
+    if redis_session:
+        app.session_interface = session.RedisSessionInterface(url=redis_url)
+    if mongo_database:
+        mongodb.database = mongo_database + suffix
+    if models:
+        setup_models(models)
+    if force_ssl:
+        extras.SSLify(app)
 
     # verifies if the module that has called the method is not
     # of type main and in case it's not calls the runner methods
     # immediately so that the proper initialization is done, then
     # returns the app reference object to the caller method
-    if not module.__name__ == "__main__": call_run()
+    if not module.__name__ == "__main__":
+        call_run()
     return app
+
 
 def unload():
     """
@@ -576,31 +579,39 @@ def unload():
     """
 
     global APP
-    if not APP: return
+    if not APP:
+        return
 
-    if APP.models: teardown_models(APP.models)
+    if APP.models:
+        teardown_models(APP.models)
 
     APP = None
 
-def load_all(path = None):
+
+def load_all(path=None):
     load_config(3)
-    config.load_file(path = path)
+    config.load_file(path=path)
     config.load_env()
 
-def load_config(offset = 1, encoding = "utf-8"):
+
+def load_config(offset=1, encoding="utf-8"):
     element = inspect.stack()[offset]
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
-    config.load(path = base_folder, encoding = encoding)
+    config.load(path=base_folder, encoding=encoding)
+
 
 def load_app_config(app, configs):
     for name, value in configs.items():
         app.config[name] = value
 
-def load_paths(app):
-    if not app.root_path in sys.path: sys.path.insert(0, app.root_path)
 
-def load_bundles(app, offset = 2):
+def load_paths(app):
+    if not app.root_path in sys.path:
+        sys.path.insert(0, app.root_path)
+
+
+def load_bundles(app, offset=2):
     # creates the base dictionary that will handle all the loaded
     # bundle information and sets it in the current application
     # object reference so that may be used latter on
@@ -615,7 +626,8 @@ def load_bundles(app, offset = 2):
     module = inspect.getmodule(element[0])
     base_folder = os.path.dirname(module.__file__)
     bundles_path = os.path.join(base_folder, "bundles")
-    if not os.path.exists(bundles_path): return
+    if not os.path.exists(bundles_path):
+        return
 
     # list the bundles directory files and iterates over each of the
     # files to load its own contents into the bundles "registry"
@@ -626,15 +638,20 @@ def load_bundles(app, offset = 2):
         # it trying to read its JSON based contents
         path_f = os.path.join(bundles_path, path)
         file = open(path_f, "rb")
-        try: data_j = json.load(file)
-        except Exception: continue
-        finally: file.close()
+        try:
+            data_j = json.load(file)
+        except Exception:
+            continue
+        finally:
+            file.close()
 
         # unpacks the current path in iteration into the base name,
         # locale string and file extension to be used in the registration
         # of the data in the bundles registry
-        try: _base, locale, _extension = path.split(".", 2)
-        except Exception: continue
+        try:
+            _base, locale, _extension = path.split(".", 2)
+        except Exception:
+            continue
 
         # retrieves a possible existing map for the current locale in the
         # registry and updates such map with the loaded data, then re-updates
@@ -643,24 +660,26 @@ def load_bundles(app, offset = 2):
         bundle.update(data_j)
         bundles[locale] = bundle
 
+
 def start_log(
     app,
-    name = None,
-    level = logging.WARN,
-    format_base = log.LOGGING_FORMAT,
-    format_tid = log.LOGGING_FORMAT_TID
+    name=None,
+    level=logging.WARN,
+    format_base=log.LOGGING_FORMAT,
+    format_tid=log.LOGGING_FORMAT_TID,
 ):
     # tries to retrieve some of the default configuration values
     # that are going to be used in the logger startup
     format = config.conf("LOGGING_FORMAT", None)
-    file_log = config.conf("FILE_LOG", False, cast = bool)
-    stream_log = config.conf("STREAM_LOG", True, cast = bool)
-    memory_log = config.conf("MEMORY_LOG", True, cast = bool)
+    file_log = config.conf("FILE_LOG", False, cast=bool)
+    stream_log = config.conf("STREAM_LOG", True, cast=bool)
+    memory_log = config.conf("MEMORY_LOG", True, cast=bool)
     syslog_host = config.conf("SYSLOG_HOST", None)
-    syslog_port = config.conf("SYSLOG_PORT", None, cast = int)
+    syslog_port = config.conf("SYSLOG_PORT", None, cast=int)
     syslog_proto = config.conf("SYSLOG_PROTO", "udp")
-    syslog_kwargs = dict(socktype = socket.SOCK_STREAM) if\
-        syslog_proto in ("tcp",) else dict()
+    syslog_kwargs = (
+        dict(socktype=socket.SOCK_STREAM) if syslog_proto in ("tcp",) else dict()
+    )
     syslog_log = True if syslog_host else False
 
     # tries to determine the default syslog port in case no port
@@ -671,8 +690,10 @@ def start_log(
     # "resolves" the proper logger file path taking into account
     # the currently defined operative system, should uses the system
     # level path in case the operative system is unix based
-    if os.name == "nt": path_t = "%s"
-    else: path_t = "/var/log/%s"
+    if os.name == "nt":
+        path_t = "%s"
+    else:
+        path_t = "/var/log/%s"
     path = name and path_t % name
 
     # creates the map that is going to be used to store the
@@ -711,15 +732,21 @@ def start_log(
 
     # adds the various created handler to the current logger so that
     # they are going to be used when using the logger for output
-    if stream_handler: logger.addHandler(stream_handler)
-    if memory_handler: logger.addHandler(memory_handler)
-    if file_handler: logger.addHandler(file_handler)
+    if stream_handler:
+        logger.addHandler(stream_handler)
+    if memory_handler:
+        logger.addHandler(memory_handler)
+    if file_handler:
+        logger.addHandler(file_handler)
 
     # for each of the handlers adds them to the handlers map in case
     # they are valid and defined (no problem in construction)
-    if stream_handler: app.handlers["stream"] = stream_handler
-    if memory_handler: app.handlers["memory"] = memory_handler
-    if file_handler: app.handlers["file"] = file_handler
+    if stream_handler:
+        app.handlers["stream"] = stream_handler
+    if memory_handler:
+        app.handlers["memory"] = memory_handler
+    if file_handler:
+        app.handlers["file"] = file_handler
 
     # iterates over the complete set of handlers currently
     # registered in the logger to properly set the formatter
@@ -730,17 +757,19 @@ def start_log(
 
     # determines if the creation of the syslog handler is required and
     # it that the case created it setting the appropriate formatter to it
-    syslog_handler = logging.handlers.SysLogHandler(
-        (syslog_host, syslog_port), **syslog_kwargs
-    ) if syslog_log else None if syslog_log else None
+    syslog_handler = (
+        logging.handlers.SysLogHandler((syslog_host, syslog_port), **syslog_kwargs)
+        if syslog_log
+        else None if syslog_log else None
+    )
 
     # in case the syslog handler has been created creates the appropriate
     # formatter for it, sets the level and adds it to the logger
     if syslog_handler:
         syslog_formatter = log.BaseFormatter(
             log.LOGGIGN_SYSLOG % APP.name if APP else "quorum",
-            datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
-            wrap = True
+            datefmt="%Y-%m-%dT%H:%M:%S.000000+00:00",
+            wrap=True,
         )
         syslog_handler.setLevel(level)
         syslog_handler.setFormatter(syslog_formatter)
@@ -754,6 +783,7 @@ def start_log(
     # sets the current logger in the top level app value so that
     # this logger is going to be used as the quorum logger
     app.logger_q = logger
+
 
 def extra_logging(logger, level, formatter):
     """
@@ -781,7 +811,8 @@ def extra_logging(logger, level, formatter):
     # verifies if the logging attribute of the current instance is
     # defined and in case it's not returns immediately
     logging = config.conf("LOGGING", None)
-    if not logging: return
+    if not logging:
+        return
 
     # iterates over the complete set of handler configuration in the
     # logging to create the associated handler instances
@@ -795,69 +826,91 @@ def extra_logging(logger, level, formatter):
         # "clones" the configuration dictionary and then removes the base
         # values so that they do not interfere with the building
         _config = dict(_config)
-        if "level" in _config: del _config["level"]
-        if "name" in _config: del _config["name"]
+        if "level" in _config:
+            del _config["level"]
+        if "name" in _config:
+            del _config["name"]
 
         # retrieves the proper building, skipping the current loop in case
         # it does not exits and then builds the new handler instance, setting
         # the proper level and formatter and then adding it to the logger
-        if not hasattr(log, name + "_handler"): continue
+        if not hasattr(log, name + "_handler"):
+            continue
         builder = getattr(log, name + "_handler")
         handler = builder(**_config)
         handler.setLevel(__level)
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-def get_app(app = None):
+
+def get_app(app=None):
     return app or APP
 
-def get_adapter(app = None):
+
+def get_adapter(app=None):
     return APP and APP.adapter
 
-def get_log(app = None):
+
+def get_log(app=None):
     app = app or APP
-    if not app: return None
+    if not app:
+        return None
     is_custom = hasattr(app, "logger_q")
     return app.logger_q if is_custom else app.logger
 
-def get_level(app = None):
-    logger = get_log(app = app)
-    if not logger: return None
+
+def get_level(app=None):
+    logger = get_log(app=app)
+    if not logger:
+        return None
     return logger.level
 
-def get_handlers(app = None):
-    logger = get_log(app = app)
-    if not logger: return None
+
+def get_handlers(app=None):
+    logger = get_log(app=app)
+    if not logger:
+        return None
     return logger.handlers
 
-def get_handler(name, app = None):
+
+def get_handler(name, app=None):
     app = app or APP
-    if not app: return None
+    if not app:
+        return None
     return app.handlers.get(name, None)
 
-def get_bundle(name, app = None, split = True):
+
+def get_bundle(name, app=None, split=True):
     app = app or APP
-    if not app: return None
+    if not app:
+        return None
     bundle = app.bundles.get(name, None)
-    if bundle: return bundle
+    if bundle:
+        return bundle
     if split and name:
         base = name.split("_", 1)[0]
         bundle = app.bundles.get(base, None)
-        if bundle: return bundle
+        if bundle:
+            return bundle
     name = _best_locale(name)
     return app.bundles.get(name, None)
 
-def is_devel(app = None):
-    level = get_level(app = app)
-    if not level: return False
+
+def is_devel(app=None):
+    level = get_level(app=app)
+    if not level:
+        return False
     return level < logging.INFO
+
 
 def finalize(value):
     # returns an empty string as value representation
     # for unset values, this is the default representation
     # to be used in the template engine
-    if value == None: return ""
+    if value == None:
+        return ""
     return value
+
 
 def before_request():
     flask.request.args_s = util.load_form(flask.request.args)
@@ -865,24 +918,28 @@ def before_request():
     flask.request.locale = util.load_locale(APP.locales)
     util.set_locale()
 
+
 def after_request(response):
-    if APP.safe: util.reset_locale()
+    if APP.safe:
+        util.reset_locale()
     util.anotate_async(response)
     util.anotate_secure(response)
     return response
 
+
 def context_processor():
     return dict(
-        acl = acl.check_login,
-        conf = config.conf,
-        locale = util.to_locale,
-        nl_to_br = util.nl_to_br,
-        sp_to_nbsp = util.sp_to_nbsp,
-        date_time = util.date_time,
-        time = time,
-        datetime = datetime,
-        zip = zip
+        acl=acl.check_login,
+        conf=config.conf,
+        locale=util.to_locale,
+        nl_to_br=util.nl_to_br,
+        sp_to_nbsp=util.sp_to_nbsp,
+        date_time=util.date_time,
+        time=time,
+        datetime=datetime,
+        zip=zip,
     )
+
 
 def start_execution():
     # creates the thread that it's going to be used to
@@ -892,6 +949,7 @@ def start_execution():
     background_t = execution.background_t
     background_t.start()
 
+
 @atexit.register
 def stop_execution():
     # stop the execution thread so that it's possible to
@@ -899,21 +957,27 @@ def stop_execution():
     background_t = execution.background_t
     background_t and background_t.stop()
 
+
 def setup_models(models):
-    _models_c = models_c(models = models)
-    for model_c in _models_c: model_c.setup()
+    _models_c = models_c(models=models)
+    for model_c in _models_c:
+        model_c.setup()
+
 
 def teardown_models(models):
-    _models_c = models_c(models = models)
-    for model_c in _models_c: model_c.teardown()
+    _models_c = models_c(models=models)
+    for model_c in _models_c:
+        model_c.teardown()
 
-def models_c(models = None):
+
+def models_c(models=None):
     # retrieves the proper models defaulting to the current
     # application models in case they are not defined, note
     # that in case the model is not defined an empty list is
     # going to be returned (fallback process)
     models = models or APP.models
-    if not models: return []
+    if not models:
+        return []
 
     # creates the list that will hold the various model
     # class discovered through module analysis
@@ -926,9 +990,12 @@ def models_c(models = None):
         # verifies if the current value in iteration inherits
         # from the top level model in case it does not continues
         # the loop as there's nothing to be done
-        try: is_valid = issubclass(value, model.Model)
-        except Exception: is_valid = False
-        if not is_valid: continue
+        try:
+            is_valid = issubclass(value, model.Model)
+        except Exception:
+            is_valid = False
+        if not is_valid:
+            continue
 
         # adds the current value in iteration as a new class
         # to the list that hold the various model classes
@@ -938,7 +1005,8 @@ def models_c(models = None):
     # to the caller method as expected by definition
     return models_c
 
-def resolve(identifier = "_id", counters = True):
+
+def resolve(identifier="_id", counters=True):
     # creates the list that will hold the definition of the current
     # model classes with a sequence of name and identifier values
     entities = []
@@ -956,23 +1024,29 @@ def resolve(identifier = "_id", counters = True):
 
     # in case the counters flag is defined the counters tuple containing
     # the counters table name and identifier is added to the entities list
-    if counters: entities.append(("counters", identifier))
+    if counters:
+        entities.append(("counters", identifier))
 
     # returns the resolution list to the caller method as requested
     # by the call to this method
     return entities
 
+
 def templates_path():
     return os.path.join(APP.root_path, APP.template_folder)
+
 
 def bundles_path():
     return os.path.join(APP.root_path, "bundles")
 
+
 def base_path(*args, **kwargs):
     return os.path.join(APP.root_path, *args)
 
+
 def has_context():
     return flask.has_app_context()
+
 
 def ensure_context(function):
     """
@@ -1004,11 +1078,14 @@ def ensure_context(function):
 
     return interceptor
 
+
 def onrun(function):
     fname = function.__name__
-    if fname in RUN_F: return
+    if fname in RUN_F:
+        return
     RUN_F[fname] = function
     return function
+
 
 def _level(level):
     """
@@ -1029,21 +1106,28 @@ def _level(level):
     """
 
     level_t = type(level)
-    if level_t == int: return level
-    if level == None: return level
-    if level == "SILENT": return log.SILENT
+    if level_t == int:
+        return level
+    if level == None:
+        return level
+    if level == "SILENT":
+        return log.SILENT
     if hasattr(logging, "_checkLevel"):
         return logging._checkLevel(level)
     return logging.getLevelName(level)
 
-def _best_locale(locale, app = None):
-    if not locale: return locale
+
+def _best_locale(locale, app=None):
+    if not locale:
+        return locale
     app = app or APP
     for _locale in app.locales:
         is_valid = _locale.startswith(locale)
-        if not is_valid: continue
+        if not is_valid:
+            continue
         return _locale
     return locale
+
 
 # runs the monkey patching of the flask module so that it
 # may be used according to the quorum specification, this

@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -54,22 +45,23 @@ from . import common
 from . import legacy
 from . import execution
 
+
 def send_mail(
-    app = None,
-    subject = "",
-    sender = None,
-    receivers = [],
-    data = None,
-    plain = None,
-    rich = None,
-    context = {},
-    encoding = "utf-8",
-    host = None,
-    port = None,
-    username = None,
-    password = None,
-    stls = False,
-    safe = True
+    app=None,
+    subject="",
+    sender=None,
+    receivers=[],
+    data=None,
+    plain=None,
+    rich=None,
+    context={},
+    encoding="utf-8",
+    host=None,
+    port=None,
+    username=None,
+    password=None,
+    stls=False,
+    safe=True,
 ):
     """
     Sends an email message using the provided :rst:dir:`SMTP_HOST`,
@@ -156,30 +148,32 @@ def send_mail(
     url = config.conf("SMTP_URL", None)
     url_p = legacy.urlparse(url) if url else None
     if url_p:
-        host_p, port_p, user_p, password_p, stls_p =\
-        url_p.hostname,\
-        url_p.port,\
-        url_p.username,\
-        url_p.password,\
-        url_p.scheme == "smtps"
+        host_p, port_p, user_p, password_p, stls_p = (
+            url_p.hostname,
+            url_p.port,
+            url_p.username,
+            url_p.password,
+            url_p.scheme == "smtps",
+        )
     else:
-        host_p, port_p, user_p, password_p, stls_p =\
-        None, None, None, None, None
+        host_p, port_p, user_p, password_p, stls_p = None, None, None, None, None
 
     # runs the defaulting operation for host and port definition
     # that haven't been set (should follow SMTP defaults)
-    if host_p == None: host_p = "localhost"
-    if port_p == None: port_p = 25
+    if host_p == None:
+        host_p = "localhost"
+    if port_p == None:
+        port_p = 25
 
     # tries to retrieve the various configuration values that are going
     # to be used for the establishment of the SMTP connection, taking
     # into account both the provided parameters and the configuration
     # variables currently defined for the environment
     host = host or config.conf("SMTP_HOST", host_p)
-    port = port or config.conf("SMTP_PORT", port_p, cast = int)
+    port = port or config.conf("SMTP_PORT", port_p, cast=int)
     username = username or config.conf("SMTP_USER", user_p)
     password = password or config.conf("SMTP_PASSWORD", password_p)
-    stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = bool)
+    stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast=bool)
 
     # sets the sender with the SMTP user value in case no values
     # has been provided (expected behavior)
@@ -198,8 +192,10 @@ def send_mail(
     # verifies the existence of data (both plain and HTML) and in
     # there's data it should be encoded using the currently provided
     # one so that the raw data is used instead of the unicode one
-    if plain_data: plain_data = plain_data.encode(encoding)
-    if html_data: html_data = html_data.encode(encoding)
+    if plain_data:
+        plain_data = plain_data.encode(encoding)
+    if html_data:
+        html_data = html_data.encode(encoding)
 
     # creates the mime's multipart object with the appropriate header
     # values set and in the alternative model (for HTML compatibility)
@@ -211,8 +207,8 @@ def send_mail(
     # creates both the plain text and the rich text (HTML) objects
     # from the provided data and then attached them to the message
     # (multipart alternative) that is the base structure
-    plain = plain_data and _plain(plain_data, encoding = encoding)
-    html = html_data and _html(html_data, encoding = encoding)
+    plain = plain_data and _plain(plain_data, encoding=encoding)
+    html = html_data and _html(html_data, encoding=encoding)
     plain and message.attach(plain)
     html and message.attach(html)
 
@@ -226,13 +222,15 @@ def send_mail(
 
     # creates the connection with the SMTP server and starts the tls
     # connection to send the created email message
-    server = smtplib.SMTP(host, port = port)
+    server = smtplib.SMTP(host, port=port)
     try:
-        if stls: server.starttls()
+        if stls:
+            server.starttls()
         server.login(username, password)
         server.sendmail(sender, receivers, contents)
     finally:
         server.quit()
+
 
 def send_mail_a(*args, **kwargs):
     """
@@ -249,26 +247,34 @@ def send_mail_a(*args, **kwargs):
 
     execution.insert_work(send_mail, args, kwargs)
 
+
 def _multipart():
     return email.mime.multipart.MIMEMultipart("alternative")
 
-def _plain(contents, encoding = "utf-8"):
+
+def _plain(contents, encoding="utf-8"):
     return email.mime.text.MIMEText(contents, "plain", encoding)
 
-def _html(contents, encoding = "utf-8"):
+
+def _html(contents, encoding="utf-8"):
     return email.mime.text.MIMEText(contents, "html", encoding)
 
-def _format(address, encoding = "utf-8"):
+
+def _format(address, encoding="utf-8"):
     address_name, address_email = email.utils.parseaddr(address)
-    if legacy.is_bytes(address_name): address_name = address_name.decode(encoding)
-    address_name = email.header.Header(address_name, charset = encoding)
+    if legacy.is_bytes(address_name):
+        address_name = address_name.decode(encoding)
+    address_name = email.header.Header(address_name, charset=encoding)
     address_name = address_name.encode()
     address_email = str(address_email)
     return "%s <%s>" % (address_name, address_email)
 
+
 def _try_resolve(template_name):
-    if not template_name: return template_name
-    if not template_name.startswith(("http://", "https://")): return template_name
+    if not template_name:
+        return template_name
+    if not template_name.startswith(("http://", "https://")):
+        return template_name
     contents = httpc.get(template_name)
     base_name = os.path.basename(template_name)
     base_split = base_name.split(".", 1)
@@ -278,9 +284,12 @@ def _try_resolve(template_name):
     if not os.path.exists(common.base().templates_path()):
         os.makedirs(common.base().templates_path())
     file = open(file_path, "wb")
-    try: file.write(contents)
-    finally: file.close()
+    try:
+        file.write(contents)
+    finally:
+        file.close()
     return file_name
+
 
 def _render(app, template_name, **context):
     template = app.jinja_env.get_or_select_template(template_name)

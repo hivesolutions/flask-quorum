@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -42,6 +33,7 @@ import flask
 import functools
 
 from . import exceptions
+
 
 def errors_json(function):
 
@@ -55,27 +47,23 @@ def errors_json(function):
                 invalid_m[name] = _errors[0]
 
             return flask.Response(
-                json.dumps({
-                    "error" : error.message,
-                    "invalid" : invalid_m,
-                    "exception" : {
-                        "message" : error.message,
-                        "errors" : error.errors
+                json.dumps(
+                    {
+                        "error": error.message,
+                        "invalid": invalid_m,
+                        "exception": {"message": error.message, "errors": error.errors},
                     }
-                }),
-                status = error.code,
-                mimetype = "application/json"
+                ),
+                status=error.code,
+                mimetype="application/json",
             )
         except exceptions.OperationalError as error:
             return flask.Response(
-                json.dumps({
-                    "error" : error.message,
-                    "exception" : {
-                        "message" : error.message
-                    }
-                }),
-                status = error.code,
-                mimetype = "application/json"
+                json.dumps(
+                    {"error": error.message, "exception": {"message": error.message}}
+                ),
+                status=error.code,
+                mimetype="application/json",
             )
 
     return interceptor

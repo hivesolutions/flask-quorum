@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,14 +32,12 @@ import flask
 
 import quorum
 
+
 class ACLTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            self.app = quorum.load(
-                name = __name__,
-                secret_key = "secret"
-            )
+            self.app = quorum.load(name=__name__, secret_key="secret")
             self.app.config["APPLICATION_ROOT"] = "/"
         except Exception:
             self.skip()
@@ -62,135 +51,94 @@ class ACLTest(quorum.TestCase):
             client.get("/")
 
             flask.session["tokens"] = ["*"]
-            result = quorum.check_login(token = "admin")
+            result = quorum.check_login(token="admin")
             self.assertEqual(result, True)
-            self.assertEqual(flask.session["tokens"], {"*" : True})
+            self.assertEqual(flask.session["tokens"], {"*": True})
 
             flask.session["tokens"] = []
-            result = quorum.check_login(token = "admin")
+            result = quorum.check_login(token="admin")
             self.assertEqual(result, False)
             self.assertEqual(flask.session["tokens"], {})
 
             flask.session["tokens"] = ["admin"]
-            result = quorum.check_login(token = "admin")
+            result = quorum.check_login(token="admin")
             self.assertEqual(result, True)
-            self.assertEqual(flask.session["tokens"], {"admin" : True})
+            self.assertEqual(flask.session["tokens"], {"admin": True})
 
             flask.session["tokens"] = ["admin.read"]
-            result = quorum.check_login(token = "admin")
+            result = quorum.check_login(token="admin")
             self.assertEqual(result, False)
-            result = quorum.check_login(token = "admin.read")
+            result = quorum.check_login(token="admin.read")
             self.assertEqual(result, True)
-            self.assertEqual(flask.session["tokens"], {
-                "admin" : {
-                    "read" : True
-                }
-            })
+            self.assertEqual(flask.session["tokens"], {"admin": {"read": True}})
 
             flask.session["tokens"] = ["admin.*"]
-            result = quorum.check_login(token = "admin.read")
+            result = quorum.check_login(token="admin.read")
             self.assertEqual(result, True)
-            self.assertEqual(flask.session["tokens"], {
-                "admin" : {
-                    "*" : True
-                }
-            })
+            self.assertEqual(flask.session["tokens"], {"admin": {"*": True}})
 
             flask.session["tokens"] = ["admin", "admin.write"]
-            result = quorum.check_login(token = "admin.read")
+            result = quorum.check_login(token="admin.read")
             self.assertEqual(result, False)
-            self.assertEqual(flask.session["tokens"], {
-                "admin" : {
-                    "_" : True,
-                    "write" : True
-                }
-            })
+            self.assertEqual(
+                flask.session["tokens"], {"admin": {"_": True, "write": True}}
+            )
 
             flask.session["tokens"] = ["admin.write", "admin.*"]
-            result = quorum.check_login(token = "admin.read")
+            result = quorum.check_login(token="admin.read")
             self.assertEqual(result, True)
-            self.assertEqual(flask.session["tokens"], {
-                "admin" : {
-                    "write" : True,
-                    "*" : True
-                }
-            })
+            self.assertEqual(
+                flask.session["tokens"], {"admin": {"write": True, "*": True}}
+            )
 
             del flask.session["tokens"]
-            result = quorum.check_login(token = "admin.read")
+            result = quorum.check_login(token="admin.read")
             self.assertEqual(result, False)
             self.assertEqual("tokens" in flask.session, False)
 
     @quorum.secured
     def test_check_tokens(self):
-        result = quorum.check_tokens(("admin", "user"), tokens_m = {"*" : True})
+        result = quorum.check_tokens(("admin", "user"), tokens_m={"*": True})
         self.assertEqual(result, True)
 
-        result = quorum.check_tokens(("admin", "user"), tokens_m = {})
+        result = quorum.check_tokens(("admin", "user"), tokens_m={})
         self.assertEqual(result, False)
 
-        result = quorum.check_tokens(("admin", "user"), tokens_m = {"admin" : True})
+        result = quorum.check_tokens(("admin", "user"), tokens_m={"admin": True})
         self.assertEqual(result, False)
 
     @quorum.secured
     def test_check_token(self):
-        result = quorum.check_token("admin", tokens_m = {"*" : True})
+        result = quorum.check_token("admin", tokens_m={"*": True})
         self.assertEqual(result, True)
 
-        result = quorum.check_token("admin", tokens_m = {})
+        result = quorum.check_token("admin", tokens_m={})
         self.assertEqual(result, False)
 
-        result = quorum.check_token("admin", tokens_m = {"admin" : True})
+        result = quorum.check_token("admin", tokens_m={"admin": True})
         self.assertEqual(result, True)
 
-        result = quorum.check_token("admin.read", tokens_m = {
-            "admin" : {
-                "read" : True
-            }
-        })
+        result = quorum.check_token("admin.read", tokens_m={"admin": {"read": True}})
         self.assertEqual(result, True)
 
-        result = quorum.check_token("admin", tokens_m = {
-            "admin" : {
-                "read" : True
-            }
-        })
+        result = quorum.check_token("admin", tokens_m={"admin": {"read": True}})
         self.assertEqual(result, False)
 
-        result = quorum.check_token("admin.read", tokens_m = {
-            "admin" : {
-                "*" : True
-            }
-        })
+        result = quorum.check_token("admin.read", tokens_m={"admin": {"*": True}})
         self.assertEqual(result, True)
 
-        result = quorum.check_token(None, tokens_m = {})
+        result = quorum.check_token(None, tokens_m={})
         self.assertEqual(result, True)
 
     def test_to_tokens_m(self):
         result = quorum.to_tokens_m(["admin"])
-        self.assertEqual(result, {"admin" : True})
+        self.assertEqual(result, {"admin": True})
 
         result = quorum.to_tokens_m(["admin", "admin.read"])
-        self.assertEqual(result, {
-            "admin" : {
-                "_" : True,
-                "read" : True
-            }
-        })
+        self.assertEqual(result, {"admin": {"_": True, "read": True}})
 
         result = quorum.to_tokens_m(["admin.read", "admin"])
-        self.assertEqual(result, {
-            "admin" : {
-                "_" : True,
-                "read" : True
-            }
-        })
+        self.assertEqual(result, {"admin": {"_": True, "read": True}})
 
         result = quorum.to_tokens_m(["admin", "admin.*"])
-        self.assertEqual(result, {
-            "admin" : {
-                "_" : True,
-                "*" : True
-            }
-        })
+        self.assertEqual(result, {"admin": {"_": True, "*": True}})

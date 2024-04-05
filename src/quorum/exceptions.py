@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,6 +32,7 @@ import uuid
 
 from . import common
 from . import legacy
+
 
 class BaseError(RuntimeError):
     """
@@ -66,18 +58,23 @@ class BaseError(RuntimeError):
 
     @property
     def uid(self):
-        if self._uid: return self._uid
+        if self._uid:
+            return self._uid
         self._uid = uuid.uuid4()
         return self._uid
 
     def set_meta(self, name, value):
-        if not self.meta: self.meta = {}
+        if not self.meta:
+            self.meta = {}
         self.meta[name] = value
 
     def del_meta(self, name):
-        if not self.meta: return
-        if not name in self.meta: return
+        if not self.meta:
+            return
+        if not name in self.meta:
+            return
         del self.meta[name]
+
 
 class ServerInitError(BaseError):
     """
@@ -90,9 +87,10 @@ class ServerInitError(BaseError):
     """ The name (description) of the server that raised
     the initialization problem """
 
-    def __init__(self, message, server = None):
+    def __init__(self, message, server=None):
         BaseError.__init__(self, message)
         self.server = server
+
 
 class ModuleNotFound(BaseError):
     """
@@ -109,6 +107,7 @@ class ModuleNotFound(BaseError):
         BaseError.__init__(self, "Failed to load '%s' module" % name)
         self.name = name
 
+
 class OperationalError(BaseError):
     """
     The operational error class that should represent any
@@ -119,9 +118,10 @@ class OperationalError(BaseError):
     """ The code to be used in the consequent serialization
     of the error in an HTTP response """
 
-    def __init__(self, message, code = 500):
+    def __init__(self, message, code=500):
         BaseError.__init__(self, message)
         self.code = code
+
 
 class AssertionError(OperationalError):
     """
@@ -131,6 +131,7 @@ class AssertionError(OperationalError):
 
     pass
 
+
 class NotFoundError(OperationalError):
     """
     Error originated from an operation that was not able
@@ -138,8 +139,9 @@ class NotFoundError(OperationalError):
     requested entity/value as defined by specification.
     """
 
-    def __init__(self, message, code = 404):
-        OperationalError.__init__(self, message, code = code)
+    def __init__(self, message, code=404):
+        OperationalError.__init__(self, message, code=code)
+
 
 class ValidationError(OperationalError):
     """
@@ -162,20 +164,25 @@ class ValidationError(OperationalError):
         self.model = model
         self.set_meta("errors", self.errors)
 
-    def errors_s(self, encoding = "utf-8"):
-        if not self.errors: return ""
+    def errors_s(self, encoding="utf-8"):
+        if not self.errors:
+            return ""
         buffer = []
         is_first = True
         for name, errors in legacy.iteritems(self.errors):
             for error in errors:
                 is_bytes = legacy.is_bytes(error)
-                if is_bytes: error = error.decode(encoding)
-                if is_first: is_first = False
-                else: buffer.append(", ")
+                if is_bytes:
+                    error = error.decode(encoding)
+                if is_first:
+                    is_first = False
+                else:
+                    buffer.append(", ")
                 buffer.append(name)
                 buffer.append(" => ")
                 buffer.append(error)
         return legacy.u("").join(buffer)
+
 
 class NotImplementedError(OperationalError):
     """
@@ -184,8 +191,9 @@ class NotImplementedError(OperationalError):
     defined abstraction level.
     """
 
-    def __init__(self, message, code = 501):
-        OperationalError.__init__(self, message, code = code)
+    def __init__(self, message, code=501):
+        OperationalError.__init__(self, message, code=code)
+
 
 class BaseInternalError(RuntimeError):
     """
@@ -208,18 +216,23 @@ class BaseInternalError(RuntimeError):
         self.message = message
         self.meta = None
 
-    def get_meta(self, name, default = None):
-        if not self.meta: return default
+    def get_meta(self, name, default=None):
+        if not self.meta:
+            return default
         return self.meta.get(name, default)
 
     def set_meta(self, name, value):
-        if not self.meta: self.meta = {}
+        if not self.meta:
+            self.meta = {}
         self.meta[name] = value
 
     def del_meta(self, name):
-        if not self.meta: return
-        if not name in self.meta: return
+        if not self.meta:
+            return
+        if not name in self.meta:
+            return
         del self.meta[name]
+
 
 class ValidationInternalError(BaseInternalError):
     """
@@ -236,6 +249,7 @@ class ValidationInternalError(BaseInternalError):
         BaseInternalError.__init__(self, message)
         self.name = name
 
+
 class ValidationMultipleError(ValidationInternalError):
     """
     Exception/error considered to be equivalent to the
@@ -247,18 +261,21 @@ class ValidationMultipleError(ValidationInternalError):
     """ The sequence containing the multiple errors associated
     with the validation multiple error """
 
-    def __init__(self, name = None, message = None):
+    def __init__(self, name=None, message=None):
         ValidationInternalError.__init__(self, name, message)
         self.errors = []
         self.set_meta("errors", self.errors)
 
     def add_error(self, name, message):
-        if not self.name: self.name = name
-        if not self.message: self.message = message
+        if not self.name:
+            self.name = name
+        if not self.message:
+            self.message = message
         self.errors.append((name, message))
 
     def add_exception(self, exception):
         self.add_error(exception.name, exception.message)
+
 
 class HTTPError(BaseError):
     """
@@ -269,6 +286,7 @@ class HTTPError(BaseError):
 
     def __init__(self, message):
         BaseError.__init__(self, message)
+
 
 class HTTPDataError(HTTPError):
     """
@@ -289,18 +307,24 @@ class HTTPDataError(HTTPError):
     going to be used to cache the binary contents of the
     error associated with this exception (data) stream """
 
-    def __init__(self, error, code = None, message = None, extended = None):
+    def __init__(self, error, code=None, message=None, extended=None):
         message = message or "Problem in the HTTP request"
-        if extended == None: extended = common.base().is_devel()
-        if code: message = "[%d] %s" % (code, message)
+        if extended == None:
+            extended = common.base().is_devel()
+        if code:
+            message = "[%d] %s" % (code, message)
         if extended:
-            data = self.read(error = error)
-            try: data = data.decode("utf-8")
-            except Exception: data = legacy.str(data)
-            if data: message = message + "\n" + data if message else data
+            data = self.read(error=error)
+            try:
+                data = data.decode("utf-8")
+            except Exception:
+                data = legacy.str(data)
+            if data:
+                message = message + "\n" + data if message else data
         HTTPError.__init__(self, message)
         self.code = code
         self.error = error
+
 
 class JSONError(HTTPError):
     """
@@ -318,7 +342,8 @@ class JSONError(HTTPError):
 
     def __str__(self):
         exception_s = HTTPError.__str__(self)
-        if not self.data: exception_s
+        if not self.data:
+            exception_s
         exception = self.data.get("exception", {})
         return exception.get("message", exception_s)
 

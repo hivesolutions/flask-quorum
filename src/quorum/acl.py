@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -48,48 +39,63 @@ SEQUENCE_TYPES = (list, tuple)
 python that are considered to be representing a
 logical sequence """
 
+
 def check_basic_auth(username, password):
     authorization = flask.request.authorization
-    if not authorization: return False
-    if not authorization.username == username: return False
-    if not authorization.password == password: return False
+    if not authorization:
+        return False
+    if not authorization.username == username:
+        return False
+    if not authorization.password == password:
+        return False
     return True
 
-def check_login(token = None):
+
+def check_login(token=None):
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
-    if isinstance(token, SEQUENCE_TYPES): tokens = token
-    else: tokens = (token,)
+    if isinstance(token, SEQUENCE_TYPES):
+        tokens = token
+    else:
+        tokens = (token,)
 
     # in case the username value is set in session and there's
     # no token to be validated returns valid and in case the checking
     # of the complete set of tokens is valid also returns valid
-    if check_user() and not token: return True
-    if check_tokens(tokens): return True
+    if check_user() and not token:
+        return True
+    if check_tokens(tokens):
+        return True
 
     # returns the default value as invalid because if all the
     # validation procedures have failed the check is invalid
     return False
 
+
 def check_user():
     # runs the multiple verification strategies available an
     # in case at least one of them succeeds the user is considered
     # to be currently authenticated
-    if "username" in flask.session: return True
-    if hasattr(flask, "tokens_p"): return True
+    if "username" in flask.session:
+        return True
+    if hasattr(flask, "tokens_p"):
+        return True
 
     # by default the user is considered to be not authenticated, all
     # of the tests for authentication have failed
     return False
 
-def check_token(token, tokens_m = None):
+
+def check_token(token, tokens_m=None):
     # in case the provided token is invalid or empty the method
     # return immediately in success (simple validation)
-    if not token: return True
+    if not token:
+        return True
 
     # tries to retrieve the tokens map from the provided argument
     # defaulting to the session one in case none is provided
-    if tokens_m == None: tokens_m = get_tokens_m()
+    if tokens_m == None:
+        tokens_m = get_tokens_m()
 
     # splits the provided token string into its parts, note that
     # a namespace is defined around the dot character
@@ -99,9 +105,12 @@ def check_token(token, tokens_m = None):
     # of parts to validate the complete chain of values against
     # the map of token parts (namespace validation)
     for token_p in token_l:
-        if not isinstance(tokens_m, dict): return False
-        if "*" in tokens_m and tokens_m["*"] == True: return True
-        if not token_p in tokens_m: return False
+        if not isinstance(tokens_m, dict):
+            return False
+        if "*" in tokens_m and tokens_m["*"] == True:
+            return True
+        if not token_p in tokens_m:
+            return False
         tokens_m = tokens_m[token_p]
 
     # determines if the final tokens map value is a dictionary
@@ -113,73 +122,75 @@ def check_token(token, tokens_m = None):
     # the final validation result accordingly
     return True if result == True else False
 
-def check_tokens(tokens, tokens_m = None):
+
+def check_tokens(tokens, tokens_m=None):
     # iterates over the complete set of tokens that are going
     # to be validated against the current context and if any of
     # them fails an invalid result is returned otherwise a valid
     # result is returned (indicating that all is valid)
     for token in tokens:
-        if not check_token(token, tokens_m = tokens_m): return False
+        if not check_token(token, tokens_m=tokens_m):
+            return False
     return True
 
-def ensure_basic_auth(username, password, json_s = False):
+
+def ensure_basic_auth(username, password, json_s=False):
     check = check_basic_auth(username, password)
-    if check: return
+    if check:
+        return
 
     log.info("Unauthorized for operation")
 
-    if json_s: return flask.Response(
-            json.dumps({
-                "exception" : {
-                    "message" : "Unauthorized for operation"
-                }
-            }),
-            status = 401,
-            mimetype = "application/json"
+    if json_s:
+        return flask.Response(
+            json.dumps({"exception": {"message": "Unauthorized for operation"}}),
+            status=401,
+            mimetype="application/json",
         )
     else:
         return flask.redirect(
             flask.url_for(
-                "login",
-                next = flask.request.path,
-                error = "Session expired or invalid"
+                "login", next=flask.request.path, error="Session expired or invalid"
             )
         )
 
-def ensure_login(token = None, json_s = False):
-    if check_login(token = token): return None
+
+def ensure_login(token=None, json_s=False):
+    if check_login(token=token):
+        return None
 
     log.info("Not enough permissions for operation")
 
     if json_s:
         return flask.Response(
-            json.dumps({
-                "exception" : {
-                    "message" : "Not enough permissions for operation"
-                }
-            }),
-            status = 403,
-            mimetype = "application/json"
+            json.dumps(
+                {"exception": {"message": "Not enough permissions for operation"}}
+            ),
+            status=403,
+            mimetype="application/json",
         )
     else:
         return flask.redirect(
             flask.url_for(
-                "login",
-                next = flask.request.path,
-                error = "Session expired or invalid"
+                "login", next=flask.request.path, error="Session expired or invalid"
             )
         )
 
+
 def ensure_user(username):
     _username = flask.session.get("username", None)
-    if not _username == None and username == _username: return
+    if not _username == None and username == _username:
+        return
     raise RuntimeError("Permission denied")
+
 
 def ensure_session(object):
-    if object.get("sesion_id", None) == flask.session.get("session_id", None): return
+    if object.get("sesion_id", None) == flask.session.get("session_id", None):
+        return
     raise RuntimeError("Permission denied")
 
-def ensure(token = None, json = False):
+
+def ensure(token=None, json=False):
     """
     Decorator that provides support for verifying the current
     session login and permission (token oriented).
@@ -209,14 +220,16 @@ def ensure(token = None, json = False):
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             ensure = ensure_login(token, json)
-            if ensure: return ensure
+            if ensure:
+                return ensure
             return function(*args, **kwargs)
 
         return interceptor
 
     return decorator
 
-def ensure_auth(username, password, json = False):
+
+def ensure_auth(username, password, json=False):
     """
     Decorator that provides support for verifying the current
     request basic authentication information for the provided
@@ -244,14 +257,16 @@ def ensure_auth(username, password, json = False):
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             ensure = ensure_basic_auth(username, password, json)
-            if ensure: return ensure
+            if ensure:
+                return ensure
             return function(*args, **kwargs)
 
         return interceptor
 
     return decorator
 
-def get_tokens_m(set = True):
+
+def get_tokens_m(set=True):
     """
     Retrieves the map of tokens from the current session so that
     they can be used for proper ACL validation.
@@ -278,8 +293,10 @@ def get_tokens_m(set = True):
     # current request an in case it's not available used the default
     # one (simple session access)
     try:
-        if hasattr(flask, "tokens_p"): tokens_m = flask.tokens_p()
-        else: tokens_m = flask.session.get("tokens", {})
+        if hasattr(flask, "tokens_p"):
+            tokens_m = flask.tokens_p()
+        else:
+            tokens_m = flask.session.get("tokens", {})
     except Exception:
         return dict()
 
@@ -290,7 +307,8 @@ def get_tokens_m(set = True):
 
     # if the tokens value is already a map then an immediate return
     # is going to be performed (it is a valid tokens map)
-    if is_map: return tokens_m
+    if is_map:
+        return tokens_m
 
     # in case the value present in the tokens value is a sequence
     # it must be properly converted into the equivalent map value
@@ -302,13 +320,15 @@ def get_tokens_m(set = True):
         # in case the set flag is set the tokens map should
         # be set in the request session (may be dangerous)
         # and then returns the tokens map to the caller method
-        if set: flask.session["tokens"] = tokens_m
+        if set:
+            flask.session["tokens"] = tokens_m
         return tokens_m
 
     # returns the "default" empty tokens map as it was not possible
     # to retrieve any information regarding tokens from the
     # current context and environment
     return dict()
+
 
 def to_tokens_m(tokens):
     # creates a new map to be used to store tokens map that is
@@ -326,13 +346,16 @@ def to_tokens_m(tokens):
         for token_p in head:
             current = tokens_c.get(token_p, {})
             is_dict = isinstance(current, dict)
-            if not is_dict: current = {"_" : current}
+            if not is_dict:
+                current = {"_": current}
             tokens_c[token_p] = current
             tokens_c = current
 
         leaf = tokens_c.get(tail, None)
-        if leaf and isinstance(leaf, dict): leaf["_"] = True
-        else: tokens_c[tail] = True
+        if leaf and isinstance(leaf, dict):
+            leaf["_"] = True
+        else:
+            tokens_c[tail] = True
 
     # returns the final map version of the token to the caller
     # method so that it may be used for structure verification

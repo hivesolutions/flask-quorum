@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,8 +32,10 @@ from . import util
 from . import legacy
 from . import exceptions
 
-try: import pika
-except ImportError: pika = None
+try:
+    import pika
+except ImportError:
+    pika = None
 
 TIMEOUT = 100
 """ The time the retrieval of a connection waits before
@@ -57,23 +50,28 @@ url = "amqp://guest:guest@localhost"
 """ The global variable containing the URL to be used
 for the connection with the service """
 
-def get_connection(force = False, timeout = TIMEOUT):
+
+def get_connection(force=False, timeout=TIMEOUT):
     global connection
-    if pika == None: raise exceptions.ModuleNotFound("pika")
-    if not force and connection: return connection
+    if pika == None:
+        raise exceptions.ModuleNotFound("pika")
+    if not force and connection:
+        return connection
     url_p = legacy.urlparse(url)
     parameters = _pika().ConnectionParameters(
-        host = url_p.hostname,
-        virtual_host = url_p.path or "/",
-        credentials = _pika().PlainCredentials(url_p.username, url_p.password)
+        host=url_p.hostname,
+        virtual_host=url_p.path or "/",
+        credentials=_pika().PlainCredentials(url_p.username, url_p.password),
     )
     parameters.socket_timeout = timeout
     connection = _pika().BlockingConnection(parameters)
     connection = _set_fixes(connection)
     return connection
 
+
 def properties(*args, **kwargs):
     return _pika().BasicProperties(*args, **kwargs)
+
 
 def _set_fixes(connection):
     def disconnect():
@@ -83,10 +81,12 @@ def _set_fixes(connection):
         connection.disconnect = disconnect
     return connection
 
-def _pika(verify = True):
-    if verify: util.verify(
-        not pika == None,
-        message = "Pika library not available",
-        exception = exceptions.OperationalError
-    )
+
+def _pika(verify=True):
+    if verify:
+        util.verify(
+            not pika == None,
+            message="Pika library not available",
+            exception=exceptions.OperationalError,
+        )
     return pika

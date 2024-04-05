@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -48,12 +39,14 @@ from . import legacy
 from . import mongodb
 from . import exceptions
 
+
 def route(*args, **kwargs):
     # verifies if the request decorator should be of type
     # JSON serializer in case it should not returns the old
     # route decorator (default behavior)
     is_json = kwargs.get("json", False)
-    if not is_json: return common.base().APP.old_route(*args, **kwargs)
+    if not is_json:
+        return common.base().APP.old_route(*args, **kwargs)
 
     # removes the JSON keyword argument from the list of arguments
     # (to avoid errors) and then calls the old route method to obtain
@@ -66,7 +59,8 @@ def route(*args, **kwargs):
     # serializes all the unhandled exceptions as JSON
     def _route(function):
         def _decorator(*args, **kwargs):
-            try: result = function(*args, **kwargs)
+            try:
+                result = function(*args, **kwargs)
             except exceptions.OperationalError as exception:
                 # runs the default handling of the user exception in the flask
                 # infra-structure so that the proper exception callbacks are called
@@ -77,8 +71,9 @@ def route(*args, **kwargs):
                 # that is being handled, note that the traceback is also logger, allowing
                 # further debugging information to be printed (extra traceability)
                 log.info(
-                    "Operational problem while routing request - %s" % legacy.UNICODE(exception),
-                    log_trace = True
+                    "Operational problem while routing request - %s"
+                    % legacy.UNICODE(exception),
+                    log_trace=True,
                 )
 
                 # retrieves the formatted version of the traceback information and then
@@ -90,16 +85,18 @@ def route(*args, **kwargs):
                 # this is going to include the proper exception message, code and also the set
                 # of lines that compose the traceback of the exception
                 return flask.Response(
-                    json.dumps({
-                        "exception" : {
-                            "name" : exception.__class__.__name__,
-                            "message" : exception.message,
-                            "code" : exception.code,
-                            "traceback" : lines
+                    json.dumps(
+                        {
+                            "exception": {
+                                "name": exception.__class__.__name__,
+                                "message": exception.message,
+                                "code": exception.code,
+                                "traceback": lines,
+                            }
                         }
-                    }),
-                    status = exception.code,
-                    mimetype = "application/json"
+                    ),
+                    status=exception.code,
+                    mimetype="application/json",
                 )
             except Exception as exception:
                 # runs the default handling of the user exception in the flask
@@ -112,7 +109,7 @@ def route(*args, **kwargs):
                 # further debugging information to be printed (extra traceability)
                 log.warning(
                     "Problem while routing request - %s" % legacy.UNICODE(exception),
-                    log_trace = True
+                    log_trace=True,
                 )
 
                 # retrieves the formatted version of the traceback information and then
@@ -124,16 +121,18 @@ def route(*args, **kwargs):
                 # that an undefined exception has just been raised, note that the error code
                 # is the internal server error one (undefined exception)
                 return flask.Response(
-                    json.dumps({
-                        "exception" : {
-                            "name" : exception.__class__.__name__,
-                            "message" : str(exception),
-                            "code" : 500,
-                            "traceback" : lines
+                    json.dumps(
+                        {
+                            "exception": {
+                                "name": exception.__class__.__name__,
+                                "message": str(exception),
+                                "code": 500,
+                                "traceback": lines,
+                            }
                         }
-                    }),
-                    status = 500,
-                    mimetype = "application/json"
+                    ),
+                    status=500,
+                    mimetype="application/json",
                 )
 
             # retrieves the type for the result that was returned from the
@@ -142,20 +141,11 @@ def route(*args, **kwargs):
             # the result to the caller method
             result_t = type(result)
             if isinstance(result, model.Model):
-                result = flask.Response(
-                    json.dumps(result),
-                    mimetype = "application/json"
-                )
+                result = flask.Response(json.dumps(result), mimetype="application/json")
             elif mongodb.is_mongo(result):
-                result = flask.Response(
-                    json.dumps(result),
-                    mimetype = "application/json"
-                )
+                result = flask.Response(json.dumps(result), mimetype="application/json")
             elif result_t in (dict, list, tuple, type(None)):
-                result = flask.Response(
-                    json.dumps(result),
-                    mimetype = "application/json"
-                )
+                result = flask.Response(json.dumps(result), mimetype="application/json")
             return result
 
         # verifies if the base value is set in the function for such
@@ -163,8 +153,10 @@ def route(*args, **kwargs):
         # as the already existing base decorator method otherwise keeps
         # using the clojure based one
         has_base = hasattr(function, "_base")
-        if has_base: _base = function._base
-        else: _base = _decorator
+        if has_base:
+            _base = function._base
+        else:
+            _base = _decorator
 
         # updates the decorates with the base value, this is going to be
         # the clojure based new view function, then in case this is a new

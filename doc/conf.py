@@ -74,29 +74,17 @@ html_static_path = ["_static"]
 htmlhelp_basename = "quorumdoc"
 latex_elements = {}
 latex_documents = [
-    (
-        "index",
-        info.NAME + ".tex",
-        info.NAME + " documentation",
-        info.AUTHOR,
-        "manual"
-    )
+    ("index", info.NAME + ".tex", info.NAME + " documentation", info.AUTHOR, "manual")
 ]
-man_pages = [
+man_pages = [("index", info.NAME, info.NAME + " documentation", [info.AUTHOR], 1)]
+texinfo_documents = [
     (
         "index",
         info.NAME,
         info.NAME + " documentation",
-        [info.AUTHOR],
-        1
+        info.AUTHOR,
+        info.NAME,
+        info.DESCRIPTION,
+        "Miscellaneous",
     )
 ]
-texinfo_documents = [(
-    "index",
-    info.NAME,
-    info.NAME + " documentation",
-    info.AUTHOR,
-    info.NAME,
-    info.DESCRIPTION,
-    "Miscellaneous"
-)]

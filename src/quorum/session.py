@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -46,15 +37,19 @@ import werkzeug.datastructures
 
 from . import redisdb
 
+
 class RedisSession(werkzeug.datastructures.CallbackDict, flask.sessions.SessionMixin):
 
-    def __init__(self, initial = None, sid = None, new = False):
-        def on_update(self): self.modified = True
+    def __init__(self, initial=None, sid=None, new=False):
+        def on_update(self):
+            self.modified = True
+
         werkzeug.datastructures.CallbackDict.__init__(self, initial, on_update)
 
         self.sid = sid
         self.new = new
         self.modified = False
+
 
 class RedisSessionInterface(flask.sessions.SessionInterface):
 
@@ -66,8 +61,9 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
     """ The class to be used to encapsulate a session
     the generated object will be serialized """
 
-    def __init__(self, _redis = None, prefix = "session:", url = None):
-        if _redis == None: _redis = redisdb._get_connection(url)
+    def __init__(self, _redis=None, prefix="session:", url=None):
+        if _redis == None:
+            _redis = redisdb._get_connection(url)
 
         self.redis = _redis
         self.prefix = prefix
@@ -76,11 +72,14 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         return str(uuid.uuid4())
 
     def get_redis_expiration_time(self, app, session):
-        if session.permanent: return app.permanent_session_lifetime
-        return datetime.timedelta(days = 1)
+        if session.permanent:
+            return app.permanent_session_lifetime
+        return datetime.timedelta(days=1)
 
     def get_seconds(self, delta):
-        return (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+        return (
+            delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6
+        ) / 10**6
 
     def open_session(self, app, request):
         # tries to retrieve the session identifier from the
@@ -93,7 +92,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         sid = sid or request.cookies.get(app.session_cookie_name)
         if not sid:
             sid = self.generate_sid()
-            return self.session_class(sid = sid)
+            return self.session_class(sid=sid)
 
         # tries to retrieve the session value from Redis in
         # case the values is successfully found loads it using
@@ -101,11 +100,11 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         value = self.redis.get(self.prefix + sid)
         if not value == None:
             data = self.serializer.loads(value)
-            return self.session_class(data, sid = sid)
+            return self.session_class(data, sid=sid)
 
         # returns a new session object with an already existing
         # session identifier, but not found in data source (Redis)
-        return self.session_class(sid = sid, new = True)
+        return self.session_class(sid=sid, new=True)
 
     def save_session(self, app, session, response):
         # retrieves the domain associated with the cookie to
@@ -117,10 +116,8 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         # from the current response object
         if not session:
             self.redis.delete(self.prefix + session.sid)
-            if session.modified: response.delete_cookie(
-                app.session_cookie_name,
-                domain = domain
-            )
+            if session.modified:
+                response.delete_cookie(app.session_cookie_name, domain=domain)
             return
 
         # retrieves the Redis expiration date from the provided
@@ -132,9 +129,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         value = self.serializer.dumps(dict(session))
         total_seconds = self.get_seconds(redis_expire)
         self.redis.setex(
-            self.prefix + session.sid,
-            value = value,
-            time = int(total_seconds)
+            self.prefix + session.sid, value=value, time=int(total_seconds)
         )
 
         # sets the proper cookie value (with session identifier) in the
@@ -143,7 +138,7 @@ class RedisSessionInterface(flask.sessions.SessionInterface):
         response.set_cookie(
             app.session_cookie_name,
             session.sid,
-            expires = cookie_expire,
-            httponly = True,
-            domain = domain
+            expires=cookie_expire,
+            httponly=True,
+            domain=domain,
         )

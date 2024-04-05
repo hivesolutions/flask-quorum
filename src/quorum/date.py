@@ -22,22 +22,14 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-def format_delta(time_delta, count = 2):
+
+def format_delta(time_delta, count=2):
     days = time_delta.days
     hours, remainder = divmod(time_delta.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -45,14 +37,17 @@ def format_delta(time_delta, count = 2):
     if days > 0:
         delta_s += "%dd " % days
         count -= 1
-    if count == 0: return delta_s.strip()
+    if count == 0:
+        return delta_s.strip()
     if hours > 0:
         delta_s += "%dh " % hours
         count -= 1
-    if count == 0: return delta_s.strip()
+    if count == 0:
+        return delta_s.strip()
     if minutes > 0:
         delta_s += "%dm " % minutes
         count -= 1
-    if count == 0: return delta_s.strip()
+    if count == 0:
+        return delta_s.strip()
     delta_s += "%ds" % seconds
     return delta_s.strip()

@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -39,110 +30,54 @@ __license__ = "Apache License, Version 2.0"
 
 import quorum
 
+
 class Person(quorum.Model):
 
-    identifier = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
+    identifier = quorum.field(type=int, index=True, increment=True, default=True)
 
-    identifier_safe = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = quorum.field(type=int, index=True, increment=True, safe=True)
 
     name = quorum.field()
 
-    age = quorum.field(
-        type = int
-    )
+    age = quorum.field(type=int)
 
-    info = quorum.field(
-        type = dict
-    )
+    info = quorum.field(type=dict)
 
     father = quorum.field(
-        type = quorum.reference(
-            "Person",
-            name = "identifier",
-            dumpall = True
-        )
+        type=quorum.reference("Person", name="identifier", dumpall=True)
     )
 
-    brother = quorum.field(
-        type = quorum.reference(
-            "Person",
-            name = "identifier"
-        )
-    )
+    brother = quorum.field(type=quorum.reference("Person", name="identifier"))
 
-    car = quorum.field(
-        type = quorum.reference(
-            "Car",
-            name = "identifier"
-        ),
-        eager = True
-    )
+    car = quorum.field(type=quorum.reference("Car", name="identifier"), eager=True)
 
-    cats = quorum.field(
-        type = quorum.references(
-            "Cat",
-            name = "identifier"
-        )
-    )
+    cats = quorum.field(type=quorum.references("Cat", name="identifier"))
 
     @classmethod
     def validate(cls):
         return super(Person, cls).validate() + [
             quorum.not_null("name"),
             quorum.not_empty("name"),
-            quorum.not_duplicate("name", cls._name())
+            quorum.not_duplicate("name", cls._name()),
         ]
+
 
 class Cat(quorum.Model):
 
-    identifier = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
+    identifier = quorum.field(type=int, index=True, increment=True, default=True)
 
-    identifier_safe = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = quorum.field(type=int, index=True, increment=True, safe=True)
 
     name = quorum.field()
 
-    friend = quorum.field(
-        type = quorum.reference(
-            "Cat",
-            name = "identifier"
-        )
-    )
+    friend = quorum.field(type=quorum.reference("Cat", name="identifier"))
+
 
 class Car(quorum.Model):
 
-    identifier = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
+    identifier = quorum.field(type=int, index=True, increment=True, default=True)
 
-    identifier_safe = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = quorum.field(type=int, index=True, increment=True, safe=True)
 
     name = quorum.field()
 
@@ -151,53 +86,27 @@ class Car(quorum.Model):
     variant = quorum.field()
 
     garage = quorum.field(
-        type = quorum.reference(
-            "Garage",
-            name = "identifier"
-        ),
-        eager = True
+        type=quorum.reference("Garage", name="identifier"), eager=True
     )
+
 
 class Garage(quorum.Model):
 
-    identifier = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
+    identifier = quorum.field(type=int, index=True, increment=True, default=True)
 
-    identifier_safe = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = quorum.field(type=int, index=True, increment=True, safe=True)
 
     name = quorum.field()
 
     address = quorum.field(
-        type = quorum.reference(
-            "Address",
-            name = "identifier"
-        ),
-        eager = True
+        type=quorum.reference("Address", name="identifier"), eager=True
     )
+
 
 class Address(quorum.Model):
 
-    identifier = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
+    identifier = quorum.field(type=int, index=True, increment=True, default=True)
 
-    identifier_safe = quorum.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = quorum.field(type=int, index=True, increment=True, safe=True)
 
     street = quorum.field()

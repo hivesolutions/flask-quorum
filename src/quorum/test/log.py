@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -40,6 +31,7 @@ __license__ = "Apache License, Version 2.0"
 import logging
 
 import quorum
+
 
 class LogTest(quorum.TestCase):
 
@@ -54,10 +46,7 @@ class LogTest(quorum.TestCase):
         self.assertEqual(latest, [])
 
         record = logging.makeLogRecord(
-            dict(
-                msg = "hello world",
-                levelname = logging.getLevelName(logging.INFO)
-            )
+            dict(msg="hello world", levelname=logging.getLevelName(logging.INFO))
         )
         memory_handler.emit(record)
         latest = memory_handler.get_latest()
@@ -66,10 +55,7 @@ class LogTest(quorum.TestCase):
         self.assertEqual(latest, ["hello world"])
 
         record = logging.makeLogRecord(
-            dict(
-                msg = "hello world 2",
-                levelname = logging.getLevelName(logging.ERROR)
-            )
+            dict(msg="hello world 2", levelname=logging.getLevelName(logging.ERROR))
         )
         memory_handler.emit(record)
         latest = memory_handler.get_latest()
@@ -77,22 +63,22 @@ class LogTest(quorum.TestCase):
         self.assertEqual(len(latest), 2)
         self.assertEqual(latest, ["hello world 2", "hello world"])
 
-        latest = memory_handler.get_latest(level = logging.ERROR)
+        latest = memory_handler.get_latest(level=logging.ERROR)
 
         self.assertEqual(len(latest), 1)
         self.assertEqual(latest, ["hello world 2"])
 
-        latest = memory_handler.get_latest(level = logging.CRITICAL)
+        latest = memory_handler.get_latest(level=logging.CRITICAL)
 
         self.assertEqual(len(latest), 0)
         self.assertEqual(latest, [])
 
-        latest = memory_handler.get_latest(level = logging.INFO)
+        latest = memory_handler.get_latest(level=logging.INFO)
 
         self.assertEqual(len(latest), 2)
         self.assertEqual(latest, ["hello world 2", "hello world"])
 
-        latest = memory_handler.get_latest(count = 1, level = logging.INFO)
+        latest = memory_handler.get_latest(count=1, level=logging.INFO)
 
         self.assertEqual(len(latest), 1)
         self.assertEqual(latest, ["hello world 2"])
@@ -108,23 +94,17 @@ class LogTest(quorum.TestCase):
         self.assertEqual(latest, [])
 
         record = logging.makeLogRecord(
-            dict(
-                msg = "hello world",
-                levelname = logging.getLevelName(logging.INFO)
-            )
+            dict(msg="hello world", levelname=logging.getLevelName(logging.INFO))
         )
         memory_handler.emit(record)
         record = logging.makeLogRecord(
-            dict(
-                msg = "hello world 2",
-                levelname = logging.getLevelName(logging.INFO)
-            )
+            dict(msg="hello world 2", levelname=logging.getLevelName(logging.INFO))
         )
         memory_handler.emit(record)
 
         file = quorum.legacy.BytesIO()
 
-        memory_handler.flush_to_file(file, clear = False)
+        memory_handler.flush_to_file(file, clear=False)
 
         file.seek(0)
         contents = file.read()
@@ -133,12 +113,12 @@ class LogTest(quorum.TestCase):
 
         file = quorum.legacy.BytesIO()
 
-        memory_handler.flush_to_file(file, reverse = False)
+        memory_handler.flush_to_file(file, reverse=False)
 
         file.seek(0)
         contents = file.read()
 
         self.assertEqual(contents, b"hello world 2\nhello world\n")
 
-        latest = memory_handler.get_latest(count = 1)
+        latest = memory_handler.get_latest(count=1)
         self.assertEqual(len(latest), 0)

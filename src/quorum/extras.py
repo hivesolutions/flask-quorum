@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -43,13 +34,14 @@ YEAR_IN_SECS = 31536000
 """ The number of seconds that exist in a
 complete year (365 days) """
 
+
 class SSLify(object):
     """
     Secures your flask app by enabling the forcing
     of the protocol in the HTTP connection.
     """
 
-    def __init__(self, app, age = YEAR_IN_SECS, subdomains = False):
+    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False):
         """
         Constructor of the class.
 
@@ -94,7 +86,8 @@ class SSLify(object):
         """
 
         hsts_policy = "max-age={0}".format(self.hsts_age)
-        if self.hsts_include_subdomains: hsts_policy += "; includeSubDomains"
+        if self.hsts_include_subdomains:
+            hsts_policy += "; includeSubDomains"
 
         return hsts_policy
 
@@ -113,11 +106,13 @@ class SSLify(object):
 
         criteria = [
             flask.request.is_secure,
-            flask.request.headers.get("X-Forwarded-Proto", "http") == "https"
+            flask.request.headers.get("X-Forwarded-Proto", "http") == "https",
         ]
 
-        if any(criteria): return
-        if not flask.request.url.startswith("http://"): return
+        if any(criteria):
+            return
+        if not flask.request.url.startswith("http://"):
+            return
 
         url = flask.request.url.replace("http://", "https://", 1)
         request = flask.redirect(url)

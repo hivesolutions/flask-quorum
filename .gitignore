@@ -6,6 +6,8 @@
 
 /.vscode/settings.json
 
+/.venv
+
 /dist
 /build
 /doc/_build

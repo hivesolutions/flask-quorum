@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -42,6 +33,7 @@ import flask
 
 from . import common
 
+
 def render_template(template_name_or_list, **context):
     # runs the resolution process in the provided template name
     # so that the proper name is going to be used when rendering
@@ -50,6 +42,7 @@ def render_template(template_name_or_list, **context):
     template_name_or_list = template_resolve(template_name_or_list)
     render_template = getattr(flask, "_render_template")
     return render_template(template_name_or_list, **context)
+
 
 def template_resolve(template):
     """
@@ -75,7 +68,9 @@ def template_resolve(template):
 
     # retrieves both the complete locale set under the current request and
     # the language base value for the same locale (to be used as fallback)
-    locale = flask.request.locale if hasattr(flask.request, "locale") else None  #@UndefinedVariable
+    locale = (
+        flask.request.locale if hasattr(flask.request, "locale") else None
+    )  # @UndefinedVariable
     language = locale.split("_", 1)[0] if locale else None
 
     # sets the fallback name as the "original" template path, because
@@ -92,7 +87,8 @@ def template_resolve(template):
     for _locale in (locale, language):
         # in case the current value in iteration is not valid (not set
         # or empty) then the current iteration is not required
-        if not _locale: continue
+        if not _locale:
+            continue
 
         # creates the base file name for the target (locale based) template
         # and then joins the file name with the proper base path to create
@@ -104,12 +100,14 @@ def template_resolve(template):
         # the full path to the target template, then verifies if it exists
         # and in case it does sets it as the template name
         target_f = os.path.join(templates_path, target)
-        if os.path.exists(target_f): return target
+        if os.path.exists(target_f):
+            return target
 
     # runs the same operation for the fallback template name and verifies
     # for its existence in case it exists uses it as the resolved value
     fallback_f = os.path.join(templates_path, fallback)
-    if os.path.exists(fallback_f): return fallback
+    if os.path.exists(fallback_f):
+        return fallback
 
     # retrieves the reference to the currently loaded app so that its
     # properties are going to be used in the locales resolution
@@ -119,7 +117,8 @@ def template_resolve(template):
     # any previously "visited" locale value (redundant) so that the list
     # represents the non visited locales by order of preference
     locales = list(app.locales)
-    if locale in locales: locales.remove(flask.request.locale)
+    if locale in locales:
+        locales.remove(flask.request.locale)
 
     # iterates over the complete list of locales trying to find the any
     # possible existing template that is compatible with the specification
@@ -128,7 +127,8 @@ def template_resolve(template):
         target = fname + "." + locale + "." + extension
         target = fbase + "/" + target if fbase else target
         target_f = os.path.join(templates_path, target)
-        if os.path.exists(target_f): return target
+        if os.path.exists(target_f):
+            return target
 
     # returns the fallback value as the last option available, note that
     # for this situation the resolution process is considered failed

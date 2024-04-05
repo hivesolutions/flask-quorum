@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,11 +32,12 @@ import string
 
 import quorum
 
+
 class UtilTest(quorum.TestCase):
 
     def setUp(self):
         try:
-            quorum.load(name = __name__)
+            quorum.load(name=__name__)
         except Exception:
             self.skip()
 
@@ -65,237 +57,347 @@ class UtilTest(quorum.TestCase):
 
     @quorum.secured
     def test_is_mobile(self):
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_mobile(user_agent = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        result = quorum.is_mobile(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_mobile(user_agent = "")
+        result = quorum.is_mobile(user_agent="")
         self.assertEqual(result, False)
 
     @quorum.secured
     def test_is_tablet(self):
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_tablet(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        result = quorum.is_tablet(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_tablet(user_agent = "")
+        result = quorum.is_tablet(user_agent="")
         self.assertEqual(result, False)
 
     @quorum.secured
     def test_is_browser(self):
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
+        result = quorum.is_browser(
+            user_agent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_browser(user_agent = "DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
+        result = quorum.is_browser(
+            user_agent="DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_browser(user_agent = "netius/1.1.10")
+        result = quorum.is_browser(user_agent="netius/1.1.10")
         self.assertEqual(result, False)
 
-        result = quorum.is_browser(user_agent = "netius/1.1b")
+        result = quorum.is_browser(user_agent="netius/1.1b")
         self.assertEqual(result, False)
 
-        result = quorum.is_browser(user_agent = "")
+        result = quorum.is_browser(user_agent="")
         self.assertEqual(result, False)
 
     @quorum.secured
     def test_is_bot(self):
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
+        result = quorum.is_bot(
+            user_agent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136"
+        )
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
+        result = quorum.is_bot(
+            user_agent="DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)"
+        )
         self.assertEqual(result, True)
 
-        result = quorum.is_bot(user_agent = "netius/1.1.10")
+        result = quorum.is_bot(user_agent="netius/1.1.10")
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "netius/1.1b")
+        result = quorum.is_bot(user_agent="netius/1.1b")
         self.assertEqual(result, False)
 
-        result = quorum.is_bot(user_agent = "")
+        result = quorum.is_bot(user_agent="")
         self.assertEqual(result, False)
 
     @quorum.secured
     def test_browser_info(self):
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
-        self.assertEqual(result, dict(
-            name = "Edge",
-            version = "12.10136",
-            version_f = 12.10136,
-            version_i = 12,
-            interactive = True,
-            bot = False,
-            os = "Windows"
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Edge",
+                version="12.10136",
+                version_f=12.10136,
+                version_i=12,
+                interactive=True,
+                bot=False,
+                os="Windows",
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
-        self.assertEqual(result, dict(
-            name = "Chrome",
-            version = "62.0.3202.75",
-            version_f = 62.0,
-            version_i = 62,
-            interactive = True,
-            bot = False,
-            os = "Windows"
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Chrome",
+                version="62.0.3202.75",
+                version_f=62.0,
+                version_i=62,
+                interactive=True,
+                bot=False,
+                os="Windows",
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
-        self.assertEqual(result, dict(
-            name = "Safari",
-            version = "601.1",
-            version_f = 601.1,
-            version_i = 601,
-            interactive = True,
-            bot = False,
-            os = "Mac"
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Safari",
+                version="601.1",
+                version_f=601.1,
+                version_i=601,
+                interactive=True,
+                bot=False,
+                os="Mac",
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
-        self.assertEqual(result, dict(
-            name = "Firefox",
-            version = "56.0",
-            version_f = 56.0,
-            version_i = 56,
-            interactive = True,
-            bot = False,
-            os = "Windows"
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Firefox",
+                version="56.0",
+                version_f=56.0,
+                version_i=56,
+                interactive=True,
+                bot=False,
+                os="Windows",
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)")
-        self.assertEqual(result, dict(
-            name = "Explorer",
-            version = "8.0",
-            version_f = 8.0,
-            version_i = 8,
-            interactive = True,
-            bot = False,
-            os = "Windows"
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Explorer",
+                version="8.0",
+                version_f=8.0,
+                version_i=8,
+                interactive=True,
+                bot=False,
+                os="Windows",
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-        self.assertEqual(result, dict(
-            name = "Googlebot",
-            version = "2.1",
-            version_f = 2.1,
-            version_i = 2,
-            interactive = False,
-            bot = True
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Googlebot",
+                version="2.1",
+                version_f=2.1,
+                version_i=2,
+                interactive=False,
+                bot=True,
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)")
-        self.assertEqual(result, dict(
-            name = "Bingbot",
-            version = "2.0",
-            version_f = 2.0,
-            version_i = 2,
-            interactive = False,
-            bot = True
-        ))
+        result = quorum.browser_info(
+            user_agent="Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="Bingbot",
+                version="2.0",
+                version_f=2.0,
+                version_i=2,
+                interactive=False,
+                bot=True,
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
-        self.assertEqual(result, dict(
-            name = "DuckDuckBot",
-            version = "1.0",
-            version_f = 1.0,
-            version_i = 1,
-            interactive = False,
-            bot = True
-        ))
+        result = quorum.browser_info(
+            user_agent="DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)"
+        )
+        self.assertEqual(
+            result,
+            dict(
+                name="DuckDuckBot",
+                version="1.0",
+                version_f=1.0,
+                version_i=1,
+                interactive=False,
+                bot=True,
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "netius/1.1.10")
-        self.assertEqual(result, dict(
-            name = "netius",
-            version = "1.1.10",
-            version_f = 1.1,
-            version_i = 1,
-            interactive = False,
-            bot = False
-        ))
+        result = quorum.browser_info(user_agent="netius/1.1.10")
+        self.assertEqual(
+            result,
+            dict(
+                name="netius",
+                version="1.1.10",
+                version_f=1.1,
+                version_i=1,
+                interactive=False,
+                bot=False,
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "netius/1.1b")
-        self.assertEqual(result, dict(
-            name = "netius",
-            version = "1.1b",
-            version_f = 0,
-            version_i = 0,
-            interactive = False,
-            bot = False
-        ))
+        result = quorum.browser_info(user_agent="netius/1.1b")
+        self.assertEqual(
+            result,
+            dict(
+                name="netius",
+                version="1.1b",
+                version_f=0,
+                version_i=0,
+                interactive=False,
+                bot=False,
+            ),
+        )
 
-        result = quorum.browser_info(user_agent = "APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+        result = quorum.browser_info(
+            user_agent="APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)"
+        )
         self.assertEqual(result, None)
 
     @quorum.secured
@@ -332,11 +434,11 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
-        result = quorum.camel_to_readable("HelloWorld", lower = True)
+        result = quorum.camel_to_readable("HelloWorld", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.camel_to_readable("HelloWorld", lower = True, capitalize = True)
+        result = quorum.camel_to_readable("HelloWorld", lower=True, capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
@@ -344,15 +446,11 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HELLO World")
 
-        result = quorum.camel_to_readable("HELLOWorld", lower = True)
+        result = quorum.camel_to_readable("HELLOWorld", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.camel_to_readable(
-            "HELLOWorld",
-            lower = True,
-            capitalize = True
-        )
+        result = quorum.camel_to_readable("HELLOWorld", lower=True, capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
@@ -360,17 +458,12 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HELLO World HELLO World")
 
-        result = quorum.camel_to_readable(
-            "HELLOWorldHELLOWorld",
-            lower = True
-        )
+        result = quorum.camel_to_readable("HELLOWorldHELLOWorld", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world hello world")
 
         result = quorum.camel_to_readable(
-            "HELLOWorldHELLOWorld",
-            lower = True,
-            capitalize = True
+            "HELLOWorldHELLOWorld", lower=True, capitalize=True
         )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
@@ -388,7 +481,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorld")
 
-        result = quorum.underscore_to_camel("hello_world", lower = True)
+        result = quorum.underscore_to_camel("hello_world", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorld")
 
@@ -396,7 +489,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorldHelloWorld")
 
-        result = quorum.underscore_to_camel("hello_world_hello_world", lower = True)
+        result = quorum.underscore_to_camel("hello_world_hello_world", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorldHelloWorld")
 
@@ -404,7 +497,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorld")
 
-        result = quorum.underscore_to_camel("hello_world_", lower = True)
+        result = quorum.underscore_to_camel("hello_world_", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorld")
 
@@ -412,7 +505,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorld")
 
-        result = quorum.underscore_to_camel("__hello_world__", lower = True)
+        result = quorum.underscore_to_camel("__hello_world__", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorld")
 
@@ -420,7 +513,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorld")
 
-        result = quorum.underscore_to_camel("__hello___world__", lower = True)
+        result = quorum.underscore_to_camel("__hello___world__", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorld")
 
@@ -428,7 +521,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWORLD")
 
-        result = quorum.underscore_to_camel("__hello___WORLD__", lower = True)
+        result = quorum.underscore_to_camel("__hello___WORLD__", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWORLD")
 
@@ -436,7 +529,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "HelloWorld")
 
-        result = quorum.underscore_to_camel("HelloWorld", lower = True)
+        result = quorum.underscore_to_camel("HelloWorld", lower=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "helloWorld")
 
@@ -453,7 +546,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.underscore_to_readable("hello_world", capitalize = True)
+        result = quorum.underscore_to_readable("hello_world", capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
@@ -461,7 +554,9 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world hello world")
 
-        result = quorum.underscore_to_readable("hello_world_hello_world", capitalize = True)
+        result = quorum.underscore_to_readable(
+            "hello_world_hello_world", capitalize=True
+        )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
@@ -469,7 +564,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.underscore_to_readable("hello_world_", capitalize = True)
+        result = quorum.underscore_to_readable("hello_world_", capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
@@ -477,7 +572,7 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.underscore_to_readable("__hello_world__", capitalize = True)
+        result = quorum.underscore_to_readable("__hello_world__", capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
@@ -485,41 +580,40 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
-        result = quorum.underscore_to_readable("__hello___world__", capitalize = True)
+        result = quorum.underscore_to_readable("__hello___world__", capitalize=True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
-        result = quorum.underscore_to_readable("__hello___world__", capitalize = True, separator = "-")
+        result = quorum.underscore_to_readable(
+            "__hello___world__", capitalize=True, separator="-"
+        )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello-World")
 
     @quorum.secured
     def test_generate_identifier(self):
-        identifier = quorum.generate_identifier(
-            size = 16,
-            chars = string.ascii_uppercase
-        )
+        identifier = quorum.generate_identifier(size=16, chars=string.ascii_uppercase)
         self.assertEqual(len(identifier), 16)
         for char in identifier:
             self.assertTrue(char in string.ascii_uppercase)
 
     @quorum.secured
     def test_escape(self):
-        result = quorum.escape("foo,bar", ",", escape = "$")
+        result = quorum.escape("foo,bar", ",", escape="$")
         self.assertEqual(result, "foo$,bar")
 
-        result = quorum.escape("foo$,bar", ",", escape = "$")
+        result = quorum.escape("foo$,bar", ",", escape="$")
         self.assertEqual(result, "foo$$$,bar")
 
     @quorum.secured
     def test_unescape(self):
-        result = quorum.unescape("foo$,bar", escape = "$")
+        result = quorum.unescape("foo$,bar", escape="$")
         self.assertEqual(result, "foo,bar")
 
-        result = quorum.unescape("foo$$,bar", escape = "$")
+        result = quorum.unescape("foo$$,bar", escape="$")
         self.assertEqual(result, "foo$,bar")
 
-        result = quorum.unescape("$$foo$,bar$$$$", escape = "$")
+        result = quorum.unescape("$$foo$,bar$$$$", escape="$")
         self.assertEqual(result, "$foo,bar$$")
 
     @quorum.secured
@@ -550,28 +644,28 @@ class UtilTest(quorum.TestCase):
         result = quorum.split_unescape("foo bar")
         self.assertEqual(result, ["foo", "bar"])
 
-        result = quorum.split_unescape("foo bar hello world", max = 2)
+        result = quorum.split_unescape("foo bar hello world", max=2)
         self.assertEqual(result, ["foo", "bar", "hello world"])
 
         result = quorum.split_unescape("foo,bar", ",")
         self.assertEqual(result, ["foo", "bar"])
 
-        result = quorum.split_unescape("foo$,bar", ",", escape = "$")
+        result = quorum.split_unescape("foo$,bar", ",", escape="$")
         self.assertEqual(result, ["foo,bar"])
 
-        result = quorum.split_unescape("foo$$,bar", ",", escape = "$", unescape = True)
+        result = quorum.split_unescape("foo$$,bar", ",", escape="$", unescape=True)
         self.assertEqual(result, ["foo$", "bar"])
 
-        result = quorum.split_unescape("foo$$,bar", ",", escape = "$", unescape = False)
+        result = quorum.split_unescape("foo$$,bar", ",", escape="$", unescape=False)
         self.assertEqual(result, ["foo$$", "bar"])
 
-        result = quorum.split_unescape("foo$", ",", escape = "$", unescape = True)
+        result = quorum.split_unescape("foo$", ",", escape="$", unescape=True)
         self.assertEqual(result, ["foo$"])
 
-        result = quorum.split_unescape("foo\\\\\\:bar", ":", unescape = True)
+        result = quorum.split_unescape("foo\\\\\\:bar", ":", unescape=True)
         self.assertEqual(result, ["foo\\:bar"])
 
-        result = quorum.split_unescape("foo\\\\:bar", ":", unescape = True)
+        result = quorum.split_unescape("foo\\\\:bar", ":", unescape=True)
         self.assertEqual(result, ["foo\\", "bar"])
 
     @quorum.secured
@@ -615,19 +709,21 @@ class UtilTest(quorum.TestCase):
         self.assertEqual(type(result), tuple)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ["text/plain", "text/json"])
-        self.assertEqual(result[1], dict(charset = "utf-8"))
+        self.assertEqual(result[1], dict(charset="utf-8"))
 
         result = quorum.parse_content_type("text/plain+json   ; charset=utf-8")
         self.assertEqual(type(result), tuple)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ["text/plain", "text/json"])
-        self.assertEqual(result[1], dict(charset = "utf-8"))
+        self.assertEqual(result[1], dict(charset="utf-8"))
 
-        result = quorum.parse_content_type("text/plain+json; charset=utf-8; boundary=hello;")
+        result = quorum.parse_content_type(
+            "text/plain+json; charset=utf-8; boundary=hello;"
+        )
         self.assertEqual(type(result), tuple)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], ["text/plain", "text/json"])
-        self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
+        self.assertEqual(result[1], dict(charset="utf-8", boundary="hello"))
 
         result = quorum.parse_content_type("")
         self.assertEqual(type(result), tuple)
@@ -659,7 +755,7 @@ class UtilTest(quorum.TestCase):
 
         self.assertRaises(
             quorum.OperationalError,
-            lambda: quorum.verify(1 == 2, exception = quorum.OperationalError)
+            lambda: quorum.verify(1 == 2, exception=quorum.OperationalError),
         )
 
     @quorum.secured
@@ -674,7 +770,7 @@ class UtilTest(quorum.TestCase):
 
         self.assertRaises(
             quorum.OperationalError,
-            lambda: quorum.verify_equal(1, 2, exception = quorum.OperationalError)
+            lambda: quorum.verify_equal(1, 2, exception=quorum.OperationalError),
         )
 
     @quorum.secured
@@ -689,7 +785,7 @@ class UtilTest(quorum.TestCase):
 
         self.assertRaises(
             quorum.OperationalError,
-            lambda: quorum.verify_not_equal(1, 1, exception = quorum.OperationalError)
+            lambda: quorum.verify_not_equal(1, 1, exception=quorum.OperationalError),
         )
 
     @quorum.secured
@@ -707,14 +803,18 @@ class UtilTest(quorum.TestCase):
 
         self.assertRaises(
             quorum.OperationalError,
-            lambda: quorum.verify_type(1, str, exception = quorum.OperationalError)
+            lambda: quorum.verify_type(1, str, exception=quorum.OperationalError),
         )
 
-        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_type(None, str, null = False))
+        self.assertRaises(
+            quorum.AssertionError, lambda: quorum.verify_type(None, str, null=False)
+        )
 
         self.assertRaises(
             quorum.OperationalError,
-            lambda: quorum.verify_type(None, str, null = False, exception = quorum.OperationalError)
+            lambda: quorum.verify_type(
+                None, str, null=False, exception=quorum.OperationalError
+            ),
         )
 
     @quorum.secured
@@ -727,12 +827,13 @@ class UtilTest(quorum.TestCase):
 
         self.assertRaises(quorum.AssertionError, lambda: quorum.verify_many((1 == 2,)))
 
-        self.assertRaises(quorum.AssertionError, lambda: quorum.verify_many((1 == 1, 1 == 2)))
+        self.assertRaises(
+            quorum.AssertionError, lambda: quorum.verify_many((1 == 1, 1 == 2))
+        )
 
         self.assertRaises(
             quorum.OperationalError,
             lambda: quorum.verify_many(
-                (1 == 1, 1 == 2),
-                exception = quorum.OperationalError
-            )
+                (1 == 1, 1 == 2), exception=quorum.OperationalError
+            ),
         )
