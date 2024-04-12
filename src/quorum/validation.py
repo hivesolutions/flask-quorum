@@ -38,29 +38,29 @@ from . import common
 from . import legacy
 from . import exceptions
 
-SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
+SIMPLE_REGEX_VALUE = r"^[\:\.\s\w-]+$"
 """ The simple regex value used to validate
 if the provided value is a "simple" one meaning
 that it may be used safely for URL parts """
 
-EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
+EMAIL_REGEX_VALUE = r"^[\w\d\._%+-]+@[\w\d\.\-]+$"
 """ The email regex value used to validate
 if the provided value is in fact an email """
 
-URL_REGEX_VALUE = "^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
+URL_REGEX_VALUE = r"^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
 """ The URL regex value used to validate
 if the provided value is in fact an URL/URI """
 
-SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE)
+SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE, re.UNICODE)
 """ The simple regex used to validate
 if the provided value is a "simple" one meaning
 that it may be used safely for URL parts """
 
-EMAIL_REGEX = re.compile(EMAIL_REGEX_VALUE)
+EMAIL_REGEX = re.compile(EMAIL_REGEX_VALUE, re.UNICODE)
 """ The email regex used to validate
 if the provided value is in fact an email """
 
-URL_REGEX = re.compile(URL_REGEX_VALUE)
+URL_REGEX = re.compile(URL_REGEX_VALUE, re.UNICODE)
 """ The URL regex used to validate
 if the provided value is in fact an URL/URI """
 

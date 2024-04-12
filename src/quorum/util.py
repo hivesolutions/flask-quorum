@@ -51,11 +51,11 @@ from . import common
 from . import defines
 from . import exceptions
 
-FIRST_CAP_REGEX = re.compile("(.)([A-Z][a-z]+)")
+FIRST_CAP_REGEX = re.compile(r"(.)([A-Z][a-z]+)")
 """ Regular expression that ensures that the first
 token of each camel string is properly capitalized """
 
-ALL_CAP_REGEX = re.compile("([a-z0-9])([A-Z])")
+ALL_CAP_REGEX = re.compile(r"([a-z0-9])([A-Z])")
 """ The generalized transition from lower case to
 upper case letter regex that will provide a way of
 putting the underscore in the middle of the transition """
