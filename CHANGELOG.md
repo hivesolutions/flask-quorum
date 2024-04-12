@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Warning on regex compilation
 
 ## [0.8.3] - 2024-04-05
 
