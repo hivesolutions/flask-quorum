@@ -98,7 +98,7 @@ class ConfigTest(quorum.TestCase):
         with mock.patch("os.path.exists", return_value=True), mock.patch(
             "builtins.open", mock_data, create=True
         ) as mock_open:
-            ctx = dict(configs={}, config_f=[])
+            ctx = dict(config={}, config_f=[])
 
             quorum.config.load_dot_env(".env", "utf-8", ctx)
 
