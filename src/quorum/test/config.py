@@ -114,6 +114,6 @@ class ConfigTest(quorum.TestCase):
             result = quorum.conf("HEIGHT", cast=int)
             self.assertEqual(result, None)
 
-            self.assertEqual(len(ctx["configs"]), 2)
+            self.assertEqual(len(ctx["config"]), 2)
 
             self.assertEqual(mock_open.return_value.close.call_count, 1)
