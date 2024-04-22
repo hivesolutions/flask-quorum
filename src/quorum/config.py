@@ -194,8 +194,8 @@ def load_file(name=FILE_NAME, path=None, encoding="utf-8", ctx=None):
 
 
 def load_dot_env(name=".env", encoding="utf-8", ctx=None):
-    configs = ctx["configs"] if ctx else config_g
-    config_f = ctx["config_f"] if ctx else config_f
+    config = ctx["config"] if ctx else config_g
+    _config_f = ctx["config_f"] if ctx else config_f
 
     file_path = os.path.abspath(name)
     file_path = os.path.normpath(file_path)
@@ -204,10 +204,10 @@ def load_dot_env(name=".env", encoding="utf-8", ctx=None):
     if not exists:
         return
 
-    exists = file_path in config_f
+    exists = file_path in _config_f
     if exists:
-        config_f.remove(file_path)
-    config_f.append(file_path)
+        _config_f.remove(file_path)
+    _config_f.append(file_path)
 
     file = open(file_path, "rb")
     try:
@@ -238,7 +238,7 @@ def load_dot_env(name=".env", encoding="utf-8", ctx=None):
             and value.endswith("'")
         ):
             value = value[1:-1].replace('\\"', '"')
-        configs[key] = value
+        config[key] = value
 
 
 def load_env(ctx=None):
