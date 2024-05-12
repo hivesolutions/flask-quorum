@@ -841,7 +841,7 @@ def _quote(values, plus=False, safe="/"):
 
     final = dict()
 
-    for key, value in values.items():
+    for key, value in values:
         key = method(key, safe=safe)
         value = method(value[0], safe=safe)
         final[key] = value
