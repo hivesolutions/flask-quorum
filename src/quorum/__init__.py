@@ -234,7 +234,15 @@ from .model import (
 )
 from .mongodb import MongoMap, MongoEncoder
 from .observer import Observable
-from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy
+from .structures import (
+    OrderedDict,
+    LazyDict,
+    LazyValue,
+    GeneratorFile,
+    LimitedSizeDict,
+    lazy_dict,
+    lazy,
+)
 from .template import render_template, template_resolve
 from .typesf import (
     AbstractType,

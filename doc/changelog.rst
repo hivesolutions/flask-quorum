@@ -9,7 +9,7 @@ Current Versions
 0.8.3
 ^^^^^
 
-    * Made code compliant with `black` 
+    * Made code compliant with `black`
 
 0.8.2
 ^^^^^
