@@ -43,7 +43,7 @@ We need people to help documentation the code base if you know anyone please con
 
 ## Build Automation
 
-[![Build Status](https://app.travis-ci.com/hivesolutions/flask-quorum.svg?branch=master)](https://travis-ci.com/github/hivesolutions/flask-quorum)
+[![Build Status](https://github.com/hivesolutions/flask-quorum/workflows/Main%20Workflow/badge.svg)](https://github.com/hivesolutions/flask-quorum/actions)
 [![Coverage Status](https://coveralls.io/repos/hivesolutions/flask-quorum/badge.svg?branch=master)](https://coveralls.io/r/hivesolutions/flask-quorum?branch=master)
 [![PyPi Status](https://img.shields.io/pypi/v/quorum.svg)](https://pypi.python.org/pypi/quorum)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/)
