@@ -2230,6 +2230,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return base
 
     @property
+    def identity(self):
+        return self._id
+
+    @property
     def request(self):
         return flask.request
 
