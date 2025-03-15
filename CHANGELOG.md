@@ -9,12 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for loading of `.env` files
-* Support for `save()` and `open()` methods in `File` class
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [0.8.4] - 2025-03-15
+
+### Added
+
+* Support for loading of `.env` files
+* Support for `save()` and `open()` methods in `File` class
 
 ### Fixed
 

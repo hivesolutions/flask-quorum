@@ -6,6 +6,14 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.4
+^^^^^
+
+    * Support for loading of `.env` files
+    * Support for `save()` and `open()` methods in `File` class
+    * Fixed warning on regex compilation
+    * Fixed jinja2 compatibility issues
+
 0.8.3
 ^^^^^
 
