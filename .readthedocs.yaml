@@ -10,3 +10,6 @@ python:
     - requirements: doc/requirements.txt
     - requirements: requirements.txt
     - requirements: extra.txt
+
+sphinx:
+  configuration: doc/conf.py
