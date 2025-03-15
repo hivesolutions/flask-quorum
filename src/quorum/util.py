@@ -1128,11 +1128,36 @@ def nl_to_br_jinja(eval_ctx, value):
     with line breaking HTML tags.
     """
 
+
+def nl_to_br_jinja(eval_ctx, value):
+    """
+    Optimized version of the function that replaces newline
+    characters with the HTML break lines that handles the
+    autoescape properties of the jinja engine.
+
+    :type eval_ctx: Context
+    :param eval_ctx: Current evaluation context being used
+    in the rendering of the jinja template. May be used to
+    determine if the autoescape mode is being used.
+    :type value: String
+    :param value: The base value that is going to be used in
+    the conversion to the html value.
+    :rtype: String
+    :return: The string containing the newline characters replaced
+    with line breaking HTML tags.
+    """
+
     if eval_ctx.autoescape:
-        value = legacy.UNICODE(jinja2.escape(value))
+        if hasattr(jinja2, "escape"):
+            value = legacy.UNICODE(jinja2.escape(value))
+        elif hasattr(jinja2.filters, "escape"):
+            value = legacy.UNICODE(jinja2.filters.escape(value))
     value = nl_to_br(value)
     if eval_ctx.autoescape:
-        value = jinja2.Markup(value)
+        if hasattr(jinja2, "Markup"):
+            value = jinja2.Markup(value)
+        elif hasattr(jinja2.filters, "Markup"):
+            value = jinja2.filters.Markup(value)
     return value
 
 

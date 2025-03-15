@@ -34,6 +34,7 @@ import json
 import time
 import flask
 import atexit
+import jinja2
 import socket
 import logging
 import inspect
@@ -474,6 +475,15 @@ def load(
     util.nl_to_br_jinja.environmentfilter = True
     util.sp_to_nbsp_jinja.evalcontextfilter = True
     util.sp_to_nbsp_jinja.environmentfilter = True
+
+    # uses the jinja2 specific pass eval functions to ensure that the
+    # proper context and environment are passed
+    if hasattr(jinja2, "pass_eval_context"):
+        jinja2.pass_eval_context(util.nl_to_br_jinja)
+        jinja2.pass_eval_context(util.sp_to_nbsp_jinja)
+    if hasattr(jinja2, "pass_environment"):
+        jinja2.pass_environment(util.nl_to_br_jinja)
+        jinja2.pass_environment(util.sp_to_nbsp_jinja)
 
     # updates the base app reference object with a series of operations
     # that should transform it's base execution and behavior
