@@ -36,7 +36,7 @@ class MongoDbTest(quorum.TestCase):
     def test__parse_uri(self):
         result = quorum.mongodb._parse_uri("mongodb://admin:pass@localhost:27017/main")
         self.assertEqual(result["nodelist"], [("localhost", 27017)])
-        self.assertEqual(result["options"], {})
         self.assertEqual(result["username"], "admin")
         self.assertEqual(result["password"], "pass")
         self.assertEqual(result["database"], "main")
+        self.assertEqual(result["options"], {})

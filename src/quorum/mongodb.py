@@ -338,6 +338,7 @@ def _parse_uri(url):
             nodelist=[(parsed.hostname, parsed.port or 27017)],
             username=parsed.username,
             password=parsed.password,
+            options=dict(),
         )
     return result
 
