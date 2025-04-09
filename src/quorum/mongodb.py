@@ -122,7 +122,16 @@ def reset_connection_a():
 
 def get_db():
     connection = get_connection()
-    result = _pymongo().uri_parser.parse_uri(url)
+    if hasattr(_pymongo().uri_parser, "parse_uri"):
+        result = _pymongo().uri_parser.parse_uri(url)
+    else:
+        parsed = legacy.urlparse(url)
+        result = dict(
+            database=parsed.path[1:] if parsed.path else None,
+            nodelist=[(parsed.hostname, parsed.port or 27017)],
+            username=parsed.username,
+            password=parsed.password,
+        )
     _database = result.get("database", None) or database
     db = connection[_database]
     return db
@@ -130,7 +139,16 @@ def get_db():
 
 def get_db_a():
     connection = get_connection_a()
-    result = _pymongo().uri_parser.parse_uri(url)
+    if hasattr(_pymongo().uri_parser, "parse_uri"):
+        result = _pymongo().uri_parser.parse_uri(url)
+    else:
+        parsed = legacy.urlparse(url)
+        result = dict(
+            database=parsed.path[1:] if parsed.path else None,
+            nodelist=[(parsed.hostname, parsed.port or 27017)],
+            username=parsed.username,
+            password=parsed.password,
+        )
     _database = result.get("database", None) or database
     db = connection[_database]
     return db
