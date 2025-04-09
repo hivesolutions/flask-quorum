@@ -122,16 +122,7 @@ def reset_connection_a():
 
 def get_db():
     connection = get_connection()
-    if hasattr(_pymongo().uri_parser, "parse_uri"):
-        result = _pymongo().uri_parser.parse_uri(url)
-    else:
-        parsed = legacy.urlparse(url)
-        result = dict(
-            database=parsed.path[1:] if parsed.path else None,
-            nodelist=[(parsed.hostname, parsed.port or 27017)],
-            username=parsed.username,
-            password=parsed.password,
-        )
+    result = _parse_uri(url)
     _database = result.get("database", None) or database
     db = connection[_database]
     return db
@@ -139,16 +130,7 @@ def get_db():
 
 def get_db_a():
     connection = get_connection_a()
-    if hasattr(_pymongo().uri_parser, "parse_uri"):
-        result = _pymongo().uri_parser.parse_uri(url)
-    else:
-        parsed = legacy.urlparse(url)
-        result = dict(
-            database=parsed.path[1:] if parsed.path else None,
-            nodelist=[(parsed.hostname, parsed.port or 27017)],
-            username=parsed.username,
-            password=parsed.password,
-        )
+    result = _parse_uri(url)
     _database = result.get("database", None) or database
     db = connection[_database]
     return db
@@ -344,6 +326,20 @@ def _version_t():
     major_s, minor_s, patch_s = version_l
     pymongo_l._version_t = (int(major_s), int(minor_s), int(patch_s))
     return pymongo_l._version_t
+
+
+def _parse_uri(url):
+    if hasattr(_pymongo(), "uri_parser"):
+        result = _pymongo().uri_parser.parse_uri(url)
+    else:
+        parsed = legacy.urlparse(url)
+        result = dict(
+            database=parsed.path[1:] if parsed.path else None,
+            nodelist=[(parsed.hostname, parsed.port or 27017)],
+            username=parsed.username,
+            password=parsed.password,
+        )
+    return result
 
 
 def _pymongo(verify=True):
