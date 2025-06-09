@@ -48,7 +48,7 @@ class DataTest(quorum.TestCase):
     def test_drop_db_missing(self):
         fd, file_path = tempfile.mkstemp()
         os.close(fd)
-        adapter = appier.TinyAdapter(file_path=file_path)
+        adapter = quorum.TinyAdapter(file_path=file_path)
         adapter.get_db()
         os.remove(file_path)
         adapter.drop_db()
