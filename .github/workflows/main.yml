@@ -23,6 +23,11 @@ jobs:
           rc
         ]
         adapter: ["tiny", "mongo"]
+        exclude:
+          - python-version: 2.7
+            adapter: mongo
+          - python-version: 3.5
+            adapter: mongo
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
