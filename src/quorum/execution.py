@@ -333,6 +333,12 @@ def interval_work(
 ):
     initial = initial or (eval and eval()) or time.time()
     description = description or callable.__name__
+
+    # in case the eval function is provided, the interval is not used
+    # as the next time is calculated by the eval function
+    if eval:
+        interval = None
+
     log.debug(
         "Scheduling work for %s, initial: %s, interval: %s, eval: %s",
         description,
@@ -447,6 +453,49 @@ def monthly_eval(monthday, offset, now=None):
 
 
 def build_composed(callable, target_time, interval, eval, callback, description):
+    """
+    Creates a *composed* (wrapper) callable that is responsible for
+    executing the provided *callable* and re-scheduling it for future
+    execution in the background queue.
+
+    The returned wrapper will:
+
+    1. Run the original *callable* propagating the given positional and
+       keyword arguments.
+    2. Determine the Unix timestamp for the next execution using the
+       optional ``eval`` function. If no evaluation function is provided,
+       the timestamp is calculated from the previous ``target_time`` and
+       the fixed ``interval`` (seconds), taking clock drift into account.
+    3. Build a *new* composed wrapper with the updated state and enqueue
+       it via :pyfunc:`insert_work`, guaranteeing continuous periodic
+       execution.
+    4. Return the result obtained from the original *callable* so that
+       callers can make use of its value as if the scheduler was
+       transparent.
+
+    :type callable: Function
+    :param callable: The function or method that should be executed
+    repeatedly.
+    :type target_time: float
+    :param target_time: Unix timestamp (UTC) indicating when the current
+    execution should occur.
+    :type interval: int or float
+    :param interval: Number of seconds between consecutive executions,
+    used when no ``eval`` function is provided.
+    :type eval: Function or ``None``
+    :param eval: Optional evaluation function that returns the next
+    execution timestamp. When defined, it takes precedence over the
+    ``interval`` calculation strategy.
+    :type callback: Function or ``None``
+    :param callback: Optional callback invoked after each execution with
+    an ``error`` keyword argument conveying any raised exception.
+    :type description: str
+    :param description: Human-readable description of the work unit,
+     mainly used for logging purposes.
+    :rtype: Function
+    :return: A wrapper function encapsulating the execution and
+    re-scheduling logic for the provided *callable*.
+    """
 
     def composed(*args, **kwargs):
         try:
