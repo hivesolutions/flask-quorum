@@ -139,3 +139,60 @@ class ExecutionTest(quorum.TestCase):
         expected_d = datetime.datetime(year=2014, month=2, day=6, hour=1)
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
+
+
+class WorkTest(quorum.TestCase):
+
+    @quorum.secured
+    def test_insert_work_description(self):
+        thread = quorum.ExecutionThread()
+
+        def dummy():
+            pass
+
+        thread.insert_work(dummy, description="dummy-work")
+        self.assertEqual(len(thread.work_list), 1)
+
+        _time, callable_o, callback, args, kwargs, description = thread.work_list[0]
+        self.assertEqual(description, "dummy-work")
+
+    @quorum.secured
+    def test_interval_work_description(self):
+        calls = []
+
+        def dummy():
+            calls.append(True)
+
+        recorded = []
+
+        def custom_insert_work(callable_o, args=[], kwargs={}, target_time=None, callback=None, description=None):
+            recorded.append((callable_o, target_time, callback, description))
+
+        original_insert_work = quorum.execution.insert_work
+        quorum.execution.insert_work = custom_insert_work
+
+        try:
+            result = quorum.interval_work(
+                dummy,
+                initial=10,
+                interval=5,
+                eval=lambda: 20,
+                description="dummy-work",
+            )
+
+            self.assertEqual(result, 10)
+            self.assertEqual(len(recorded), 1)
+            callable_o, target_time, callback, description = recorded[0]
+            self.assertEqual(target_time, 10)
+            self.assertEqual(description, "dummy-work")
+
+            recorded.clear()
+            callable_o()
+
+            self.assertEqual(len(recorded), 1)
+            _, target_time, _, description = recorded[0]
+            self.assertEqual(target_time, 20)
+            self.assertEqual(description, "dummy-work")
+        finally:
+            quorum.execution.insert_work = original_insert_work
+
