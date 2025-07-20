@@ -41,6 +41,10 @@ in mind that some delay may exist between the current repository `master` versio
 
 We need people to help documentation the code base if you know anyone please contact us.
 
+## License
+
+Quorum Extensions for Flask] is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+
 ## Build Automation
 
 [![Build Status](https://github.com/hivesolutions/flask-quorum/workflows/Main%20Workflow/badge.svg)](https://github.com/hivesolutions/flask-quorum/actions)
