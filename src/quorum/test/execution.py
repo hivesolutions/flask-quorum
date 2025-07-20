@@ -189,15 +189,15 @@ class WorkTest(quorum.TestCase):
 
             self.assertEqual(result, 10)
             self.assertEqual(len(recorded), 1)
-            callable_o, target_time, callback, description = recorded[0]
+            callable_o, target_time, _callback, description = recorded[0]
             self.assertEqual(target_time, 10)
             self.assertEqual(description, "dummy-work")
 
-            recorded.clear()
+            del recorded[:]
             callable_o()
 
             self.assertEqual(len(recorded), 1)
-            _, target_time, _, description = recorded[0]
+            _callable_o, target_time, _callback, description = recorded[0]
             self.assertEqual(target_time, 20)
             self.assertEqual(description, "dummy-work")
         finally:
