@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Flask Quorum
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2025 Hive Solutions Lda.
 #
 # This file is part of Hive Flask Quorum.
 #

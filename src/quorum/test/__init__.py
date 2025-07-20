@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Flask Quorum
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2025 Hive Solutions Lda.
 #
 # This file is part of Hive Flask Quorum.
 #
@@ -19,7 +19,7 @@
 # You should have received a copy of the Apache License along with
 # Hive Flask Quorum. If not, see <http://www.apache.org/licenses/>.
 
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2025 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
