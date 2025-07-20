@@ -140,9 +140,6 @@ class ExecutionTest(quorum.TestCase):
         expected_t = calendar.timegm(expected_d.utctimetuple())
         self.assertEqual(result, expected_t)
 
-
-class WorkTest(quorum.TestCase):
-
     @quorum.secured
     def test_insert_work_description(self):
         thread = quorum.ExecutionThread()
