@@ -147,6 +147,10 @@ class ExecutionThread(threading.Thread):
                     str(kwargs),
                 )
 
+                # retrieves the current time, this variable is going to be used
+                # to calculate the time taken to execute the work
+                start_time = time.time()
+
                 # executes the "callable" and logs the error in case the
                 # execution fails (must be done to log the error) then
                 # sets the error flag with the exception variable
@@ -156,15 +160,19 @@ class ExecutionThread(threading.Thread):
                     error = exception
                     log.warning(str(exception), log_trace=True)
 
+                # calculates the time taken to execute the work
+                execution_time = time.time() - start_time
+
                 # logs the execution of the work, allowing for proper debugging
                 # of the work execution, in case it's needed
                 log.debug(
-                    "Finished executing work for %s (callable: %s, args: %s, kwargs: %s, error: %s)",
+                    "Finished executing work for %s (callable: %s, args: %s, kwargs: %s, error: %s) in %.2f seconds",
                     description,
                     callable.__name__,
                     str(args),
                     str(kwargs),
                     error,
+                    execution_time,
                 )
 
                 # calls the callback method with the currently set error
