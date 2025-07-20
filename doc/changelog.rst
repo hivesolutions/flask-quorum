@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.6
+^^^^^
+
+    * Logging methods better handle conditional formatting
+
 0.8.5
 ^^^^^
 

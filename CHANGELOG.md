@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Logging methods better handle conditional formatting
+*
 
 ### Fixed
 
 *
+
+## [0.8.6] - 2025-07-20
+
+### Changed
+
+* Logging methods better handle conditional formatting
 
 ## [0.8.5] - 2025-07-20
 
