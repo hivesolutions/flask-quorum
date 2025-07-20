@@ -43,7 +43,7 @@ We need people to help documentation the code base if you know anyone please con
 
 ## License
 
-Quorum Extensions for Flask] is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+Quorum Extensions for Flask is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
 
 ## Build Automation
 
