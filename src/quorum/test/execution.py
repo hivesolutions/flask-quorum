@@ -150,7 +150,7 @@ class ExecutionTest(quorum.TestCase):
         thread.insert_work(dummy, description="dummy-work")
         self.assertEqual(len(thread.work_list), 1)
 
-        _time, callable_o, callback, args, kwargs, description = thread.work_list[0]
+        _time, callable_o, callback, args, kwargs, description = thread.peek_work()
         self.assertEqual(description, "dummy-work")
 
     @quorum.secured

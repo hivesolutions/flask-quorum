@@ -177,6 +177,27 @@ class ExecutionThread(threading.Thread):
         finally:
             self.work_lock.release()
 
+    def peek_work(self):
+        self.work_lock.acquire()
+        try:
+            return self.work_list[0]
+        finally:
+            self.work_lock.release()
+
+    def pop_work(self):
+        self.work_lock.acquire()
+        try:
+            return heapq.heappop(self.work_list)
+        finally:
+            self.work_lock.release()
+
+    def clear_work(self):
+        self.work_lock.acquire()
+        try:
+            self.work_list.clear()
+        finally:
+            self.work_lock.release()
+
 
 def background(timeout=None):
     """
