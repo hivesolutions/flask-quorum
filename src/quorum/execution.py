@@ -137,6 +137,16 @@ class ExecutionThread(threading.Thread):
                 # variable that controls the result of the execution
                 error = None
 
+                # logs the execution of the work, allowing for proper debugging
+                # of the work execution, in case it's needed
+                log.debug(
+                    "Executing work for %s (callable: %s, args: %s, kwargs: %s)",
+                    description,
+                    callable.__name__,
+                    str(args),
+                    str(kwargs),
+                )
+
                 # executes the "callable" and logs the error in case the
                 # execution fails (must be done to log the error) then
                 # sets the error flag with the exception variable
@@ -146,10 +156,22 @@ class ExecutionThread(threading.Thread):
                     error = exception
                     log.warning(str(exception), log_trace=True)
 
+                # logs the execution of the work, allowing for proper debugging
+                # of the work execution, in case it's needed
+                log.debug(
+                    "Finished executing work for %s (callable: %s, args: %s, kwargs: %s, error: %s)",
+                    description,
+                    callable.__name__,
+                    str(args),
+                    str(kwargs),
+                    error,
+                )
+
                 # calls the callback method with the currently set error
                 # in order to notify the runtime about the problem, only
                 # calls the callback in case such method is defined
-                callback and callback(error=error)
+                if callback:
+                    callback(error=error)
 
             # sleeps for a while so that the process may
             # released for different tasks
