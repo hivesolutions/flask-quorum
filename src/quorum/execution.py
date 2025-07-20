@@ -180,6 +180,8 @@ class ExecutionThread(threading.Thread):
     def peek_work(self):
         self.work_lock.acquire()
         try:
+            if not self.work_list:
+                return None
             return self.work_list[0]
         finally:
             self.work_lock.release()
@@ -187,6 +189,8 @@ class ExecutionThread(threading.Thread):
     def pop_work(self):
         self.work_lock.acquire()
         try:
+            if not self.work_list:
+                return None
             return heapq.heappop(self.work_list)
         finally:
             self.work_lock.release()
