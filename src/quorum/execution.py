@@ -169,6 +169,7 @@ class ExecutionThread(threading.Thread):
     ):
         target_time = target_time or time.time()
         description = description or callable.__name__
+        log.debug("Inserting work for %s, target_time: %s", description, target_time)
         work = (target_time, callable, callback, args, kwargs, description)
         self.work_lock.acquire()
         try:
@@ -276,6 +277,14 @@ def interval_work(
     description=None,
 ):
     initial = initial or (eval and eval()) or time.time()
+    description = description or callable.__name__
+    log.debug(
+        "Scheduling work for %s, initial: %s, interval: %s, eval: %s",
+        description,
+        initial,
+        interval,
+        eval,
+    )
     composed = build_composed(callable, initial, interval, eval, callback, description)
     insert_work(
         composed,
