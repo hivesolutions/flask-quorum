@@ -342,6 +342,7 @@ def has_exception():
 
 
 def debug(message, *args, **kwargs):
+    kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return
