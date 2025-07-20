@@ -107,6 +107,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_redirect(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         quoted = quorum.legacy.quote("https://%s/" % self.httpbin)
         _data, response = quorum.get_json(
             "https://%s/redirect-to?url=%s" % (self.httpbin, quoted),
@@ -128,6 +131,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_timeout(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         self.assertRaises(
             BaseException,
             lambda: quorum.get_json(
@@ -149,6 +155,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_get_f(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         file = quorum.get_f("https://%s/image/png" % self.httpbin)
 
         self.assertEqual(file.file_name, "default")
@@ -165,6 +174,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_generator(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         def text_g(message=[b"hello", b" ", b"world"]):
             yield sum(len(value) for value in message)
             for value in message:
@@ -181,6 +193,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_file(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         data, response = quorum.post_json(
             "https://%s/post" % self.httpbin,
             data=quorum.legacy.BytesIO(b"hello world"),
@@ -195,6 +210,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_multithread(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         threads = []
         results = []
 
@@ -228,6 +246,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_error(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         self.assertRaises(
             quorum.HTTPDataError,
             lambda: quorum.get("https://%s/status/404" % self.httpbin),
@@ -235,6 +256,9 @@ class HTTPCTest(quorum.TestCase):
 
     @quorum.secured
     def test_invalid(self):
+        if quorum.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         self.assertRaises(
             BaseException, lambda: quorum.get("https://invalidlargedomain.org/")
         )
