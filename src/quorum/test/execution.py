@@ -165,7 +165,14 @@ class WorkTest(quorum.TestCase):
 
         recorded = []
 
-        def custom_insert_work(callable_o, args=[], kwargs={}, target_time=None, callback=None, description=None):
+        def custom_insert_work(
+            callable_o,
+            args=[],
+            kwargs={},
+            target_time=None,
+            callback=None,
+            description=None,
+        ):
             recorded.append((callable_o, target_time, callback, description))
 
         original_insert_work = quorum.execution.insert_work
@@ -195,4 +202,3 @@ class WorkTest(quorum.TestCase):
             self.assertEqual(description, "dummy-work")
         finally:
             quorum.execution.insert_work = original_insert_work
-
