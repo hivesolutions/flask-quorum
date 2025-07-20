@@ -341,14 +341,15 @@ def has_exception():
     return not info == (None, None, None)
 
 
-def debug(message, log_trace=False, *args, **kwargs):
+def debug(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
     logger.debug(message, *args, **kwargs)
 
 
-def info(message, log_trace=False, *args, **kwargs):
+def info(message, *args, **kwargs):
+    log_trace = kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return
@@ -360,7 +361,8 @@ def info(message, log_trace=False, *args, **kwargs):
         logger.debug(line, *args, **kwargs)
 
 
-def warning(message, log_trace=False, *args, **kwargs):
+def warning(message, *args, **kwargs):
+    log_trace = kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return
@@ -372,7 +374,8 @@ def warning(message, log_trace=False, *args, **kwargs):
         logger.info(line, *args, **kwargs)
 
 
-def error(message, log_trace=False, *args, **kwargs):
+def error(message, *args, **kwargs):
+    log_trace = kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return
@@ -384,7 +387,8 @@ def error(message, log_trace=False, *args, **kwargs):
         logger.warning(line, *args, **kwargs)
 
 
-def critical(message, log_trace=False, *args, **kwargs):
+def critical(message, *args, **kwargs):
+    log_trace = kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return

@@ -171,7 +171,7 @@ class ExecutionThread(threading.Thread):
                     callable.__name__,
                     str(args),
                     str(kwargs),
-                    error,
+                    str(error) if error else "None",
                     execution_time,
                 )
 
