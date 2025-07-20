@@ -115,9 +115,13 @@ class ExecutionThread(threading.Thread):
                     # retrieves the current work tuple to
                     # be used and executes it in case the
                     # time has passed (should be executed)
-                    _time, callable, callback, args, kwargs = self.work_list[0]
+                    _time, callable, callback, args, kwargs, description = (
+                        self.work_list[0]
+                    )
                     if _time < current_time:
-                        execution_list.append((callable, callback, args, kwargs))
+                        execution_list.append(
+                            (callable, callback, args, kwargs, description)
+                        )
                         heapq.heappop(self.work_list)
                     else:
                         break
@@ -128,7 +132,7 @@ class ExecutionThread(threading.Thread):
 
             # iterates over all the "callables" in the execution
             # list to execute their operations
-            for callable, callback, args, kwargs in execution_list:
+            for callable, callback, args, kwargs, description in execution_list:
                 # sets the initial (default) value for the error
                 # variable that controls the result of the execution
                 error = None
@@ -155,10 +159,17 @@ class ExecutionThread(threading.Thread):
         self.run_flag = False
 
     def insert_work(
-        self, callable, args=[], kwargs={}, target_time=None, callback=None
+        self,
+        callable,
+        args=[],
+        kwargs={},
+        target_time=None,
+        callback=None,
+        description=None,
     ):
         target_time = target_time or time.time()
-        work = (target_time, callable, callback, args, kwargs)
+        description = description or callable.__name__
+        work = (target_time, callable, callback, args, kwargs, description)
         self.work_lock.acquire()
         try:
             heapq.heappush(self.work_list, work)
@@ -167,6 +178,17 @@ class ExecutionThread(threading.Thread):
 
 
 def background(timeout=None):
+    """
+    Decorator to run a function in a background thread.
+
+    The function will be executed in the every timeout
+    seconds.
+
+    :type timeout: float
+    :param timeout: The timeout for the function to be executed.
+    :type function: Function
+    :param function: The function to be executed in the background.
+    """
 
     def decorator(function):
         _timeout = timeout or 0.0
@@ -174,8 +196,8 @@ def background(timeout=None):
         def schedule(error=None, force=False):
             if timeout == None and not force:
                 return
-            target = time.time() + _timeout
-            insert_work(function, target, schedule)
+            target_time = time.time() + _timeout
+            insert_work(function, target_time=target_time, callback=schedule)
 
         # retrieves the name of the function and in
         # case the name already exists in the global
@@ -196,7 +218,9 @@ def background(timeout=None):
     return decorator
 
 
-def insert_work(callable, args=[], kwargs={}, target_time=None, callback=None):
+def insert_work(
+    callable, args=[], kwargs={}, target_time=None, callback=None, description=None
+):
     """
     Runs the provided callable (function, method, etc) in a separated
     thread context under submission of a queue system.
@@ -226,20 +250,40 @@ def insert_work(callable, args=[], kwargs={}, target_time=None, callback=None):
     :param callback: The callback function to be called upon finishing the\
     execution of the callable, in case an error (exception) on executing\
     the callback the error is passed as error argument.
+    :type description: String
+    :param description: The description of the work to be executed, used amongst
+    other things to identify the work in the logs.
     """
 
     background_t.insert_work(
-        callable, args=args, kwargs=kwargs, target_time=target_time, callback=callback
+        callable,
+        args=args,
+        kwargs=kwargs,
+        target_time=target_time,
+        callback=callback,
+        description=description,
     )
 
 
 def interval_work(
-    callable, args=[], kwargs={}, callback=None, initial=None, interval=60, eval=None
+    callable,
+    args=[],
+    kwargs={},
+    callback=None,
+    initial=None,
+    interval=60,
+    eval=None,
+    description=None,
 ):
     initial = initial or (eval and eval()) or time.time()
-    composed = build_composed(callable, initial, interval, eval, callback)
+    composed = build_composed(callable, initial, interval, eval, callback, description)
     insert_work(
-        composed, args=args, kwargs=kwargs, target_time=initial, callback=callback
+        composed,
+        args=args,
+        kwargs=kwargs,
+        target_time=initial,
+        callback=callback,
+        description=description,
     )
     return initial
 
@@ -338,7 +382,7 @@ def monthly_eval(monthday, offset, now=None):
     return calendar.timegm(monthday_tuple)
 
 
-def build_composed(callable, target_time, interval, eval, callback):
+def build_composed(callable, target_time, interval, eval, callback, description):
 
     def composed(*args, **kwargs):
         try:
@@ -366,13 +410,16 @@ def build_composed(callable, target_time, interval, eval, callback):
 
             # builds a new callable (composed) method taking into account the state and
             # inserts the work unit again into the queue of processing
-            composed = build_composed(callable, next_time, interval, eval, callback)
+            composed = build_composed(
+                callable, next_time, interval, eval, callback, description
+            )
             insert_work(
                 composed,
                 args=args,
                 kwargs=kwargs,
                 target_time=next_time,
                 callback=callback,
+                description=description,
             )
 
         # returns the current result from the original callable to the calling method,
