@@ -166,13 +166,13 @@ class ExecutionThread(threading.Thread):
                 # logs the execution of the work, allowing for proper debugging
                 # of the work execution, in case it's needed
                 log.debug(
-                    "Finished executing work for %s (callable: %s, args: %s, kwargs: %s, error: %s) in %.2f seconds",
+                    "Finished executing work for %s in %.2f seconds (callable: %s, args: %s, kwargs: %s, error: %s)",
                     description,
+                    execution_time,
                     callable.__name__,
                     str(args),
                     str(kwargs),
                     str(error) if error else "None",
-                    execution_time,
                 )
 
                 # calls the callback method with the currently set error
@@ -199,7 +199,11 @@ class ExecutionThread(threading.Thread):
     ):
         target_time = target_time or time.time()
         description = description or callable.__name__
-        log.debug("Inserting work for %s, target_time: %s", description, target_time)
+        log.debug(
+            "Inserting work for %s, target_time: %s",
+            description,
+            str(datetime.datetime.utcfromtimestamp(target_time)),
+        )
         work = (target_time, callable, callback, args, kwargs, description)
         self.work_lock.acquire()
         try:
