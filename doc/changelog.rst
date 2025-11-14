@@ -6,6 +6,11 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.7
+^^^^^
+
+    * Support for retro compatibility in `session_cookie_name` attribute
+
 0.8.6
 ^^^^^
 
