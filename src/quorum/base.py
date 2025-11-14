@@ -521,6 +521,11 @@ def load(
     # considered to be the start time of the application
     app.start_time = time.time()
 
+    # sets a series of attributes, ensuring retro compatibility
+    # as expected by the flask/quorum infra-structure
+    if not hasattr("app", "session_cookie_name"):
+        app.session_cookie_name = app.config["SESSION_COOKIE_NAME"]
+
     # sets a series of conditional based attributes in both
     # the associated modules and the base app object (as expected)
     if redis_url:
