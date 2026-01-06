@@ -124,7 +124,16 @@ from .base import (
     ensure_context,
     onrun,
 )
-from .config import conf, conf_prefix, conf_suffix, confs, confr, confd, confctx
+from .config import (
+    conf,
+    conf_prefix,
+    conf_suffix,
+    confs,
+    confr,
+    confd,
+    confctx,
+    conf_override,
+)
 from .crypt import Cipher, RC4, Spritz
 from .daemon import Daemon
 from .data import (
