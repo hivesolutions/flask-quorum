@@ -145,7 +145,7 @@ def xlsx_raw(cell_s):
     # directly without any conversion or processing
     is_str = cell_s.ctype == xlrd.XL_CELL_TEXT
     if is_str:
-        return cell_s.value
+        return legacy.u(cell_s.value, force=True)
 
     # uses modulo to check if value has no fractional part
     # returning as integer string if so, otherwise as float
