@@ -55,7 +55,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "Hello World")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_text_cell_unicode(self):
@@ -65,17 +65,17 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "Olá Mundo")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_text_cell_empty(self):
-        # creates a mock cell with text type and empty string
+        # creates a mock cell with text type and empty quorum.legacy.UNICODEing
         # value to verify edge case handling
         cell = MockCell(MockXlrd.XL_CELL_TEXT, "")
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_integer_value(self):
@@ -86,7 +86,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "42")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_integer_value_zero(self):
@@ -96,7 +96,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "0")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_integer_value_negative(self):
@@ -106,7 +106,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "-100")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_float_value(self):
@@ -116,7 +116,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "3.14159")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_float_value_negative(self):
@@ -126,7 +126,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "-2.5")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_large_integer(self):
@@ -136,7 +136,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "123456789")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
     def test_xlsx_raw_small_float(self):
@@ -146,7 +146,7 @@ class FormatsTest(quorum.TestCase):
         result = quorum.formats.xlsx_raw(cell)
 
         self.assertEqual(result, "0.001")
-        self.assertEqual(type(result), str)
+        self.assertEqual(type(result), quorum.legacy.UNICODE)
 
 
 class MockXlrd:
