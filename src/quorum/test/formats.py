@@ -54,7 +54,7 @@ class FormatsTest(quorum.TestCase):
         cell = MockCell(MockXlrd.XL_CELL_TEXT, "Hello World")
         result = quorum.formats.xlsx_raw(cell)
 
-        self.assertEqual(result, "Hello World")
+        self.assertEqual(result, quorum.legacy.u("Hello World"))
         self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
@@ -64,7 +64,7 @@ class FormatsTest(quorum.TestCase):
         cell = MockCell(MockXlrd.XL_CELL_TEXT, "Olá Mundo")
         result = quorum.formats.xlsx_raw(cell)
 
-        self.assertEqual(result, "Olá Mundo")
+        self.assertEqual(result, quorum.legacy.u("Olá Mundo"))
         self.assertEqual(type(result), quorum.legacy.UNICODE)
 
     @quorum.secured
