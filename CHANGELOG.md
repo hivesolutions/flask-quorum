@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for `conf_override()` context manager to temporarily override configuration values
+* Docstring documentation for `xlsx_to_map` function
+* Unit tests for `xlsx_raw` function in formats module
 
 ### Changed
 
-*
+* Improved integer/float detection in `xlsx_raw` using modulo operator
 
 ### Fixed
 

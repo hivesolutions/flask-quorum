@@ -38,6 +38,37 @@ except ImportError:
 
 
 def xlsx_to_map(file_path, keys=(), types=(), ignore_header=True):
+    """
+    Parses an Excel spreadsheet (.xlsx or .xls) file and converts its contents
+    into a list of dictionaries (maps), where each row becomes a dictionary entry.
+    This function is particularly useful for importing structured data from Excel
+    files into Python applications, enabling seamless integration with business
+    workflows that rely on spreadsheet-based data exchange.
+
+    The function uses the xlrd library to read the workbook and processes only
+    the first sheet. Each row in the sheet is mapped to a dictionary using the
+    provided keys sequence, where each key corresponds to a column in order.
+
+    Optional type conversion can be applied to each column via the types parameter,
+    allowing automatic casting of cell values (e.g., int, float, str).
+
+    :type file_path: String
+    :param file_path: The absolute or relative file path to the Excel spreadsheet
+    file that should be parsed and converted into a list of dictionaries.
+    :type keys: Tuple
+    :param keys: A sequence of strings representing the dictionary keys to use
+    for each column. The order must match the column order in the spreadsheet.
+    :type types: Tuple
+    :param types: A sequence of callable types (e.g., int, float, str) for
+    converting each column's raw value. Use None for columns that need no conversion.
+    :type ignore_header: bool
+    :param ignore_header: If True (default), the first row of the spreadsheet
+    is skipped, assuming it contains column headers rather than data.
+    :rtype: List
+    :return: A list of dictionaries where each dictionary represents a row
+    from the spreadsheet with keys mapped to their corresponding cell values.
+    """
+
     # verifies if the xlrd module has been correctly loaded
     # and in case it's not raises an exception indicating so
     if xlrd == None:
@@ -110,13 +141,19 @@ def xlsx_raw(cell_s):
     ready to be used.
     """
 
+    # in case the cell is a text cell returns the value
+    # directly without any conversion or processing
     is_str = cell_s.ctype == xlrd.XL_CELL_TEXT
     if is_str:
         return cell_s.value
+
+    # uses modulo to check if value has no fractional part
+    # returning as integer string if so, otherwise as float
+    # in case of an error returns the value as a string, this
+    # is a fallback coercion strategy to handle unexpected cases
     try:
-        is_int = cell_s.value == int(cell_s.value)
-    except ValueError:
-        is_int = False
-    if is_int:
-        return legacy.UNICODE(int(cell_s.value))
-    return legacy.UNICODE(cell_s.value)
+        if float(cell_s.value) % 1 == 0:
+            return legacy.UNICODE(int(cell_s.value))
+        return legacy.UNICODE(float(cell_s.value))
+    except (ValueError, TypeError):
+        return legacy.UNICODE(cell_s.value)
