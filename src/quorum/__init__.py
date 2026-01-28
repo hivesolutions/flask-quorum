@@ -333,6 +333,7 @@ from .validation import (
     validate_b,
     validate_e,
     safe,
+    custom,
     eq,
     gt,
     gte,
