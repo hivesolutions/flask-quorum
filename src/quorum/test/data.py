@@ -50,5 +50,6 @@ class DataTest(quorum.TestCase):
         os.close(fd)
         adapter = quorum.TinyAdapter(file_path=file_path)
         adapter.get_db()
+        adapter.close()
         os.remove(file_path)
         adapter.drop_db()
