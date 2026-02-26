@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Added `close()` method to `DataAdapter` and `TinyAdapter` to properly release database resources
 
 ## [0.8.7] - 2025-11-14
 
