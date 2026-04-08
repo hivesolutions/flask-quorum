@@ -37,8 +37,6 @@ import logging.handlers
 
 import quorum
 
-from quorum import log
-
 
 class LogTest(quorum.TestCase):
 
@@ -229,7 +227,7 @@ class LogTest(quorum.TestCase):
         def sample(a, b, secure=None):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = quorum.in_signature(sample, "secure")
 
         self.assertEqual(result, True)
 
@@ -238,7 +236,7 @@ class LogTest(quorum.TestCase):
         def sample(a, b):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = quorum.in_signature(sample, "secure")
 
         self.assertEqual(result, False)
 
@@ -247,7 +245,7 @@ class LogTest(quorum.TestCase):
         def sample(a, b, secure):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = quorum.in_signature(sample, "secure")
 
         self.assertEqual(result, True)
 
