@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* TRACE log level and `patch_logging()` for fine-grained protocol-level debugging
 * Support for `conf_override()` context manager to temporarily override configuration values
 * Docstring documentation for `xlsx_to_map` function
 * Unit tests for `xlsx_raw` function in formats module

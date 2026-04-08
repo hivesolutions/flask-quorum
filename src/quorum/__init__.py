@@ -108,6 +108,7 @@ from .base import (
     get_handler,
     get_bundle,
     is_devel,
+    is_trace,
     finalize,
     before_request,
     after_request,
@@ -123,6 +124,7 @@ from .base import (
     has_context,
     ensure_context,
     onrun,
+    _level,
 )
 from .config import (
     conf,
@@ -215,13 +217,17 @@ from .info import (
 )
 from .jsonf import load_json
 from .log import (
+    SILENT,
+    TRACE,
     MemoryHandler,
     BaseFormatter,
     ThreadFormatter,
     rotating_handler,
     smtp_handler,
+    patch_logging,
     in_signature,
     has_exception,
+    trace,
     debug,
     info,
     warning,

@@ -28,12 +28,228 @@ __copyright__ = "Copyright (c) 2008-2025 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import logging
+import tempfile
+import unittest
+
+import logging.handlers
 
 import quorum
 
+from quorum import log
+
 
 class LogTest(quorum.TestCase):
+
+    @quorum.secured
+    def test_silent_value(self):
+        self.assertEqual(quorum.SILENT, logging.CRITICAL + 1)
+        self.assertEqual(type(quorum.SILENT), int)
+
+    @quorum.secured
+    def test_silent_above_critical(self):
+        self.assertTrue(quorum.SILENT > logging.CRITICAL)
+
+    @quorum.secured
+    def test_trace_value(self):
+        self.assertEqual(quorum.TRACE, 5)
+        self.assertEqual(quorum.TRACE, logging.DEBUG - 5)
+        self.assertEqual(type(quorum.TRACE), int)
+
+    @quorum.secured
+    def test_trace_below_debug(self):
+        self.assertTrue(quorum.TRACE < logging.DEBUG)
+
+    @quorum.secured
+    def test_level_ordering(self):
+        self.assertTrue(quorum.TRACE < logging.DEBUG)
+        self.assertTrue(logging.DEBUG < logging.INFO)
+        self.assertTrue(logging.INFO < logging.WARNING)
+        self.assertTrue(logging.WARNING < logging.ERROR)
+        self.assertTrue(logging.ERROR < logging.CRITICAL)
+        self.assertTrue(logging.CRITICAL < quorum.SILENT)
+
+    @quorum.secured
+    def test_rotating_handler(self):
+        fd, path = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            handler = quorum.rotating_handler(path=path, max_bytes=1024, max_log=3)
+
+            self.assertEqual(type(handler), logging.handlers.RotatingFileHandler)
+            self.assertEqual(handler.maxBytes, 1024)
+            self.assertEqual(handler.backupCount, 3)
+
+            handler.close()
+        finally:
+            os.unlink(path)
+
+    @quorum.secured
+    def test_rotating_handler_defaults(self):
+        fd, path = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            handler = quorum.rotating_handler(path=path)
+
+            self.assertEqual(handler.maxBytes, 1048576)
+            self.assertEqual(handler.backupCount, 5)
+
+            handler.close()
+        finally:
+            os.unlink(path)
+
+    @quorum.secured
+    def test_patch_logging(self):
+        quorum.patch_logging()
+
+        result = logging.getLevelName(quorum.TRACE)
+
+        self.assertEqual(result, "TRACE")
+
+    @quorum.secured
+    def test_patch_logging_reverse(self):
+        quorum.patch_logging()
+
+        result = logging.getLevelName("TRACE")
+
+        self.assertEqual(result, quorum.TRACE)
+
+    @quorum.secured
+    def test_patch_logging_idempotent(self):
+        quorum.patch_logging()
+        quorum.patch_logging()
+
+        result = logging.getLevelName(quorum.TRACE)
+
+        self.assertEqual(result, "TRACE")
+
+    @quorum.secured
+    def test_patch_logging_logger_trace(self):
+        quorum.patch_logging()
+
+        logger = logging.getLogger("quorum.test.trace")
+
+        self.assertTrue(hasattr(logger, "trace"))
+        self.assertTrue(callable(logger.trace))
+
+    @quorum.secured
+    def test_patch_logging_logger_trace_call(self):
+        quorum.patch_logging()
+
+        logger = logging.getLogger("quorum.test.trace.call")
+        logger.setLevel(quorum.TRACE)
+        records = []
+        handler = logging.Handler()
+        handler.setLevel(quorum.TRACE)
+        handler.emit = lambda record: records.append(record)
+        logger.addHandler(handler)
+
+        try:
+            logger.trace("trace test message")
+
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0].getMessage(), "trace test message")
+            self.assertEqual(records[0].levelno, quorum.TRACE)
+            self.assertEqual(records[0].levelname, "TRACE")
+        finally:
+            logger.removeHandler(handler)
+
+    @quorum.secured
+    def test_patch_logging_logger_trace_filtered(self):
+        quorum.patch_logging()
+
+        logger = logging.getLogger("quorum.test.trace.filtered")
+        logger.setLevel(logging.DEBUG)
+        records = []
+        handler = logging.Handler()
+        handler.setLevel(quorum.TRACE)
+        handler.emit = lambda record: records.append(record)
+        logger.addHandler(handler)
+
+        try:
+            # the trace message should be filtered since the logger
+            # level is set to DEBUG which is above TRACE
+            logger.trace("this should be filtered")
+
+            self.assertEqual(len(records), 0)
+        finally:
+            logger.removeHandler(handler)
+
+    @quorum.secured
+    def test_level_trace_before_patch(self):
+        # temporarily removes the patched state to simulate a
+        # scenario where patch_logging() has not been called yet
+        patched = getattr(logging, "_quorum_patched", None)
+        if patched:
+            del logging._quorum_patched
+        trace_method = getattr(logging.Logger, "trace", None)
+        if trace_method:
+            del logging.Logger.trace
+        try:
+            result = quorum._level("TRACE")
+
+            self.assertEqual(result, quorum.TRACE)
+            self.assertEqual(result, 5)
+        finally:
+            if patched:
+                logging._quorum_patched = patched
+            if trace_method:
+                logging.Logger.trace = trace_method
+
+    @quorum.secured
+    def test_level_trace_after_patch(self):
+        quorum.patch_logging()
+
+        result = quorum._level("TRACE")
+
+        self.assertEqual(result, quorum.TRACE)
+        self.assertEqual(result, 5)
+
+    @quorum.secured
+    def test_level_silent(self):
+        result = quorum._level("SILENT")
+
+        self.assertEqual(result, quorum.SILENT)
+
+    @quorum.secured
+    def test_level_integer(self):
+        result = quorum._level(logging.DEBUG)
+
+        self.assertEqual(result, logging.DEBUG)
+
+    @quorum.secured
+    def test_level_none(self):
+        result = quorum._level(None)
+
+        self.assertEqual(result, None)
+
+    @quorum.secured
+    def test_in_signature(self):
+        def sample(a, b, secure=None):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, True)
+
+    @quorum.secured
+    def test_in_signature_missing(self):
+        def sample(a, b):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, False)
+
+    @quorum.secured
+    def test_in_signature_args(self):
+        def sample(a, b, secure):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, True)
 
     @quorum.secured
     def test_memory_handler(self):

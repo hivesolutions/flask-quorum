@@ -680,9 +680,22 @@ def start_log(
     app,
     name=None,
     level=logging.WARN,
-    format_base=log.LOGGING_FORMAT,
-    format_tid=log.LOGGING_FORMAT_TID,
+    format_base=None,
+    format_tid=None,
 ):
+    # patches the logging infra-structure so that the TRACE level
+    # is properly registered and available for usage, this call
+    # is idempotent and safe to be called multiple times
+    log.patch_logging()
+
+    is_trace = level <= log.TRACE
+    format_base = format_base or (
+        log.LOGGING_FORMAT_TRACE if is_trace else log.LOGGING_FORMAT
+    )
+    format_tid = format_tid or (
+        log.LOGGING_FORMAT_TRACE_TID if is_trace else log.LOGGING_FORMAT_TID
+    )
+
     # tries to retrieve some of the default configuration values
     # that are going to be used in the logger startup
     format = config.conf("LOGGING_FORMAT", None)
@@ -918,6 +931,13 @@ def is_devel(app=None):
     return level < logging.INFO
 
 
+def is_trace(app=None):
+    level = get_level(app=app)
+    if not level:
+        return False
+    return level <= log.TRACE
+
+
 def finalize(value):
     # returns an empty string as value representation
     # for unset values, this is the default representation
@@ -1127,6 +1147,8 @@ def _level(level):
         return level
     if level == "SILENT":
         return log.SILENT
+    if level == "TRACE":
+        return log.TRACE
     if hasattr(logging, "_checkLevel"):
         return logging._checkLevel(level)
     return logging.getLevelName(level)
