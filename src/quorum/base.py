@@ -424,7 +424,11 @@ def load(
     name = name + "-" + instance if instance else name
     prefix = instance + "-" if instance else ""
     suffix = "-" + instance if instance else ""
-    level = logging.DEBUG if debug else _level(level_s)
+    level = (
+        (log.TRACE if level_s == "TRACE" else logging.DEBUG)
+        if debug
+        else _level(level_s)
+    )
     logger = logger and prefix + logger
 
     # retrieves the last stack element as the previous element and
