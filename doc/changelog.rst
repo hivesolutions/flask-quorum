@@ -6,6 +6,17 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.8
+^^^^^
+
+    * TRACE log level and `patch_logging()` for fine-grained protocol-level debugging
+    * Support for `conf_override()` context manager to temporarily override configuration values
+    * Docstring documentation for `xlsx_to_map` function
+    * Unit tests for `xlsx_raw` function in formats module
+    * Improved integer/float detection in `xlsx_raw` using modulo operator
+    * Improved test coverage and structure
+    * Added `close()` method to `DataAdapter` and `TinyAdapter` to properly release database resources
+
 0.8.7
 ^^^^^
 
