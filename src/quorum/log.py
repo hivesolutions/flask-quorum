@@ -376,6 +376,8 @@ def trace(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.trace(message, *args, **kwargs)
 
 
@@ -384,6 +386,8 @@ def debug(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.debug(message, *args, **kwargs)
 
 
@@ -392,6 +396,8 @@ def info(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.info(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -405,6 +411,8 @@ def warning(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.warning(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -418,6 +426,8 @@ def error(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.error(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -431,6 +441,8 @@ def critical(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.critical(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
