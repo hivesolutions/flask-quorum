@@ -453,5 +453,8 @@ def critical(message, *args, **kwargs):
 
 
 def _trace(self, message, *args, **kwargs):
-    if self.isEnabledFor(TRACE):
-        self._log(TRACE, message, args, **kwargs)
+    if not self.isEnabledFor(TRACE):
+        return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
+    self._log(TRACE, message, args, **kwargs)
