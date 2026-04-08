@@ -55,6 +55,16 @@ multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
 
+LOGGING_FORMAT_TRACE_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s%%(pathname)s:%%(lineno)d | %%(message)s"
+""" The format to be used when the logging level is set to TRACE,
+includes file path and line number to allow for fine-grained debugging
+of low-level protocol operations """
+
+LOGGING_FORMAT_TRACE_TID_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s[%%(thread)d] %%(pathname)s:%%(lineno)d | %%(message)s"
+""" The format to be used when the logging level is set to TRACE and
+the thread is not the main one, includes file path, line number and
+thread identification number """
+
 LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast=bool) else ""
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
@@ -75,12 +85,19 @@ SILENT = logging.CRITICAL + 1
 or an handler, this is used as an utility for debugging
 purposes more that a real feature for production systems """
 
-LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+TRACE = logging.DEBUG - 5
+""" The trace level used for extremely detailed and verbose
+logging of protocol-level operations, this is meant to be
+used for fine-grained debugging of low-level operations
+like raw byte transfers and frame parsing """
+
+LEVELS = ("TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 """ The sequence of levels from the least sever to the
 most sever this sequence may be used to find all the
 levels that are considered more sever that a level """
 
 LEVEL_ALIAS = {
+    "TRAC": "TRACE",
     "DEBU": "DEBUG",
     "WARN": "WARNING",
     "INF": "INFO",
@@ -96,6 +113,8 @@ used by syslog with the appropriate default ports """
 
 LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
+LOGGING_FORMAT_TRACE = LOGGING_FORMAT_TRACE_T % LOGGING_EXTRA
+LOGGING_FORMAT_TRACE_TID = LOGGING_FORMAT_TRACE_TID_T % LOGGING_EXTRA
 
 
 class MemoryHandler(logging.Handler):
@@ -326,6 +345,18 @@ def smtp_handler(
     )
 
 
+def patch_logging():
+    if hasattr(logging, "_quorum_patched"):
+        return
+
+    # patches the logging infra-structure adding the trace level
+    # support and the corresponding trace method to the logger
+    logging.addLevelName(TRACE, "TRACE")
+    logging.Logger.trace = _trace
+
+    logging._quorum_patched = True
+
+
 def in_signature(callable, name):
     has_full = hasattr(inspect, "getfullargspec")
     if has_full:
@@ -333,7 +364,7 @@ def in_signature(callable, name):
     else:
         spec = inspect.getargspec(callable)
     args, _varargs, kwargs = spec[:3]
-    return (args and name in args) or (kwargs and "secure" in kwargs)
+    return bool((args and name in args) or (kwargs and "secure" in kwargs))
 
 
 def has_exception():
@@ -341,11 +372,23 @@ def has_exception():
     return not info == (None, None, None)
 
 
+def trace(message, *args, **kwargs):
+    kwargs.pop("log_trace", False)
+    logger = common.base().get_log()
+    if not logger:
+        return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
+    logger.trace(message, *args, **kwargs)
+
+
 def debug(message, *args, **kwargs):
     kwargs.pop("log_trace", False)
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.debug(message, *args, **kwargs)
 
 
@@ -354,6 +397,8 @@ def info(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.info(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -367,6 +412,8 @@ def warning(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.warning(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -380,6 +427,8 @@ def error(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.error(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
@@ -393,9 +442,16 @@ def critical(message, *args, **kwargs):
     logger = common.base().get_log()
     if not logger:
         return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
     logger.critical(message, *args, **kwargs)
     if not log_trace or not has_exception():
         return
     lines = traceback.format_exc().splitlines()
     for line in lines:
         logger.error(line, *args, **kwargs)
+
+
+def _trace(self, message, *args, **kwargs):
+    if self.isEnabledFor(TRACE):
+        self._log(TRACE, message, args, **kwargs)
