@@ -355,7 +355,7 @@ def load(
     adapter_s = config.conf("ADAPTER", "mongo")
     name = config.conf("NAME", name)
     instance = config.conf("INSTANCE", None)
-    force_ssl = config.conf("FORCE_SSL", False)
+    force_ssl = config.conf("FORCE_SSL", False, cast=bool)
     redis_url = config.conf("REDISTOGO_URL", None)
     mongo_url = config.conf("MONGOHQ_URL", None)
     amqp_url = config.conf("AMQP_URL", None)
