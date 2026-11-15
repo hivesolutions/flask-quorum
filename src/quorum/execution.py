@@ -404,7 +404,9 @@ def minutes_eval(offset, now=None):
     current = datetime.datetime(
         year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute
     )
-    next = current + datetime.timedelta(minutes=1, seconds=offset)
+    next = current + datetime.timedelta(seconds=offset)
+    if next <= now:
+        next += datetime.timedelta(minutes=1)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
@@ -414,7 +416,9 @@ def hourly_eval(offset, now=None):
     current = datetime.datetime(
         year=now.year, month=now.month, day=now.day, hour=now.hour
     )
-    next = current + datetime.timedelta(hours=1, seconds=offset)
+    next = current + datetime.timedelta(seconds=offset)
+    if next <= now:
+        next += datetime.timedelta(hours=1)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
@@ -422,9 +426,11 @@ def hourly_eval(offset, now=None):
 def daily_eval(offset, now=None):
     now = now or datetime.datetime.utcnow()
     today = datetime.datetime(year=now.year, month=now.month, day=now.day)
-    tomorrow = today + datetime.timedelta(days=1, seconds=offset)
-    tomorrow_tuple = tomorrow.utctimetuple()
-    return calendar.timegm(tomorrow_tuple)
+    next = today + datetime.timedelta(seconds=offset)
+    if next <= now:
+        next += datetime.timedelta(days=1)
+    next_tuple = next.utctimetuple()
+    return calendar.timegm(next_tuple)
 
 
 def weekly_eval(weekday, offset, now=None):

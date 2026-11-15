@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Cast `FORCE_SSL` configuration value to `bool` so string env values (e.g. `"False"`) are interpreted correctly
+* Daily, hourly and per minute scheduled work skipping the current slot when started before it - [#6](https://github.com/hivesolutions/flask-quorum/issues/6)
 
 ## [0.8.8] - 2026-04-08
 
