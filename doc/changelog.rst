@@ -6,6 +6,13 @@ List the complete set of changes to the quorum project since it's creation.
 Current Versions
 ----------------
 
+0.8.9
+^^^^^
+
+    * Skipped MongoDB tests in CI for Python images whose base system no longer receives updates
+    * Cast `FORCE_SSL` configuration value to `bool` so string env values (e.g. `"False"`) are interpreted correctly
+    * Daily, hourly and per minute scheduled work skipping the current slot when started before it
+
 0.8.8
 ^^^^^
 
